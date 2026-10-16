@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { UI } from '@/lib/content';
+import { href } from '@/lib/i18n';
 
 export default function ContactForm({ lang }: { lang: 'bs' | 'en' }) {
   const t = UI[lang];
@@ -30,7 +31,7 @@ export default function ContactForm({ lang }: { lang: 'bs' | 'en' }) {
       </div>
       <div className="cform-row"><label htmlFor="cf-msg">{t.message}</label><textarea id="cf-msg" name="message" rows={4} /></div>
       <input type="text" name="website" className="hp" tabIndex={-1} autoComplete="off" aria-hidden="true" />
-      <label className="cform-consent"><input type="checkbox" name="consent" /> {t.consent}</label>
+      <label className="cform-consent"><input type="checkbox" name="consent" /> <span>{t.consent} <a href={href('privacy', lang)}>{t.consentLink}</a></span></label>
       <button type="submit" className="btn btn-gold" disabled={state === 'sending'}>{state === 'sending' ? t.sending : t.send}</button>
       <p className={'cform-status' + (state === 'ok' ? ' is-ok' : state === 'err' || state === 'invalid' ? ' is-err' : '')} role="status">
         {state === 'ok' ? t.ok : state === 'err' ? t.err : state === 'invalid' ? t.required : ''}

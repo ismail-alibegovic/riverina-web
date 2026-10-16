@@ -2,6 +2,7 @@ import { Lang, SiteData, tx, mediaUrl, UI, sectionList, resolveLink, SectionKey 
 import { href } from '@/lib/i18n';
 import { siteNav } from '@/lib/nav';
 import SiteChrome from './site/SiteChrome';
+import Footer from './site/Footer';
 import Gallery from './Gallery';
 import ContactForm from './ContactForm';
 import Hero from './home/Hero';
@@ -113,7 +114,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
               </ul>
             )}
             {tx(loc.address, lang) && <p className="loc-address">{tx(loc.address, lang)}</p>}
-            {loc.map_link && <a className="link-line" href={loc.map_link} target="_blank" rel="noopener noreferrer">{t.directions}</a>}
+            <a className="link-line" href={href('location', lang)}>{t.moreLocation}</a>
           </div>
           <div className="loc-media" data-reveal="clip">
             {loc.map_embed
@@ -130,7 +131,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
           {page.investor.logo && <div className="inv-logo" data-reveal="up"><Fill src={page.investor.logo} alt={page.footer?.company || ''} sizes="240px" /></div>}
           <Heading text={tx(page.investor.title, lang)} className="is-center" />
           <div data-reveal="up"><Paras className="prose inv-text" text={tx(page.investor.text, lang)} /></div>
-          {page.investor.link && <a className="link-line" href={page.investor.link} target="_blank" rel="noopener noreferrer">{t.website}</a>}
+          <a className="link-line" href={href('developer', lang)}>{t.moreDeveloper}</a>
         </div>
       </section>
     ),
@@ -154,25 +155,13 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
     ),
   };
 
-  const year = new Date().getFullYear();
   return (
     <>
       <SiteChrome data={data} lang={lang} nav={nav} contactHref="#kontakt" langHref={(l) => href('home', l)} />
       <main id="main">
         {order.map((k) => <SectionSlot key={k}>{sections[k]()}</SectionSlot>)}
       </main>
-      <footer className="footer">
-        <div className="wrap wrap-wide footer-grid">
-          <a href={href('home', lang)} className="brand" aria-label={name}><img src={mediaUrl(settings.logo) || '/brand/wordmark-light.png'} alt="" width={700} height={157} /></a>
-          <nav aria-label={t.mainNav} className="footer-nav">
-            {nav.map((n) => <a key={n.href} href={n.href}>{n.label}</a>)}
-          </nav>
-          <div className="footer-meta">
-            {tx(page.footer?.text, lang) && <p>{tx(page.footer?.text, lang)}</p>}
-            <p>© {year} {page.footer?.company || name}. {t.rights}</p>
-          </div>
-        </div>
-      </footer>
+      <Footer data={data} lang={lang} nav={nav} />
     </>
   );
 }

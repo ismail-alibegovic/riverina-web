@@ -37,8 +37,9 @@ export type Page = {
   highlights?: { title?: L; items?: { title?: L; text?: L; image?: string }[] };
   selector?: { eyebrow?: L; title?: L; text?: L };
   gallery?: { title?: L; images?: Img[] };
-  location?: { title?: L; text?: L; address?: L; map_embed?: string; map_link?: string; image?: string; points?: { name?: L; value?: L }[] };
-  investor?: { title?: L; text?: L; logo?: string; link?: string };
+  location?: { title?: L; text?: L; address?: L; map_embed?: string; map_link?: string; image?: string; page_image?: string; points?: { name?: L; value?: L }[] };
+  investor?: { title?: L; text?: L; logo?: string; link?: string; page_image?: string };
+  privacy?: { title?: L; text?: L };
   contact?: { title?: L; text?: L; phone?: string; email?: string; address?: L; hours?: L };
   footer?: { text?: L; company?: string };
 };
@@ -121,11 +122,20 @@ export const DEFAULT_PAGE: Page = {
       en: 'Riverina Residence is located in Ilidža, Sarajevo.\n\n[[TBD: exact address and distances to the centre, airport and public transport]]',
     },
     image: `${R}/lokacija/mapa-ilidza.webp`,
+    page_image: `${R}/naselje/3.webp`,
   },
   investor: {
     title: { bs: 'Investitor\n*ALYASIN Group*', en: 'Developer\n*ALYASIN Group*' },
     text: { bs: '[[TBD: tekst o investitoru]]', en: '[[TBD: about the developer]]' },
     logo: `${R}/investitor/alyasin-logo.webp`,
+    page_image: `${R}/objekat/objekat-5.webp`,
+  },
+  privacy: {
+    title: { bs: 'Politika\n*privatnosti*', en: 'Privacy\n*policy*' },
+    text: {
+      bs: 'Ova stranica opisuje kako postupamo s podacima koje pošaljete putem kontakt forme i forme za upit o stanu.\n\nKada pošaljete upit, spremamo ime i prezime, e-mail, telefon, poruku, stan na koji se upit odnosi, jezik i adresu stranice s koje je upit poslan. Podatke koristimo samo da bismo odgovorili na vaš upit.\n\nSajt trenutno ne koristi kolačiće za analitiku ni oglašavanje.\n\n[[TBD: naziv i adresa odgovornog lica, rok čuvanja podataka, prava korisnika i kontakt za zahtjeve u vezi s podacima. Tekst treba pregledati pravnik.]]',
+      en: 'This page explains how we handle the information you send through the contact form and the apartment enquiry form.\n\nWhen you send an enquiry, we store your name, e-mail, phone, message, the apartment it refers to, the language and the address of the page it was sent from. We use this information only to reply to your enquiry.\n\nThe site currently uses no cookies for analytics or advertising.\n\n[[TBD: name and address of the data controller, retention period, user rights and a contact for data requests. To be reviewed by a lawyer.]]',
+    },
   },
   selector: {
     eyebrow: { bs: 'Interaktivni pregled', en: 'Interactive view' },

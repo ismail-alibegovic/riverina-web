@@ -1,5 +1,6 @@
 import { Lang, SiteData, tx, mediaUrl, UI, sectionList, resolveLink, SectionKey } from '@/lib/content';
 import { href } from '@/lib/i18n';
+import { siteNav } from '@/lib/nav';
 import SiteChrome from './site/SiteChrome';
 import Gallery from './Gallery';
 import ContactForm from './ContactForm';
@@ -27,13 +28,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
   const aptLabel = tx(page.hero?.cta, lang) || t.chooseApartment;
   const has = (k: SectionKey) => order.includes(k);
 
-  const nav = [
-    has('about') && { href: href('home', lang, 'projekat'), label: t.project },
-    { href: href('apartments', lang), label: t.apartments },
-    has('details') && (page.details?.items || []).length > 0 && { href: href('home', lang, 'detalji'), label: t.gallery },
-    has('location') && hasLocation && { href: href('home', lang, 'lokacija'), label: t.location },
-    { href: href('home', lang, 'kontakt'), label: t.contact },
-  ].filter(Boolean) as { href: string; label: string }[];
+  const nav = siteNav(data, lang);
 
   const sections: Record<SectionKey, () => React.ReactNode> = {
     hero: () => <Hero hero={page.hero || {}} lang={lang} name={name} />,

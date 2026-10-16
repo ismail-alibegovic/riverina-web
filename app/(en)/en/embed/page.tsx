@@ -3,7 +3,7 @@ import { getSiteData } from '@/lib/content';
 import type { Metadata } from 'next';
 
 export const revalidate = 300;
-export const metadata: Metadata = { title: 'Choose your apartment · Riverina Residence', alternates: { canonical: '/en/stanovi' }, robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: 'Choose your apartment · Riverina Residence', alternates: { canonical: '/en/apartments' }, robots: { index: false, follow: false } };
 
 export default async function Page() {
   const data = await getSiteData();

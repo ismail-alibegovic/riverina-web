@@ -11,7 +11,7 @@ export const LANGS = Object.keys(LOCALES) as Lang[];
 // Route keys → path per language. Pages that do not exist yet are left out of navigation.
 const ROUTES = {
   home: { bs: '/', en: '/en' },
-  apartments: { bs: '/stanovi', en: '/en/stanovi' },
+  apartments: { bs: '/stanovi', en: '/en/apartments' },
 } satisfies Record<string, Record<Lang, string>>;
 export type RouteKey = keyof typeof ROUTES;
 

@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [{ source: '/en/stanovi', destination: '/en/apartments', permanent: true }];
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
     qualities: [75, 78, 80],

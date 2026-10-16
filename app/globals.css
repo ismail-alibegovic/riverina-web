@@ -161,3 +161,18 @@ p { margin: 0; }
   .lb-nav { top: auto; bottom: 16px; transform: none; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+
+/* Samostalni pregled stanova (/stanovi) i embed (/embed) */
+.only { min-height: 100vh; background: var(--ivory); display: flex; flex-direction: column; }
+.only-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px clamp(16px, 3vw, 40px); background: var(--navy); color: #fff; }
+.only-head .brand { color: #fff; text-decoration: none; }
+.only-head .brand img { height: 34px; width: auto; display: block; }
+.only-head-r { display: flex; gap: 20px; font-size: 14px; }
+.only-head-r a { color: rgba(255, 255, 255, .85); text-decoration: none; }
+.only-head-r a:hover { color: #fff; }
+.only-main { flex: 1; padding: clamp(10px, 2vw, 28px); max-width: 1680px; width: 100%; margin: 0 auto; }
+.only .rvs { border-radius: 16px; box-shadow: 0 30px 80px -40px rgba(20, 33, 58, .35); }
+.only-embed { background: transparent; min-height: 0; }
+.only-embed .only-main { padding: 0; max-width: none; }
+.only-embed .rvs { border-radius: 0; box-shadow: none; }
+.only-head .wordmark { font-size: clamp(14px, 4.2vw, 24px); letter-spacing: .14em; white-space: nowrap; }

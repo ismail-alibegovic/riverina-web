@@ -166,12 +166,13 @@ export function resolveLink(link: string | undefined, lang: Lang): string {
   return link;
 }
 
-/** Visible sections in the order chosen in the CMS. */
+/** Visible sections in the order chosen in the CMS. The hero always comes first. */
 export function sectionList(p: Page): SectionKey[] {
-  const order = (p.sections?.order || []).filter((k) => SECTION_ORDER.includes(k));
-  const all = [...order, ...SECTION_ORDER.filter((k) => !order.includes(k))];
+  const rest: SectionKey[] = SECTION_ORDER.filter((k) => k !== 'hero');
+  const order = (p.sections?.order || []).filter((k) => rest.includes(k));
+  const all: SectionKey[] = ['hero', ...order, ...rest.filter((k) => !order.includes(k))];
   const hidden = new Set(p.sections?.hidden || []);
-  return all.filter((k) => !hidden.has(k));
+  return all.filter((k) => k === 'hero' || !hidden.has(k));
 }
 
 const EMPTY: SiteData = { settings: {}, page: {}, scenes: { masterplan: { views: [] }, buildings: [] }, units: [] };

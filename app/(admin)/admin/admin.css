@@ -230,3 +230,15 @@
 .cms-ed-qa { border: 1px dashed var(--c-line); border-radius: 10px; padding: 10px 12px; margin-top: 10px; }
 .cms-ed-qa summary { cursor: pointer; font-weight: 600; }
 .cms-ed-qa .cms-field { margin: 8px 0; }
+
+/* phase (d): first point lights up when the shape can be closed */
+.cms-ed-dp.is-first.is-near { fill: #b8955a; stroke: #fff; stroke-width: 3; }
+.cms-ed-undo[disabled] { opacity: .45; }
+
+/* phase (d): home section order */
+.cms-order-list { list-style: none; margin: 12px 0 0; padding: 0; counter-reset: sec; }
+.cms-order-list li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid #e7e2d8; counter-increment: sec; }
+.cms-order-list li::before { content: counter(sec); width: 22px; color: #8a8f98; font-size: 12px; font-variant-numeric: tabular-nums; }
+.cms-order-list li.is-off .cms-check { opacity: .5; }
+.cms-order-list .cms-link { font-size: 16px; padding: 4px 8px; }
+.cms-order-list .cms-link[disabled] { opacity: .25; pointer-events: none; }

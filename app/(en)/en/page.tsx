@@ -7,5 +7,5 @@ export const generateMetadata = () => pageMetadata('en');
 
 export default async function HomeEn() {
   const data = await getSiteData();
-  return <div lang="en"><Site data={data} lang="en" /></div>;
+  return <Site data={data} lang="en" />;
 }

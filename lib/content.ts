@@ -1,5 +1,7 @@
 // Content model, defaults and data loading for the public site.
-export type Lang = 'bs' | 'en';
+import type { Lang } from './i18n';
+export type { Lang } from './i18n';
+export { UI } from './i18n';
 export type L = { bs?: string; en?: string };
 
 export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
@@ -109,8 +111,3 @@ export function toSelectorData(d: SiteData) {
     units: (d.units || []).map((u: any) => ({ ...u, plan: mediaUrl(u.plan), pdf: mediaUrl(u.pdf) })),
   };
 }
-
-export const UI = {
-  bs: { project: 'Projekat', apartments: 'Stanovi', gallery: 'Galerija', location: 'Lokacija', contact: 'Kontakt', menu: 'Meni', close: 'Zatvori', directions: 'Otvori u Google Maps', phone: 'Telefon', email: 'E-mail', address: 'Adresa', hours: 'Radno vrijeme', send: 'Pošalji poruku', sending: 'Šaljem…', name: 'Ime i prezime', message: 'Poruka', consent: 'Saglasan/na sam da me kontaktirate u vezi s ovim upitom.', ok: 'Hvala! Poruka je poslana — javit ćemo vam se uskoro.', err: 'Poruka nije poslana. Pokušajte ponovo ili nas pozovite.', required: 'Unesite ime i e-mail ili telefon te potvrdite saglasnost.', rights: 'Sva prava zadržana.', noApartments: 'Pregled stanova uskoro.', available: 'slobodnih stanova' },
-  en: { project: 'Project', apartments: 'Apartments', gallery: 'Gallery', location: 'Location', contact: 'Contact', menu: 'Menu', close: 'Close', directions: 'Open in Google Maps', phone: 'Phone', email: 'E-mail', address: 'Address', hours: 'Opening hours', send: 'Send message', sending: 'Sending…', name: 'Full name', message: 'Message', consent: 'I agree to be contacted about this enquiry.', ok: 'Thank you! Your message has been sent — we will be in touch shortly.', err: 'The message could not be sent. Please try again or call us.', required: 'Enter your name and an e-mail or phone, and tick the consent box.', rights: 'All rights reserved.', noApartments: 'Apartment overview coming soon.', available: 'apartments available' },
-};

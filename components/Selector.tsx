@@ -16,5 +16,5 @@ export default function Selector({ data, lang }: { data: any; lang: 'bs' | 'en' 
     });
     return () => { cancelled = true; if (inst && inst.destroy) inst.destroy(); };
   }, [data, lang]);
-  return <div ref={ref} className="rvs-root" />;
+  return <div ref={ref} className="rvs-root" data-lenis-prevent />;
 }

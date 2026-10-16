@@ -7,5 +7,5 @@ export const metadata: Metadata = { title: 'Choose your apartment · Riverina Re
 
 export default async function Page() {
   const data = await getSiteData();
-  return <div lang="en"><ApartmentsOnly data={data} lang="en" embed={true} /></div>;
+  return <ApartmentsOnly data={data} lang="en" embed={true} />;
 }

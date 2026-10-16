@@ -1,5 +1,6 @@
 import { Lang, SiteData, tx, mediaUrl, UI, toSelectorData } from '@/lib/content';
-import SiteHeader from './SiteHeader';
+import SiteChrome from './site/SiteChrome';
+import { href } from '@/lib/i18n';
 import Selector from './Selector';
 import Gallery from './Gallery';
 import ContactForm from './ContactForm';
@@ -44,19 +45,19 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
   const selectorData = toSelectorData(data);
   const hasSelector = selectorData.units.length > 0 || selectorData.buildings.length > 0;
   const nav = [
-    hasAbout && { href: '#projekat', label: t.project },
-    { href: '#stanovi', label: t.apartments },
-    gallery.length > 0 && { href: '#galerija', label: t.gallery },
-    hasLocation && { href: '#lokacija', label: t.location },
-    { href: '#kontakt', label: t.contact },
+    hasAbout && { href: href('home', lang, 'projekat'), label: t.project },
+    { href: href('apartments', lang), label: t.apartments },
+    gallery.length > 0 && { href: href('home', lang, 'galerija'), label: t.gallery },
+    hasLocation && { href: href('home', lang, 'lokacija'), label: t.location },
+    { href: href('home', lang, 'kontakt'), label: t.contact },
   ].filter(Boolean) as { href: string; label: string }[];
   const name = settings.project_name || 'Riverina Residence';
   const year = new Date().getFullYear();
 
   return (
     <>
-      <SiteHeader nav={nav} lang={lang} logo={mediaUrl(settings.logo)} name={name} menuLabel={t.menu} closeLabel={t.close} />
-      <main id="top">
+      <SiteChrome data={data} lang={lang} nav={nav} contactHref="#kontakt" langHref={(l) => href('home', l)} />
+      <main id="main">
         <section className={'hero' + (hero.image ? ' has-image' : '')}>
           {hero.image ? <img className="hero-img" src={mediaUrl(hero.image)} alt="" fetchPriority="high" /> : <RiverLines />}
           <div className="hero-shade" />
@@ -65,7 +66,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
             <h1>{tx(hero.title, lang) || name}</h1>
             {tx(hero.subtitle, lang) && <p className="hero-sub">{tx(hero.subtitle, lang)}</p>}
             <div className="hero-ctas">
-              <a className="btn btn-gold" href="#stanovi">{tx(hero.cta, lang) || t.apartments}</a>
+              <a className="btn btn-gold" href={href('apartments', lang)}>{tx(hero.cta, lang) || t.apartments}</a>
               <a className="btn btn-line" href="#kontakt">{tx(hero.cta2, lang) || t.contact}</a>
             </div>
           </div>
@@ -173,7 +174,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
       </main>
       <footer className="footer">
         <div className="wrap footer-inner">
-          <a href={base} className="brand brand-foot">{settings.logo ? <img src={mediaUrl(settings.logo)} alt={name} /> : <span className="wordmark">{name}</span>}</a>
+          <a href={base} className="brand" aria-label={name}><img src={mediaUrl(settings.logo) || '/brand/wordmark-light.png'} alt="" width={700} height={157} /></a>
           {tx(page.footer?.text, lang) && <p>{tx(page.footer?.text, lang)}</p>}
           <p className="copy">© {year} {page.footer?.company || name}. {t.rights}</p>
         </div>

@@ -3,9 +3,9 @@ import { getSiteData } from '@/lib/content';
 import type { Metadata } from 'next';
 
 export const revalidate = 300;
-export const metadata: Metadata = { title: 'Odaberite svoj stan · Riverina Residence', alternates: { canonical: '/stanovi' } };
+export const metadata: Metadata = { title: 'Choose your apartment · Riverina Residence', alternates: { canonical: '/en/stanovi' } };
 
 export default async function Page() {
   const data = await getSiteData();
-  return <div lang="bs"><ApartmentsOnly data={data} lang="bs" embed={false} /></div>;
+  return <ApartmentsOnly data={data} lang="en" embed={false} />;
 }

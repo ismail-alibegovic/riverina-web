@@ -1,184 +1,187 @@
-import { Lang, SiteData, tx, mediaUrl, UI, toSelectorData } from '@/lib/content';
-import SiteChrome from './site/SiteChrome';
+import { Lang, SiteData, tx, mediaUrl, UI, sectionList, resolveLink, SectionKey } from '@/lib/content';
 import { href } from '@/lib/i18n';
-import Selector from './Selector';
+import SiteChrome from './site/SiteChrome';
 import Gallery from './Gallery';
 import ContactForm from './ContactForm';
+import Hero from './home/Hero';
+import Manifest from './home/Manifest';
+import About from './home/About';
+import Categories from './home/Categories';
+import Details from './home/Details';
+import { Fill, Heading, Paras } from './home/text';
 
-function Paras({ text, className }: { text: string; className?: string }) {
-  if (!text) return null;
-  return (
-    <div className={className}>
-      {text.split(/\n\s*\n/).map((p, i) => (
-        <p key={i}>{p.split('\n').map((line, j) => (j ? [<br key={j} />, line] : line))}</p>
-      ))}
-    </div>
-  );
-}
-
-function RiverLines() {
-  // decorative contour lines for the hero when no image is uploaded yet
-  const lines = Array.from({ length: 9 }, (_, i) => {
-    const y = 120 + i * 70;
-    return `M-50 ${y} C 300 ${y - 90 + i * 6}, 600 ${y + 110 - i * 8}, 900 ${y - 20} S 1400 ${y - 120 + i * 9}, 1700 ${y + 30}`;
-  });
-  return (
-    <svg className="hero-lines" viewBox="0 0 1600 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      {lines.map((d, i) => <path key={i} d={d} fill="none" strokeWidth={i === 4 ? 1.6 : 0.8} />)}
-    </svg>
-  );
-}
+const FALLBACK_BUILDING = '/riverina/objekat/objekat-3.webp';
 
 export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
-  const { page, settings } = data;
+  const { page, settings, units } = data;
   const t = UI[lang];
-  const base = lang === 'en' ? '/en' : '/';
-  const hero = page.hero || {};
-  const about = page.about || {};
-  const highlights = (page.highlights?.items || []).filter((x) => tx(x.title, lang));
-  const facts = (about.facts || []).filter((f) => tx(f.value, lang));
-  const gallery = (page.gallery?.images || []).filter((g) => g.path);
+  const name = settings.project_name || 'Riverina Residence';
   const loc = page.location || {};
   const contact = page.contact || {};
-  const hasAbout = !!(tx(about.title, lang) || tx(about.text, lang));
+  const gallery = (page.gallery?.images || []).filter((g) => g.path);
+  const manifestText = tx(page.manifest?.text, lang);
   const hasLocation = !!(tx(loc.title, lang) || tx(loc.text, lang) || loc.map_embed);
-  const selectorData = toSelectorData(data);
-  const hasSelector = selectorData.units.length > 0 || selectorData.buildings.length > 0;
+  const buildings: any[] = data.scenes?.buildings || [];
+  const order = sectionList(page);
+  // One label for the "see apartments" intent everywhere: the hero button text from the CMS.
+  const aptLabel = tx(page.hero?.cta, lang) || t.chooseApartment;
+  const has = (k: SectionKey) => order.includes(k);
+
   const nav = [
-    hasAbout && { href: href('home', lang, 'projekat'), label: t.project },
+    has('about') && { href: href('home', lang, 'projekat'), label: t.project },
     { href: href('apartments', lang), label: t.apartments },
-    gallery.length > 0 && { href: href('home', lang, 'galerija'), label: t.gallery },
-    hasLocation && { href: href('home', lang, 'lokacija'), label: t.location },
+    has('details') && (page.details?.items || []).length > 0 && { href: href('home', lang, 'detalji'), label: t.gallery },
+    has('location') && hasLocation && { href: href('home', lang, 'lokacija'), label: t.location },
     { href: href('home', lang, 'kontakt'), label: t.contact },
   ].filter(Boolean) as { href: string; label: string }[];
-  const name = settings.project_name || 'Riverina Residence';
-  const year = new Date().getFullYear();
 
+  const sections: Record<SectionKey, () => React.ReactNode> = {
+    hero: () => <Hero hero={page.hero || {}} lang={lang} name={name} />,
+
+    manifest: () => manifestText && (
+      <Manifest text={manifestText} label={t.manifest} images={(page.manifest?.images || []).filter((m) => m.path).map((m) => ({ src: mediaUrl(m.path), alt: tx(m.caption, lang) }))} />
+    ),
+
+    about: () => (tx(page.about?.title, lang) || tx(page.about?.text, lang)) && <About about={page.about || {}} units={units} lang={lang} />,
+
+    categories: () => {
+      const items = (page.categories?.items || []).filter((c) => tx(c.title, lang) && c.image);
+      return items.length > 0 && (
+        <section aria-label={t.categories}>
+          <Categories items={items.map((c) => ({ title: tx(c.title, lang), src: mediaUrl(c.image), href: resolveLink(c.link, lang), linkLabel: tx(c.link_label, lang) || (c.link === 'apartments' ? aptLabel : t.categories) }))} />
+        </section>
+      );
+    },
+
+    buildings: () => buildings.length > 0 && (
+      <section className="section blds">
+        <div className="wrap blds-head">
+          <Heading text={tx(page.buildings?.title, lang)} />
+          {tx(page.buildings?.text, lang) && <p className="lead" data-reveal="up">{tx(page.buildings?.text, lang)}</p>}
+        </div>
+        <div className={'wrap wrap-wide blds-grid n-' + Math.min(buildings.length, 3)}>
+          {buildings.map((b, i) => {
+            const own = units.filter((u) => u.building === b.id);
+            const free = own.filter((u) => u.status === 'available').length;
+            const soon = b.status === 'soon';
+            const img = b.views?.[b.default_view || 0]?.image || b.views?.[0]?.image || FALLBACK_BUILDING;
+            const status = soon ? t.soon : t.availableCount.replace('{n}', String(free));
+            return (
+              <article className={'bld' + (soon ? ' is-soon' : '')} key={b.id} data-reveal="up" style={{ '--i': i } as React.CSSProperties}>
+                <a href={href('apartments', lang)} className="bld-link">
+                  <div className="bld-img"><Fill src={img} alt="" sizes={buildings.length === 1 ? '(min-width: 900px) 60vw, 100vw' : '(min-width: 900px) 30vw, 100vw'} /></div>
+                  <div className="bld-info">
+                    <h3>{b.name}</h3>
+                    <p className="label bld-status">{status}</p>
+                    {!soon && own.length > 0 && <p className="bld-meta">{t.unitsCount.replace('{n}', String(own.length))}</p>}
+                    <span className="link-line">{aptLabel}</span>
+                  </div>
+                </a>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    ),
+
+    details: () => {
+      const slides = (page.details?.items || []).filter((d) => d.image).map((d) => ({ src: mediaUrl(d.image), title: tx(d.title, lang), text: tx(d.text, lang) }));
+      return slides.length > 0 && (
+        <section id="detalji" className="section details">
+          <div className="wrap"><Heading text={tx(page.details?.title, lang)} /></div>
+          <Details slides={slides} labels={{ prev: t.prev, next: t.next, region: t.slider }} />
+          {tx(page.details?.note, lang) && <p className="wrap det-note">{tx(page.details?.note, lang)}</p>}
+        </section>
+      );
+    },
+
+    gallery: () => gallery.length > 0 && (
+      <section id="galerija" className="section gallery">
+        <div className="wrap">
+          <Heading text={tx(page.gallery?.title, lang) || t.gallery} />
+          <Gallery images={gallery.map((g) => ({ src: mediaUrl(g.path), caption: tx(g.caption, lang) }))} closeLabel={t.close} />
+        </div>
+      </section>
+    ),
+
+    location: () => hasLocation && (
+      <section id="lokacija" className="section location">
+        <div className="wrap loc-grid">
+          <div className="loc-text">
+            <Heading text={tx(loc.title, lang) || t.location} />
+            <div data-reveal="up"><Paras className="prose" text={tx(loc.text, lang)} /></div>
+            {(loc.points || []).filter((p) => tx(p.name, lang)).length > 0 && (
+              <ul className="points" data-reveal="up">
+                {(loc.points || []).filter((p) => tx(p.name, lang)).map((p, i) => (
+                  <li key={i}><span>{tx(p.name, lang)}</span><b>{tx(p.value, lang)}</b></li>
+                ))}
+              </ul>
+            )}
+            {tx(loc.address, lang) && <p className="loc-address">{tx(loc.address, lang)}</p>}
+            {loc.map_link && <a className="link-line" href={loc.map_link} target="_blank" rel="noopener noreferrer">{t.directions}</a>}
+          </div>
+          <div className="loc-media" data-reveal="clip">
+            {loc.map_embed
+              ? <iframe src={loc.map_embed} title={t.location} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
+              : loc.image ? <Fill src={loc.image} alt={tx(loc.title, lang).replace(/\*/g, '').replace(/\n/g, ' ')} sizes="(min-width: 900px) 58vw, 100vw" /> : null}
+          </div>
+        </div>
+      </section>
+    ),
+
+    investor: () => page.investor && (tx(page.investor.title, lang) || page.investor.logo) && (
+      <section id="investitor" className="section investor">
+        <div className="wrap inv-inner">
+          {page.investor.logo && <div className="inv-logo" data-reveal="up"><Fill src={page.investor.logo} alt={page.footer?.company || ''} sizes="240px" /></div>}
+          <Heading text={tx(page.investor.title, lang)} className="is-center" />
+          <div data-reveal="up"><Paras className="prose inv-text" text={tx(page.investor.text, lang)} /></div>
+          {page.investor.link && <a className="link-line" href={page.investor.link} target="_blank" rel="noopener noreferrer">{t.website}</a>}
+        </div>
+      </section>
+    ),
+
+    contact: () => (
+      <section id="kontakt" className="section contact">
+        <div className="wrap contact-grid">
+          <div>
+            <Heading text={tx(contact.title, lang) || t.contact} />
+            <Paras className="prose" text={tx(contact.text, lang)} />
+            <dl className="contact-list">
+              {(contact.phone || settings.phone) && <><dt>{t.phone}</dt><dd><a href={'tel:' + String(contact.phone || settings.phone).replace(/[^\d+]/g, '')}>{contact.phone || settings.phone}</a></dd></>}
+              {contact.email && <><dt>{t.email}</dt><dd><a href={'mailto:' + contact.email}>{contact.email}</a></dd></>}
+              {tx(contact.address, lang) && <><dt>{t.address}</dt><dd>{tx(contact.address, lang)}</dd></>}
+              {tx(contact.hours, lang) && <><dt>{t.hours}</dt><dd>{tx(contact.hours, lang)}</dd></>}
+            </dl>
+          </div>
+          <ContactForm lang={lang} />
+        </div>
+      </section>
+    ),
+  };
+
+  const year = new Date().getFullYear();
   return (
     <>
       <SiteChrome data={data} lang={lang} nav={nav} contactHref="#kontakt" langHref={(l) => href('home', l)} />
       <main id="main">
-        <section className={'hero' + (hero.image ? ' has-image' : '')}>
-          {hero.image ? <img className="hero-img" src={mediaUrl(hero.image)} alt="" fetchPriority="high" /> : <RiverLines />}
-          <div className="hero-shade" />
-          <div className="wrap hero-inner">
-            {tx(hero.eyebrow, lang) && <p className="eyebrow">{tx(hero.eyebrow, lang)}</p>}
-            <h1>{tx(hero.title, lang) || name}</h1>
-            {tx(hero.subtitle, lang) && <p className="hero-sub">{tx(hero.subtitle, lang)}</p>}
-            <div className="hero-ctas">
-              <a className="btn btn-gold" href={href('apartments', lang)}>{tx(hero.cta, lang) || t.apartments}</a>
-              <a className="btn btn-line" href="#kontakt">{tx(hero.cta2, lang) || t.contact}</a>
-            </div>
-          </div>
-        </section>
-
-        {hasAbout && (
-          <section id="projekat" className="section about">
-            <div className="wrap about-grid">
-              <div>
-                {tx(about.eyebrow, lang) && <p className="eyebrow">{tx(about.eyebrow, lang)}</p>}
-                <h2>{tx(about.title, lang)}</h2>
-              </div>
-              <Paras className="prose" text={tx(about.text, lang)} />
-            </div>
-            {facts.length > 0 && (
-              <div className="wrap facts">
-                {facts.map((f, i) => (
-                  <div className="fact" key={i}><span className="fact-v">{tx(f.value, lang)}</span><span className="fact-l">{tx(f.label, lang)}</span></div>
-                ))}
-              </div>
-            )}
-            {about.image && <div className="wrap"><img className="about-img" src={mediaUrl(about.image)} alt="" loading="lazy" /></div>}
-          </section>
-        )}
-
-        {highlights.length > 0 && (
-          <section className="section highlights">
-            <div className="wrap">
-              {tx(page.highlights?.title, lang) && <h2>{tx(page.highlights?.title, lang)}</h2>}
-              <div className="hl-grid">
-                {highlights.map((h, i) => (
-                  <article className="hl" key={i}>
-                    {h.image && <img src={mediaUrl(h.image)} alt="" loading="lazy" />}
-                    <h3>{tx(h.title, lang)}</h3>
-                    <Paras text={tx(h.text, lang)} />
-                  </article>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        <section id="stanovi" className="section apartments">
-          <div className="wrap section-head">
-            <div>
-              {tx(page.selector?.eyebrow, lang) && <p className="eyebrow">{tx(page.selector?.eyebrow, lang)}</p>}
-              <h2>{tx(page.selector?.title, lang)}</h2>
-            </div>
-            {tx(page.selector?.text, lang) && <p className="lead">{tx(page.selector?.text, lang)}</p>}
-          </div>
-          <div className="wrap wrap-wide">
-            {hasSelector ? <Selector data={selectorData} lang={lang} /> : <p className="empty-note">{t.noApartments}</p>}
-          </div>
-        </section>
-
-        {gallery.length > 0 && (
-          <section id="galerija" className="section gallery">
-            <div className="wrap">
-              <h2>{tx(page.gallery?.title, lang) || t.gallery}</h2>
-              <Gallery images={gallery.map((g) => ({ src: mediaUrl(g.path), caption: tx(g.caption, lang) }))} closeLabel={t.close} />
-            </div>
-          </section>
-        )}
-
-        {hasLocation && (
-          <section id="lokacija" className="section location">
-            <div className="wrap loc-grid">
-              <div className="loc-text">
-                <h2>{tx(loc.title, lang) || t.location}</h2>
-                <Paras className="prose" text={tx(loc.text, lang)} />
-                {(loc.points || []).filter((p) => tx(p.name, lang)).length > 0 && (
-                  <ul className="points">
-                    {(loc.points || []).filter((p) => tx(p.name, lang)).map((p, i) => (
-                      <li key={i}><span>{tx(p.name, lang)}</span><i aria-hidden="true" /><b>{tx(p.value, lang)}</b></li>
-                    ))}
-                  </ul>
-                )}
-                {tx(loc.address, lang) && <p className="loc-address">{tx(loc.address, lang)}</p>}
-                {loc.map_link && <a className="btn btn-dark" href={loc.map_link} target="_blank" rel="noopener noreferrer">{t.directions}</a>}
-              </div>
-              <div className="loc-media">
-                {loc.map_embed ? (
-                  <iframe src={loc.map_embed} title={t.location} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
-                ) : loc.image ? <img src={mediaUrl(loc.image)} alt="" loading="lazy" /> : null}
-              </div>
-            </div>
-          </section>
-        )}
-
-        <section id="kontakt" className="section contact">
-          <div className="wrap contact-grid">
-            <div>
-              <h2>{tx(contact.title, lang) || t.contact}</h2>
-              <Paras className="prose" text={tx(contact.text, lang)} />
-              <dl className="contact-list">
-                {(contact.phone || settings.phone) && <><dt>{t.phone}</dt><dd><a href={'tel:' + String(contact.phone || settings.phone).replace(/[^\d+]/g, '')}>{contact.phone || settings.phone}</a></dd></>}
-                {contact.email && <><dt>{t.email}</dt><dd><a href={'mailto:' + contact.email}>{contact.email}</a></dd></>}
-                {tx(contact.address, lang) && <><dt>{t.address}</dt><dd>{tx(contact.address, lang)}</dd></>}
-                {tx(contact.hours, lang) && <><dt>{t.hours}</dt><dd>{tx(contact.hours, lang)}</dd></>}
-              </dl>
-            </div>
-            <ContactForm lang={lang} />
-          </div>
-        </section>
+        {order.map((k) => <SectionSlot key={k}>{sections[k]()}</SectionSlot>)}
       </main>
       <footer className="footer">
-        <div className="wrap footer-inner">
-          <a href={base} className="brand" aria-label={name}><img src={mediaUrl(settings.logo) || '/brand/wordmark-light.png'} alt="" width={700} height={157} /></a>
-          {tx(page.footer?.text, lang) && <p>{tx(page.footer?.text, lang)}</p>}
-          <p className="copy">© {year} {page.footer?.company || name}. {t.rights}</p>
+        <div className="wrap wrap-wide footer-grid">
+          <a href={href('home', lang)} className="brand" aria-label={name}><img src={mediaUrl(settings.logo) || '/brand/wordmark-light.png'} alt="" width={700} height={157} /></a>
+          <nav aria-label={t.mainNav} className="footer-nav">
+            {nav.map((n) => <a key={n.href} href={n.href}>{n.label}</a>)}
+          </nav>
+          <div className="footer-meta">
+            {tx(page.footer?.text, lang) && <p>{tx(page.footer?.text, lang)}</p>}
+            <p>© {year} {page.footer?.company || name}. {t.rights}</p>
+          </div>
         </div>
       </footer>
     </>
   );
+}
+
+function SectionSlot({ children }: { children: React.ReactNode }) {
+  return <>{children || null}</>;
 }

@@ -1,5 +1,5 @@
 // Content model, defaults and data loading for the public site.
-import type { Lang } from './i18n';
+import { href, type Lang } from './i18n';
 export type { Lang } from './i18n';
 export { UI } from './i18n';
 export type L = { bs?: string; en?: string };
@@ -20,14 +20,25 @@ export function tx(v: L | string | undefined | null, lang: Lang): string {
   return (lang === 'en' ? v.en || v.bs : v.bs || v.en) || '';
 }
 
+type Img = { path: string; caption?: L; alt?: L };
+export type SectionKey = 'hero' | 'manifest' | 'about' | 'categories' | 'buildings' | 'details' | 'gallery' | 'location' | 'investor' | 'contact';
+export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'categories', 'buildings', 'details', 'gallery', 'location', 'investor', 'contact'];
+
+// Text conventions in the CMS: a new line starts a new heading line; *word* marks the contrasting word.
 export type Page = {
   seo?: { title?: L; description?: L; image?: string };
+  sections?: { order?: SectionKey[]; hidden?: SectionKey[] };
   hero?: { eyebrow?: L; title?: L; subtitle?: L; image?: string; cta?: L; cta2?: L };
-  about?: { eyebrow?: L; title?: L; text?: L; image?: string; facts?: { value?: L; label?: L }[] };
+  manifest?: { text?: L; images?: Img[] };
+  about?: { eyebrow?: L; title?: L; text?: L; image?: string; facts?: { value?: L; label?: L }[]; auto_facts?: boolean };
+  categories?: { items?: { title?: L; image?: string; link?: string; link_label?: L }[] };
+  buildings?: { title?: L; text?: L };
+  details?: { title?: L; note?: L; items?: { image?: string; title?: L; text?: L }[] };
   highlights?: { title?: L; items?: { title?: L; text?: L; image?: string }[] };
   selector?: { eyebrow?: L; title?: L; text?: L };
-  gallery?: { title?: L; images?: { path: string; caption?: L }[] };
+  gallery?: { title?: L; images?: Img[] };
   location?: { title?: L; text?: L; address?: L; map_embed?: string; map_link?: string; image?: string; points?: { name?: L; value?: L }[] };
+  investor?: { title?: L; text?: L; logo?: string; link?: string };
   contact?: { title?: L; text?: L; phone?: string; email?: string; address?: L; hours?: L };
   footer?: { text?: L; company?: string };
 };
@@ -47,23 +58,121 @@ export type Settings = {
 
 export type SiteData = { settings: Settings; page: Page; scenes: any; units: any[] };
 
-// Only facts known to be true are used as defaults; everything else stays empty until filled in the CMS.
+const R = '/riverina';
+// Only facts confirmed by the project documents are used (63 apartments in Riverina 1, 46,44 to 110,92 m2,
+// commercial ground floor plus five residential floors). Missing facts are marked [[TBD: ...]], see docs/content-todo.md.
 export const DEFAULT_PAGE: Page = {
   hero: {
-    eyebrow: { bs: 'Ilidža · Sarajevo', en: 'Ilidža · Sarajevo' },
-    title: { bs: 'Riverina Residence', en: 'Riverina Residence' },
+    eyebrow: { bs: 'Ilidža, Sarajevo', en: 'Ilidža, Sarajevo' },
+    title: { bs: 'Riverina\n*residence*', en: 'Riverina\n*residence*' },
     subtitle: { bs: 'Novi stambeni kompleks na Ilidži.', en: 'A new residential development in Ilidža.' },
-    cta: { bs: 'Pogledajte stanove', en: 'View apartments' },
-    cta2: { bs: 'Kontakt', en: 'Contact' },
+    image: `${R}/objekat/objekat-8.webp`,
+    cta: { bs: 'Odaberite stan', en: 'Find your apartment' },
+  },
+  manifest: {
+    text: {
+      bs: 'Riverina je *novi* stambeni kompleks na *Ilidži*. Prva zgrada nudi *63 stana* od 46 do 111 m², iznad poslovnog prizemlja, zamišljenih za *miran* život u *Sarajevu*.',
+      en: 'Riverina is a *new* residential development in *Ilidža*. The first building offers *63 apartments* from 46 to 111 m², above a commercial ground floor, designed for a *calm* life in *Sarajevo*.',
+    },
+    images: [
+      { path: `${R}/enterijer/enterijer-9.webp`, caption: { bs: 'Kupatilo, vizualizacija', en: 'Bathroom, visualisation' } },
+      { path: `${R}/objekat/objekat-7.webp`, caption: { bs: 'Ulaz u zgradu, vizualizacija', en: 'Building entrance, visualisation' } },
+      { path: `${R}/enterijer/enterijer-6.webp`, caption: { bs: 'Spavaća soba, vizualizacija', en: 'Bedroom, visualisation' } },
+      { path: `${R}/objekat/objekat-2.webp`, caption: { bs: 'Poslovno prizemlje, vizualizacija', en: 'Commercial ground floor, visualisation' } },
+      { path: `${R}/enterijer/enterijer-19.webp`, caption: { bs: 'Kupatilo s tušem, vizualizacija', en: 'Shower room, visualisation' } },
+    ],
+  },
+  about: {
+    title: { bs: 'O\n*projektu*', en: 'About\n*the project*' },
+    text: {
+      bs: 'Riverina Residence nastaje na Ilidži, u Sarajevu. Prva zgrada, Riverina 1, ima poslovno prizemlje i pet stambenih etaža.\n\n[[TBD: broj zgrada u kompleksu, faze i rok useljenja]]',
+      en: 'Riverina Residence is being built in Ilidža, Sarajevo. The first building, Riverina 1, has a commercial ground floor and five residential floors.\n\n[[TBD: number of buildings, phases and completion date]]',
+    },
+    image: `${R}/objekat/objekat-6.webp`,
+    auto_facts: true,
+  },
+  categories: {
+    items: [
+      { title: { bs: 'Zgrade', en: 'Buildings' }, image: `${R}/objekat/objekat-1.webp`, link: 'apartments' },
+      { title: { bs: 'Enterijer', en: 'Interiors' }, image: `${R}/enterijer/enterijer-4.webp`, link: '#detalji', link_label: { bs: 'Pogledajte', en: 'View' } },
+      { title: { bs: 'Lokacija', en: 'Location' }, image: `${R}/naselje/3.webp`, link: '#lokacija', link_label: { bs: 'Pogledajte', en: 'View' } },
+    ],
+  },
+  buildings: {
+    title: { bs: 'Zgrade\n*i stanovi*', en: 'Buildings\n*and apartments*' },
+    text: { bs: 'Odaberite zgradu, sprat i stan u interaktivnom pregledu.', en: 'Choose a building, floor and apartment in the interactive view.' },
+  },
+  details: {
+    title: { bs: 'Enterijer\n*i detalji*', en: 'Interiors\n*and details*' },
+    note: { bs: 'Vizualizacije su ilustrativne.', en: 'Visualisations are for illustration only.' },
+    items: [
+      { image: `${R}/enterijer/enterijer-1.webp`, title: { bs: 'Dnevni boravak', en: 'Living room' } },
+      { image: `${R}/enterijer/enterijer-4.webp`, title: { bs: 'Trpezarija', en: 'Dining' } },
+      { image: `${R}/enterijer/enterijer-7.webp`, title: { bs: 'Kuhinja', en: 'Kitchen' } },
+      { image: `${R}/enterijer/enterijer-6.webp`, title: { bs: 'Spavaća soba', en: 'Bedroom' } },
+      { image: `${R}/enterijer/enterijer-9.webp`, title: { bs: 'Kupatilo', en: 'Bathroom' } },
+      { image: `${R}/enterijer/enterijer-5.webp`, title: { bs: 'Boravak', en: 'Lounge' } },
+    ],
+  },
+  location: {
+    title: { bs: 'Ilidža,\n*Sarajevo*', en: 'Ilidža,\n*Sarajevo*' },
+    text: {
+      bs: 'Riverina Residence se nalazi na Ilidži, u Sarajevu.\n\n[[TBD: tačna adresa i udaljenosti do centra, aerodroma i javnog prevoza]]',
+      en: 'Riverina Residence is located in Ilidža, Sarajevo.\n\n[[TBD: exact address and distances to the centre, airport and public transport]]',
+    },
+    image: `${R}/lokacija/mapa-ilidza.webp`,
+  },
+  investor: {
+    title: { bs: 'Investitor\n*ALYASIN Group*', en: 'Developer\n*ALYASIN Group*' },
+    text: { bs: '[[TBD: tekst o investitoru]]', en: '[[TBD: about the developer]]' },
+    logo: `${R}/investitor/alyasin-logo.webp`,
   },
   selector: {
     eyebrow: { bs: 'Interaktivni pregled', en: 'Interactive view' },
     title: { bs: 'Odaberite svoj stan', en: 'Find your apartment' },
     text: { bs: 'Pređite mišem preko zgrade i kliknite na stan za tlocrt, površinu i dostupnost.', en: 'Hover over the building and click an apartment to see its floor plan, size and availability.' },
   },
-  contact: { title: { bs: 'Kontakt', en: 'Contact' } },
+  contact: {
+    title: { bs: 'Pošaljite\n*upit*', en: 'Send an\n*enquiry*' },
+    text: { bs: 'Javite nam se za tlocrte, dostupnost i termin razgovora.', en: 'Get in touch for floor plans, availability and a meeting.' },
+  },
   footer: { company: 'ALYASIN Group d.o.o.' },
 };
+
+/** Key figures derived live from the apartments table (first building with apartments). */
+export function unitFacts(units: any[], lang: Lang): { value: string; label: string }[] {
+  if (!units.length) return [];
+  const b = units[0].building;
+  const list = units.filter((u) => u.building === b);
+  const areas = list.map((u) => Number(u.area)).filter((n) => n > 0);
+  const types = new Set(areas.map((a) => a.toFixed(2))).size;
+  const floors = new Set(list.map((u) => u.floor).filter((f) => f > 0)).size;
+  const fmt = (n: number) => Math.round(n).toLocaleString(lang === 'en' ? 'en-GB' : 'bs-BA');
+  const L = lang === 'en'
+    ? { units: 'apartments in the first building', types: 'apartment types', area: 'm² apartment sizes', floors: 'residential floors' }
+    : { units: 'stana u prvoj zgradi', types: 'tipova stanova', area: 'm² veličine stanova', floors: 'stambenih etaža' };
+  const out = [{ value: String(list.length), label: L.units }];
+  if (types > 1) out.push({ value: String(types), label: L.types });
+  if (areas.length) out.push({ value: `${fmt(Math.min(...areas))}-${fmt(Math.max(...areas))}`, label: L.area });
+  if (floors) out.push({ value: String(floors), label: L.floors });
+  return out;
+}
+
+/** Resolves a CMS link: a route key ("apartments"), a home anchor ("#lokacija") or a full URL. */
+export function resolveLink(link: string | undefined, lang: Lang): string {
+  if (!link) return '';
+  if (link.startsWith('#')) return (lang === 'bs' ? '/' : `/${lang}`) + link;
+  if (link === 'apartments' || link === 'home') return href(link, lang);
+  return link;
+}
+
+/** Visible sections in the order chosen in the CMS. */
+export function sectionList(p: Page): SectionKey[] {
+  const order = (p.sections?.order || []).filter((k) => SECTION_ORDER.includes(k));
+  const all = [...order, ...SECTION_ORDER.filter((k) => !order.includes(k))];
+  const hidden = new Set(p.sections?.hidden || []);
+  return all.filter((k) => !hidden.has(k));
+}
 
 const EMPTY: SiteData = { settings: {}, page: {}, scenes: { masterplan: { views: [] }, buildings: [] }, units: [] };
 

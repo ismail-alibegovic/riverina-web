@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { gsap } from '@/lib/motion';
+import { whenNear } from '@/lib/motion';
 
 export type Category = { title: string; src: string; href: string; linkLabel: string };
 
@@ -11,16 +11,18 @@ export default function Categories({ items }: { items: Category[] }) {
   useEffect(() => {
     const el = root.current;
     if (!el) return;
-    const mm = gsap.matchMedia();
-    const ctx = gsap.context(() => {
-      mm.add('(prefers-reduced-motion: no-preference)', () => {
-        gsap.utils.toArray<HTMLElement>('.cat', el).forEach((panel) => {
-          gsap.fromTo(panel.querySelector('.cat-media'), { scale: 1.16 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: panel, start: 'top bottom', end: 'bottom top', scrub: true } });
-          gsap.fromTo(panel.querySelectorAll('.cat-ch'), { yPercent: 105 }, { yPercent: 0, duration: 1.2, ease: 'power3.out', stagger: 0.06, scrollTrigger: { trigger: panel, start: 'top 55%', once: true } });
+    return whenNear(el, ({ gsap }) => {
+      const mm = gsap.matchMedia();
+      const ctx = gsap.context(() => {
+        mm.add('(prefers-reduced-motion: no-preference)', () => {
+          gsap.utils.toArray<HTMLElement>('.cat', el).forEach((panel) => {
+            gsap.fromTo(panel.querySelector('.cat-media'), { scale: 1.16 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: panel, start: 'top bottom', end: 'bottom top', scrub: true } });
+            gsap.fromTo(panel.querySelectorAll('.cat-ch'), { yPercent: 105 }, { yPercent: 0, duration: 1.2, ease: 'power3.out', stagger: 0.06, scrollTrigger: { trigger: panel, start: 'top 55%', once: true } });
+          });
         });
-      });
-    }, el);
-    return () => { ctx.revert(); mm.revert(); };
+      }, el);
+      return () => { ctx.revert(); mm.revert(); };
+    });
   }, [items.length]);
 
   return (

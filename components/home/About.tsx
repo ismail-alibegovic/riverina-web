@@ -1,4 +1,4 @@
-import { Lang, Page, tx, unitFacts } from '@/lib/content';
+import { Lang, Page, tx, plain, unitFacts } from '@/lib/content';
 import { Fill, Heading, Paras } from './text';
 
 export default function About({ about, units, lang }: { about: NonNullable<Page['about']>; units: any[]; lang: Lang }) {
@@ -25,7 +25,7 @@ export default function About({ about, units, lang }: { about: NonNullable<Page[
       )}
       {about.image && (
         <div className="wrap wrap-wide">
-          <div className="about-img" data-reveal="clip"><Fill src={about.image} sizes="(min-width: 1520px) 1520px, 100vw" /></div>
+          <div className="about-img" data-reveal="clip"><Fill src={about.image} alt={plain(about.title, lang)} sizes="(min-width: 1520px) 1520px, 100vw" /></div>
         </div>
       )}
     </section>

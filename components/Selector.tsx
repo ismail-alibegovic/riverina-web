@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
+import { LOCALES, SELECTOR_UI, Lang } from '@/lib/i18n';
 
 declare global {
   interface Window { RiverinaSelector?: { mount: (el: HTMLElement, boot: any) => any } }
@@ -9,13 +10,13 @@ declare global {
  * Mounts the interactive viewer (lib/selector/selector.js).
  * `fill` = full-screen mode: the stage takes the rest of the viewport below its toolbar and crops like a cover image.
  */
-export default function Selector({ data, lang, fill = false }: { data: any; lang: 'bs' | 'en'; fill?: boolean }) {
+export default function Selector({ data, lang, fill = false }: { data: any; lang: Lang; fill?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     let inst: any = null;
     let cancelled = false;
     const el = ref.current;
-    const boot: any = { data, lang, rest: { lead: '/api/lead' } };
+    const boot: any = { data, lang, numberLocale: LOCALES[lang].number, strings: SELECTOR_UI[lang], rest: { lead: '/api/lead' } };
     if (fill && el) {
       boot.maxCrop = 0.4;
       // read on every layout pass, so it follows resizes

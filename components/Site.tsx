@@ -1,4 +1,4 @@
-import { Lang, SiteData, tx, mediaUrl, UI, sectionList, resolveLink, SectionKey } from '@/lib/content';
+import { Lang, SiteData, tx, mediaUrl, UI, sectionList, resolveLink, SectionKey, imgAlt } from '@/lib/content';
 import { href } from '@/lib/i18n';
 import { siteNav } from '@/lib/nav';
 import SiteChrome from './site/SiteChrome';
@@ -11,6 +11,7 @@ import About from './home/About';
 import Categories from './home/Categories';
 import Details from './home/Details';
 import { Fill, Heading, Paras } from './home/text';
+import JsonLd from './JsonLd';
 
 const FALLBACK_BUILDING = '/riverina/objekat/objekat-3.webp';
 
@@ -35,7 +36,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
     hero: () => <Hero hero={page.hero || {}} lang={lang} name={name} />,
 
     manifest: () => manifestText && (
-      <Manifest text={manifestText} label={t.manifest} images={(page.manifest?.images || []).filter((m) => m.path).map((m) => ({ src: mediaUrl(m.path), alt: tx(m.caption, lang) }))} />
+      <Manifest text={manifestText} label={t.manifest} images={(page.manifest?.images || []).filter((m) => m.path).map((m) => ({ src: mediaUrl(m.path), alt: imgAlt(m, lang) }))} />
     ),
 
     about: () => (tx(page.about?.title, lang) || tx(page.about?.text, lang)) && <About about={page.about || {}} units={units} lang={lang} />,
@@ -95,7 +96,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
       <section id="galerija" className="section gallery">
         <div className="wrap">
           <Heading text={tx(page.gallery?.title, lang) || t.gallery} />
-          <Gallery images={gallery.map((g) => ({ src: mediaUrl(g.path), caption: tx(g.caption, lang) }))} closeLabel={t.close} />
+          <Gallery images={gallery.map((g) => ({ src: mediaUrl(g.path), alt: imgAlt(g, lang), caption: tx(g.caption, lang) }))} labels={{ close: t.close, prev: t.prev, next: t.next, image: t.image }} />
         </div>
       </section>
     ),
@@ -162,6 +163,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
         {order.map((k) => <SectionSlot key={k}>{sections[k]()}</SectionSlot>)}
       </main>
       <Footer data={data} lang={lang} nav={nav} />
+      <JsonLd data={data} lang={lang} route="home" />
     </>
   );
 }

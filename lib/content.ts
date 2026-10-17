@@ -1,8 +1,8 @@
 // Content model, defaults and data loading for the public site.
-import { href, type Lang } from './i18n';
+import { href, pick, LOCALES, UI, type Lang, type Localized, type RouteKey } from './i18n';
 export type { Lang } from './i18n';
 export { UI } from './i18n';
-export type L = { bs?: string; en?: string };
+export type L = Localized;
 
 export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 export const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
@@ -14,19 +14,29 @@ export function mediaUrl(path?: string | null): string {
   return `${SUPABASE_URL}/storage/v1/object/public/media/${path.split('/').map(encodeURIComponent).join('/')}`;
 }
 
-export function tx(v: L | string | undefined | null, lang: Lang): string {
-  if (!v) return '';
-  if (typeof v === 'string') return v;
-  return (lang === 'en' ? v.en || v.bs : v.bs || v.en) || '';
+export const tx = pick;
+
+/** "© 2026 Company d.o.o. All rights reserved." without a double full stop after abbreviations. */
+export const copyright = (company: string, rights: string) => `© ${new Date().getFullYear()} ${company}${company.endsWith('.') ? '' : '.'} ${rights}`;
+
+/** CMS text without markup, for metadata, alt texts and labels: no *emphasis*, no line breaks, no [[TBD]] notes. */
+export function plain(v: L | string | undefined | null, lang: Lang): string {
+  return pick(v, lang).replace(/\[\[TBD:[^\]]*\]\]/g, '').replace(/\*/g, '').replace(/\s+/g, ' ').trim();
 }
 
 type Img = { path: string; caption?: L; alt?: L };
+/** Alt text of a CMS image: its own alt text, else the caption. */
+export const imgAlt = (img: { alt?: L; caption?: L }, lang: Lang) => plain(img.alt, lang) || plain(img.caption, lang);
+
+/** Search and sharing texts for one page; empty fields fall back to the page's own title and text. */
+export type Seo = { title?: L; description?: L; image?: string };
 export type SectionKey = 'hero' | 'manifest' | 'about' | 'categories' | 'buildings' | 'details' | 'gallery' | 'location' | 'investor' | 'contact';
 export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'categories', 'buildings', 'details', 'gallery', 'location', 'investor', 'contact'];
 
 // Text conventions in the CMS: a new line starts a new heading line; *word* marks the contrasting word.
 export type Page = {
-  seo?: { title?: L; description?: L; image?: string };
+  /** home page fields at the top level (kept for older saves), other pages under pages.<route> */
+  seo?: Seo & { pages?: Partial<Record<Exclude<RouteKey, 'home'>, Seo>> };
   sections?: { order?: SectionKey[]; hidden?: SectionKey[] };
   hero?: { eyebrow?: L; title?: L; subtitle?: L; image?: string; cta?: L; cta2?: L };
   manifest?: { text?: L; images?: Img[] };
@@ -157,10 +167,9 @@ export function unitFacts(units: any[], lang: Lang): { value: string; label: str
   const areas = list.map((u) => Number(u.area)).filter((n) => n > 0);
   const types = new Set(areas.map((a) => a.toFixed(2))).size;
   const floors = new Set(list.map((u) => u.floor).filter((f) => f > 0)).size;
-  const fmt = (n: number) => Math.round(n).toLocaleString(lang === 'en' ? 'en-GB' : 'bs-BA');
-  const L = lang === 'en'
-    ? { units: 'apartments in the first building', types: 'apartment types', area: 'm² apartment sizes', floors: 'residential floors' }
-    : { units: 'stana u prvoj zgradi', types: 'tipova stanova', area: 'm² veličine stanova', floors: 'stambenih etaža' };
+  const fmt = (n: number) => Math.round(n).toLocaleString(LOCALES[lang].number);
+  const t = UI[lang];
+  const L = { units: t.factUnits, types: t.factTypes, area: t.factArea, floors: t.factFloors };
   const out = [{ value: String(list.length), label: L.units }];
   if (types > 1) out.push({ value: String(types), label: L.types });
   if (areas.length) out.push({ value: `${fmt(Math.min(...areas))}-${fmt(Math.max(...areas))}`, label: L.area });
@@ -171,7 +180,7 @@ export function unitFacts(units: any[], lang: Lang): { value: string; label: str
 /** Resolves a CMS link: a route key ("apartments"), a home anchor ("#lokacija") or a full URL. */
 export function resolveLink(link: string | undefined, lang: Lang): string {
   if (!link) return '';
-  if (link.startsWith('#')) return (lang === 'bs' ? '/' : `/${lang}`) + link;
+  if (link.startsWith('#')) return (LOCALES[lang].prefix || '/') + link;
   if (link === 'apartments' || link === 'home') return href(link, lang);
   return link;
 }
@@ -188,6 +197,12 @@ export function sectionList(p: Page): SectionKey[] {
 const EMPTY: SiteData = { settings: {}, page: {}, scenes: { masterplan: { views: [] }, buildings: [] }, units: [] };
 
 export async function getSiteData(): Promise<SiteData> {
+  // Local testing without network access to Supabase: SITE_DATA_FILE=path/to/public_site_data.json (never set on Vercel).
+  if (process.env.SITE_DATA_FILE) {
+    const { readFile } = await import('node:fs/promises');
+    const d = JSON.parse(await readFile(process.env.SITE_DATA_FILE, 'utf8')) as SiteData;
+    return { settings: d.settings || {}, page: mergePage(d.page || {}), scenes: d.scenes || EMPTY.scenes, units: d.units || [] };
+  }
   if (!SUPABASE_URL || !SUPABASE_KEY) return { ...EMPTY, page: DEFAULT_PAGE };
   try {
     const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/public_site_data`, {

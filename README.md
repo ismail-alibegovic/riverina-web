@@ -32,5 +32,24 @@ npm run dev                  # http://localhost:3000  (CMS: /admin)
 | `NEXT_PUBLIC_SITE_URL` | npr. `https://riverinaresidence.com` |
 | `RESEND_API_KEY`, `LEAD_NOTIFY_EMAIL`, `LEAD_FROM_EMAIL` | opcionalno: e-mail obavijest za nove upite (resend.com) |
 
+## Jezici (BS, EN; spremno za TR i AR)
+Svi prevodi interfejsa, rute po jeziku i postavke jezika su u `lib/i18n.ts`. BS je na `/` bez prefiksa, ostali jezici na `/<jezik>/...`, svaki u svom folderu (`app/(bs)`, `app/(en)`).
+Dodavanje jezika (npr. `tr`):
+1. `lib/i18n.ts`: dodati `'tr'` u `Lang` i `LOCALES` (za `ar`: `dir: 'rtl'`), putanje u `ROUTES`, blok prevoda u `UI` (TypeScript javlja svaki ključ koji fali) i po želji `SELECTOR_UI.tr` za pregled stanova.
+2. Kopirati tanke fajlove iz `app/(en)` u `app/(tr)` (layout + stranice) i zamijeniti `'en'` sa `'tr'`.
+3. `lib/admin/app.js`: dodati `'tr'` u `CMS_LANGS` da se u CMS-u pojave polja za taj jezik.
+Tekst koji nije preveden pada na `LOCALES[lang].fallback` (EN → BS).
+
+## SEO
+- Metadata svih stranica: `lib/meta.ts` (`buildMetadata`). Redoslijed: CMS „Google i dijeljenje linka" za tu stranicu i jezik → naslov/tekst/slika same stranice → zadano (`public/og/riverina.jpg`).
+- Kanonski URL i `hreflang` (uključujući `x-default`) na svakoj stranici i u `sitemap.xml`; JSON-LD (`Organization`, `WebSite`, `ApartmentComplex`, `BreadcrumbList`) u `components/JsonLd.tsx`, samo s podacima koji su već na sajtu.
+- Vercel preview deploy je `noindex` (i `robots.txt` zabranjuje sve); indeksira se samo production.
+- `NEXT_PUBLIC_SITE_URL` mora biti stvarna adresa sajta (kanonski URL-ovi, sitemap, OG slike).
+
+## Skripte
+- `node scripts/make-brand-assets.mjs` — zadana OG slika, WebP logotipi, favicon i apple ikona iz `public/brand/`.
+- `node scripts/optimize-assets.mjs` — originali rendera → `public/riverina/`.
+- Lokalni test bez pristupa Supabaseu: `SITE_DATA_FILE=put/do/public_site_data.json npm run build && npm start` (JSON koji vraća `public_site_data()`). Na Vercelu se ne postavlja.
+
 ## Sigurnost
 Posjetioci ne čitaju tabele direktno: sav javni sadržaj dolazi iz funkcije `public_site_data()` (bez skrivenih stanova i bez cijena kad su isključene ili je stan prodan). Upisi idu samo preko `submit_lead()` (validacija + ograničenje broja upita). Sve ostalo zahtijeva prijavljenog admina (RLS + `is_admin()`), uključujući upload u Storage bucket `media`.

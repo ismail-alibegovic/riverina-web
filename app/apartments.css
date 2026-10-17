@@ -37,3 +37,5 @@
 @media (prefers-reduced-motion: reduce) {
   .apt-title, .apt-text, .apt-finder { animation: none; }
 }
+/* Reserve the viewer's space before its script mounts, so the footer does not jump (CLS). */
+.apt-finder .rvs-root:empty { min-height: calc(100svh - var(--header-h)); }

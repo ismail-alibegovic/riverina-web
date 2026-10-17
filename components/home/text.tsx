@@ -34,8 +34,8 @@ export function Paras({ text, className }: { text: string; className?: string })
 }
 
 /** Image that fills its (aspect-ratio) frame; works for /public paths and Supabase Storage paths. */
-export function Fill({ src, alt = '', sizes, priority, className }: { src?: string; alt?: string; sizes: string; priority?: boolean; className?: string }) {
+export function Fill({ src, alt = '', sizes, priority, className, quality = 80 }: { src?: string; alt?: string; sizes: string; priority?: boolean; className?: string; quality?: number }) {
   const url = mediaUrl(src);
   if (!url) return null;
-  return <Image src={url} alt={alt} fill sizes={sizes} priority={priority} className={className} quality={80} />;
+  return <Image src={url} alt={alt} fill sizes={sizes} priority={priority} className={className} quality={quality} />;
 }

@@ -12,7 +12,7 @@ export default function GlobalNotFound() {
     <html lang="bs" className={`${display.variable} ${body.variable}`}>
       <body>
         <main className="nf">
-          <a href="/" className="nf-brand" aria-label="Riverina Residence"><img src="/brand/wordmark-light.png" alt="" width={700} height={157} /></a>
+          <a href="/" className="nf-brand" aria-label="Riverina Residence"><img src="/brand/wordmark-light.webp" alt="" width={480} height={108} /></a>
           <p className="nf-code" aria-hidden="true">404</p>
           <div className="nf-cols">
             <section>

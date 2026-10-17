@@ -4,14 +4,25 @@ import { SUPABASE_URL, SUPABASE_KEY } from '@/lib/content';
 // Stores an enquiry (apartment form or contact form) and optionally e-mails the sales team via Resend.
 export async function POST(req: Request) {
   let p: Record<string, unknown>;
-  try { p = await req.json(); } catch { return NextResponse.json({ error: 'bad json' }, { status: 400 }); }
-  const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/submit_lead`, {
-    method: 'POST',
-    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ p }),
-  });
+  const raw = await req.text();
+  if (raw.length > 20000) return NextResponse.json({ error: 'too large' }, { status: 413 });
+  try { p = JSON.parse(raw); } catch { return NextResponse.json({ error: 'bad json' }, { status: 400 }); }
+  if (!p || typeof p !== 'object' || Array.isArray(p)) return NextResponse.json({ error: 'bad json' }, { status: 400 });
+  // Validation, honeypot and rate limits live in submit_lead() (supabase/migrations/0001_init.sql).
+  let r: Response;
+  try {
+    r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/submit_lead`, {
+      method: 'POST',
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p }),
+    });
+  } catch (e) {
+    console.error('submit_lead unreachable', e);
+    return NextResponse.json({ error: 'unavailable' }, { status: 502 });
+  }
   if (!r.ok) {
     const msg = await r.text();
+    if (r.status >= 500) console.error('submit_lead failed', r.status, msg);
     return NextResponse.json({ error: /rate/.test(msg) ? 'rate limited' : 'invalid' }, { status: /rate/.test(msg) ? 429 : 400 });
   }
   const key = process.env.RESEND_API_KEY, to = process.env.LEAD_NOTIFY_EMAIL;

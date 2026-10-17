@@ -20,7 +20,7 @@ export default function SiteChrome({ data, lang, nav, contactHref, langHref, ton
   const socials = Object.entries(s.socials || {}).filter(([, v]) => v).map(([k, v]) => ({ label: SOCIAL_LABELS[k] || k, href: String(v) }));
   return (
     <>
-      <div className="intro" aria-hidden="true"><img src="/brand/logo-stacked-light.png" alt="" width={520} height={452} /></div>
+      <div className="intro" aria-hidden="true"><img src="/brand/logo-stacked-light.webp" alt="" width={400} height={348} /></div>
       <SmoothScroll />
       <Header
         lang={lang}
@@ -30,8 +30,8 @@ export default function SiteChrome({ data, lang, nav, contactHref, langHref, ton
         contactHref={contactHref}
         langLinks={LANGS.map((l) => ({ lang: l, href: langHref(l) }))}
         tone={tone}
-        logoOnDark={mediaUrl(s.logo) || '/brand/wordmark-light.png'}
-        logoOnLight={mediaUrl(s.logo_dark) || '/brand/wordmark.png'}
+        logoOnDark={mediaUrl(s.logo) || '/brand/wordmark-light.webp'}
+        logoOnLight={mediaUrl(s.logo_dark) || '/brand/wordmark.webp'}
         phone={data.page.contact?.phone || s.phone}
         email={data.page.contact?.email}
         socials={socials}

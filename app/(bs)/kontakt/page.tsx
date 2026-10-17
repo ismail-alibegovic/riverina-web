@@ -1,12 +1,12 @@
 import { ContactPage } from '@/components/pages/Pages';
-import { subMeta } from '@/components/pages/SubPage';
+import { buildMetadata } from '@/lib/meta';
 import { getSiteData } from '@/lib/content';
 
 export const revalidate = 300;
 
 export async function generateMetadata() {
   const d = await getSiteData();
-  return subMeta(d, 'bs', 'contact', d.page.contact?.title, d.page.contact?.text, undefined);
+  return buildMetadata(d, 'bs', 'contact', { title: d.page.contact?.title, text: d.page.contact?.text });
 }
 
 export default async function Page() {

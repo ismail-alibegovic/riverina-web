@@ -4,7 +4,7 @@ Na sajtu se ne izmišlja ništa činjenično. Svako mjesto ispod na sajtu stoji 
 
 | # | Šta | Gdje se koristi | Status |
 |---|---|---|---|
-| 1 | Ime investitora: ALYASIN Group ili ESU AGENCY d.o.o. (idejni projekat), i njihov odnos | Footer ©, stranica O investitoru, meta | Otvoreno pitanje |
+| 1 | Ime investitora: ALYASIN Group ili ESU AGENCY d.o.o. (idejni projekat), i njihov odnos. Tekstovi nisu mijenjani: sajt koristi „ALYASIN Group d.o.o." iz CMS-a (Podnožje → Naziv firme) | Footer ©, stranica O investitoru, meta, JSON-LD `Organization` | Otvoreno pitanje, odlučuje vlasnik |
 | 2 | Tekst o investitoru (historija, reference, projekti) | O investitoru | Fali |
 | 3 | Tačan broj zgrada u kompleksu i faze prodaje | O projektu, masterplan teaser | Fali (brief kaže „~10") |
 | 4 | Rok završetka / useljenja po fazama | O projektu, FAQ | Fali |
@@ -16,8 +16,19 @@ Na sajtu se ne izmišlja ništa činjenično. Svako mjesto ispod na sajtu stoji 
 | 10 | Cijene i prikaz cijena (da/ne) | Stanovi | Postavka u CMS-u, trenutno isključeno |
 | 11 | Materijali i oprema (fasada, stolarija, podovi, grijanje) | Slider detalja, stan detalji | Fali (samo AI vizual „materijalizacija") |
 | 12 | Energetski razred, gradnja (izvođač, konstrukcija) | O projektu | Fali |
-| 13 | Politika privatnosti i uslovi korištenja (pravni tekst) | Footer, forma (GDPR) | Fali, treba pravnik |
+| 13 | Politika privatnosti i uslovi korištenja (pravni tekst). Sadašnji tekst je radna verzija, **nije konačan** | Footer, forma (GDPR) | Fali, treba pravnik |
 | 14 | Društvene mreže (Instagram, Facebook, LinkedIn) | Meni overlay, footer | Fali |
-| 15 | Stan 104,35 m²: broj spavaćih soba (u podacima 0) | Stanovi | Provjeriti na skici |
-| 16 | Vektorski logo (SVG) | Header, favicon, OG slika | Fali, trenutno PNG |
+| 15 | Stan 5-1 (104,35 m²): broj spavaćih soba | Stanovi | **Provjereno 17.10.2026:** u bazi je 3, slaže se s prostorijama (master soba + 2 dječije sobe). Baza nije mijenjana |
+| 16 | Vektorski logo (SVG) | Header, favicon, OG slika | Fali. Do tada: WebP verzije iz PNG-a, favicon iz `mark.png` (`scripts/make-brand-assets.mjs`) |
 | 17 | Masterplan, 360° uglovi i poligoni | /stanovi | Radi vlasnik kroz CMS |
+| 18 | SEO naslov i opis po stranici i jeziku (Početna, Stanovi, Lokacija, O investitoru, Kontakt, Privatnost) | Google rezultati, dijeljenje linka | Prazno u CMS-u (Tekstovi sajta → Google i dijeljenje linka). Dok je prazno, koristi se naslov i tekst same stranice |
+| 19 | Alt tekst slika u galeriji: `uploads/2026/10/4-h52vo.webp` nema ni opis ni alt (BS i EN) | Galerija na početnoj | Fali. U CMS-u polja bez teksta su označena žuto (Tekstovi sajta → Galerija) |
+| 20 | Status zgrade Riverina 1 u „Označi stanove" je „Uskoro" (`soon`), a dogovor je da je Riverina 1 aktivna | Kartica zgrade na početnoj („Uskoro dostupno"), masterplan na /stanovi | Vlasnik mijenja u CMS-u; pogled zgrade još nema označenih stanova (poligona) ni tlocrta spratova |
+| 21 | Tačna adresa (ulica i broj) | Lokacija, Kontakt, JSON-LD `PostalAddress` (sada samo „Ilidža, Sarajevo, BA") | Fali |
+| 22 | Kontakt prodaje (telefon, e-mail) | Header meni, Kontakt, JSON-LD | Fali (CMS → Kontakt i forma) |
+
+## Tehničke napomene za kasnije
+
+- **TR i AR:** struktura je spremna (vidi README → Jezici). Za arapski (RTL) `<html dir="rtl">` se postavlja sam; layout sajta koristi logička CSS svojstva, ali **interaktivni pregled stanova** (`app/selector.css`, `lib/selector/selector.js`) pozicionira elemente lijevo/desno i treba zaseban RTL prolaz kad AR dođe na red.
+- **Manifest na početnoj:** riječi su na početku prigušene (namjeran efekat paljenja riječi pri scrollu), pa automatski test kontrasta to javlja. Tekst je potpuno čitljiv kad se dođe do sekcije, a kod „reduced motion" je odmah pun.
+

@@ -85,8 +85,8 @@ export default function Header(p: HeaderProps) {
             </button>
           </div>
           <a href={p.homeHref} className="hdr-brand" aria-label={p.name}>
-            <img className="on-dark" src={p.logoOnDark} alt="" width={700} height={157} />
-            <img className="on-light" src={p.logoOnLight} alt="" width={700} height={157} />
+            <img className="on-dark" src={p.logoOnDark} alt="" width={480} height={108} fetchPriority="high" />
+            <img className="on-light" src={p.logoOnLight} alt="" width={480} height={108} fetchPriority="high" />
           </a>
           <div className="hdr-side is-end">
             <a className="hdr-btn hdr-contact" href={p.contactHref} tabIndex={open ? -1 : undefined}>{t.contact}</a>

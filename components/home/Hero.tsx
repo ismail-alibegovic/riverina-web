@@ -10,7 +10,8 @@ export default function Hero({ hero, lang, name }: { hero: NonNullable<Page['her
   return (
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero-media">
-        <Fill src={hero.image} sizes="100vw" priority className="hero-img" />
+        {/* Full-bleed under a dark shade: a lower quality is not visible and loads faster. */}
+        <Fill src={hero.image} sizes="100vw" priority quality={72} className="hero-img" />
       </div>
       <div className="hero-shade" aria-hidden="true" />
       <div className="wrap wrap-wide hero-inner">

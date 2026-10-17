@@ -1,12 +1,12 @@
 import { PrivacyPage } from '@/components/pages/Pages';
-import { subMeta } from '@/components/pages/SubPage';
+import { buildMetadata } from '@/lib/meta';
 import { getSiteData } from '@/lib/content';
 
 export const revalidate = 300;
 
 export async function generateMetadata() {
   const d = await getSiteData();
-  return subMeta(d, 'bs', 'privacy', d.page.privacy?.title, d.page.privacy?.text, undefined);
+  return buildMetadata(d, 'bs', 'privacy', { title: d.page.privacy?.title, text: d.page.privacy?.text });
 }
 
 export default async function Page() {

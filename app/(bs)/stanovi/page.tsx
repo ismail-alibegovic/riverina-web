@@ -1,13 +1,13 @@
 import ApartmentsOnly from '@/components/ApartmentsOnly';
-import { getSiteData, tx } from '@/lib/content';
+import { getSiteData, UI } from '@/lib/content';
+import { buildMetadata } from '@/lib/meta';
 import type { Metadata } from 'next';
 
 export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   const d = await getSiteData();
-  const title = `${tx(d.page.selector?.title, 'bs') || 'Odaberite svoj stan'} · ${d.settings.project_name || 'Riverina Residence'}`;
-  return { title, description: tx(d.page.selector?.text, 'bs') || undefined, alternates: { canonical: '/stanovi', languages: { bs: '/stanovi', en: '/en/apartments', 'x-default': '/stanovi' } } };
+  return buildMetadata(d, 'bs', 'apartments', { title: d.page.selector?.title || UI.bs.chooseApartment, text: d.page.selector?.text });
 }
 
 export default async function Page() {

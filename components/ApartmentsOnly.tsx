@@ -1,8 +1,9 @@
-import { Lang, SiteData, UI, tx, toSelectorData } from '@/lib/content';
+import { Lang, SiteData, UI, tx, toSelectorData, copyright } from '@/lib/content';
 import { href } from '@/lib/i18n';
 import { siteNav } from '@/lib/nav';
 import Selector from './Selector';
 import SiteChrome from './site/SiteChrome';
+import JsonLd from './JsonLd';
 
 /** Interactive apartment finder as its own full-screen page (embed = without site chrome, for an iframe). */
 export default function ApartmentsOnly({ data, lang, embed }: { data: SiteData; lang: Lang; embed?: boolean }) {
@@ -35,9 +36,10 @@ export default function ApartmentsOnly({ data, lang, embed }: { data: SiteData; 
         <div className="wrap wrap-wide footer-grid">
           <a href={href('home', lang)} className="link-line">{t.backToSite}</a>
           <span />
-          <p className="footer-meta">© {new Date().getFullYear()} {data.page.footer?.company || data.settings.project_name || 'Riverina Residence'}. {t.rights}</p>
+          <p className="footer-meta">{copyright(data.page.footer?.company || data.settings.project_name || 'Riverina Residence', t.rights)}</p>
         </div>
       </footer>
+      <JsonLd data={data} lang={lang} route="apartments" title={title} />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { gsap, ScrollTrigger } from '@/lib/motion';
+import { whenNear } from '@/lib/motion';
 
 type Img = { src: string; alt: string };
 
@@ -13,22 +13,24 @@ export default function Manifest({ text, images, label }: { text: string; images
   useEffect(() => {
     const el = root.current;
     if (!el) return;
-    const mm = gsap.matchMedia();
-    const ctx = gsap.context(() => {
-      mm.add('(prefers-reduced-motion: no-preference) and (min-width: 900px)', () => {
-        const words = gsap.utils.toArray<HTMLElement>('.mf-w', el);
-        const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: 'top top', end: '+=140%', pin: true, scrub: 0.6, anticipatePin: 1 } });
-        tl.fromTo(words, { opacity: 0.14 }, { opacity: 1, stagger: 0.08, ease: 'none', duration: 0.4 }, 0);
-        gsap.utils.toArray<HTMLElement>('.mf-img', el).forEach((img) => {
-          const speed = Number(img.dataset.speed || 1);
-          tl.fromTo(img, { yPercent: 35 * speed }, { yPercent: -45 * speed, ease: 'none', duration: tl.duration() || 1 }, 0);
+    return whenNear(el, ({ gsap, ScrollTrigger }) => {
+      const mm = gsap.matchMedia();
+      const ctx = gsap.context(() => {
+        mm.add('(prefers-reduced-motion: no-preference) and (min-width: 900px)', () => {
+          const words = gsap.utils.toArray<HTMLElement>('.mf-w', el);
+          const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: 'top top', end: '+=140%', pin: true, scrub: 0.6, anticipatePin: 1 } });
+          tl.fromTo(words, { opacity: 0.14 }, { opacity: 1, stagger: 0.08, ease: 'none', duration: 0.4 }, 0);
+          gsap.utils.toArray<HTMLElement>('.mf-img', el).forEach((img) => {
+            const speed = Number(img.dataset.speed || 1);
+            tl.fromTo(img, { yPercent: 35 * speed }, { yPercent: -45 * speed, ease: 'none', duration: tl.duration() || 1 }, 0);
+          });
         });
-      });
-      mm.add('(prefers-reduced-motion: no-preference) and (max-width: 899px)', () => {
-        gsap.fromTo('.mf-w', { opacity: 0.14 }, { opacity: 1, stagger: 0.1, ease: 'none', scrollTrigger: { trigger: el.querySelector('.mf-text'), start: 'top 78%', end: 'bottom 55%', scrub: 0.6 } });
-      });
-    }, el);
-    return () => { ctx.revert(); mm.revert(); ScrollTrigger.refresh(); };
+        mm.add('(prefers-reduced-motion: no-preference) and (max-width: 899px)', () => {
+          gsap.fromTo('.mf-w', { opacity: 0.14 }, { opacity: 1, stagger: 0.1, ease: 'none', scrollTrigger: { trigger: el.querySelector('.mf-text'), start: 'top 78%', end: 'bottom 55%', scrub: 0.6 } });
+        });
+      }, el);
+      return () => { ctx.revert(); mm.revert(); ScrollTrigger.refresh(); };
+    }, '0px 0px -2px 0px');
   }, [text]);
 
   return (

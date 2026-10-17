@@ -1,11 +1,11 @@
 'use client';
 import { useEffect } from 'react';
-import Lenis from 'lenis';
-import { gsap, ScrollTrigger } from '@/lib/motion';
+import type Lenis from 'lenis';
+import { onMotion } from '@/lib/motion';
 import 'lenis/dist/lenis.css';
 
 let instance: Lenis | null = null;
-/** The page's single smooth-scroll engine (null under reduced motion). */
+/** The page's single smooth-scroll engine (null under reduced motion or before it has started). */
 export const getLenis = () => instance;
 
 export default function SmoothScroll() {
@@ -22,17 +22,24 @@ export default function SmoothScroll() {
     }
     if (reduce) return () => io.disconnect();
 
-    const headerH = parseFloat(getComputedStyle(html).getPropertyValue('--header-h')) || 84;
-    const lenis = new Lenis({ lerp: 0.085, anchors: { offset: -headerH } });
-    instance = lenis;
-    lenis.on('scroll', ScrollTrigger.update);
-    const tick = (t: number) => lenis.raf(t * 1000);
-    gsap.ticker.add(tick);
-    gsap.ticker.lagSmoothing(0);
-    // Fonts and lazy images change the page height; keep pinned sections measured correctly.
-    document.fonts?.ready.then(() => ScrollTrigger.refresh());
-    window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
-    return () => { io.disconnect(); gsap.ticker.remove(tick); lenis.destroy(); instance = null; };
+    // Smooth scroll only smooths the mouse wheel (touch scrolling stays native), so it is skipped on touch screens
+    // and started on the first wheel turn: it never competes with loading the page.
+    let dead = false;
+    const start = () => {
+      import('lenis').then(({ default: L }) => {
+        if (dead || instance) return;
+        const headerH = parseFloat(getComputedStyle(html).getPropertyValue('--header-h')) || 84;
+        const lenis = new L({ lerp: 0.085, anchors: { offset: -headerH }, autoRaf: true });
+        instance = lenis;
+        // Scroll animations (GSAP) load on demand; keep them in step with Lenis once they exist.
+        onMotion(({ ScrollTrigger }) => { if (!dead) lenis.on('scroll', ScrollTrigger.update); });
+      });
+    };
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (fine) window.addEventListener('wheel', start, { once: true, passive: true });
+    // Fonts change the page height; re-measure pinned sections once they are in.
+    onMotion(({ ScrollTrigger }) => { document.fonts?.ready.then(() => ScrollTrigger.refresh()); });
+    return () => { dead = true; window.removeEventListener('wheel', start); io.disconnect(); instance?.destroy(); instance = null; };
   }, []);
   return null;
 }

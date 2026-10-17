@@ -1,10 +1,10 @@
-import type { Metadata } from 'next';
-import { SiteData, tx, mediaUrl, L } from '@/lib/content';
-import { href, LANGS, LOCALES, Lang, RouteKey } from '@/lib/i18n';
+import { SiteData, plain } from '@/lib/content';
+import { href, Lang, RouteKey } from '@/lib/i18n';
 import { siteNav } from '@/lib/nav';
 import SiteChrome from '../site/SiteChrome';
 import Footer from '../site/Footer';
 import { Fill, Rich } from '../home/text';
+import JsonLd from '../JsonLd';
 
 /** Shared frame for inner pages: chrome, a page hero (image or plain navy), content, footer. */
 export default function SubPage({ data, lang, route, title, image, intro, children }: {
@@ -24,7 +24,7 @@ export default function SubPage({ data, lang, route, title, image, intro, childr
       <SiteChrome data={data} lang={lang} nav={nav} contactHref={href('contact', lang)} langHref={(l) => href(route, l)} />
       <main id="main">
         <section className={'ph' + (image ? ' has-image' : '')}>
-          {image && <div className="ph-media"><Fill src={image} sizes="100vw" priority /></div>}
+          {image && <div className="ph-media"><Fill src={image} sizes="100vw" priority quality={72} /></div>}
           {image && <div className="hero-shade" aria-hidden="true" />}
           <div className="wrap wrap-wide ph-inner">
             <h1 className="ph-title">
@@ -36,20 +36,7 @@ export default function SubPage({ data, lang, route, title, image, intro, childr
         {children}
       </main>
       <Footer data={data} lang={lang} nav={nav} />
+      <JsonLd data={data} lang={lang} route={route} title={plain(title, lang)} />
     </>
   );
-}
-
-/** Metadata for an inner page: localized title, description, canonical and hreflang alternates. */
-export function subMeta(data: SiteData, lang: Lang, route: RouteKey, title: L | string | undefined, description?: L | string, image?: string): Metadata {
-  const name = data.settings.project_name || 'Riverina Residence';
-  const t = (typeof title === 'string' ? title : tx(title, lang)).replace(/\*/g, '').replace(/\s*\n\s*/g, ' ').trim();
-  const desc = (typeof description === 'string' ? description : tx(description, lang)).replace(/\[\[TBD:[^\]]*\]\]/g, '').replace(/\s+/g, ' ').trim().slice(0, 158) || undefined;
-  const img = mediaUrl(image);
-  return {
-    title: t ? `${t} · ${name}` : name,
-    description: desc,
-    alternates: { canonical: href(route, lang), languages: { ...Object.fromEntries(LANGS.map((l) => [l, href(route, l)])), 'x-default': href(route, 'bs') } },
-    openGraph: { title: t || name, description: desc, images: img ? [img] : undefined, locale: LOCALES[lang].og, type: 'website' },
-  };
 }

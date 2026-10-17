@@ -242,3 +242,8 @@
 .cms-order-list li.is-off .cms-check { opacity: .5; }
 .cms-order-list .cms-link { font-size: 16px; padding: 4px 8px; }
 .cms-order-list .cms-link[disabled] { opacity: .25; pointer-events: none; }
+.cms-subhead { margin: 18px 0 2px; padding-top: 14px; border-top: 1px solid var(--c-line); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #14213a; }
+.cms-sec-body > .cms-subhead:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+.cms-count { display: block; text-align: right; font-size: 11px; color: #8a8f99; margin-top: 2px; }
+.cms-count.is-over { color: #b3261e; }
+.cms-gal-i input.is-missing { border-color: #e0a100 !important; background: #fff8e6; }

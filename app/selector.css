@@ -11,6 +11,11 @@
   --rvs-reserved: #c99434;
   --rvs-sold: #b4473a;
   --rvs-unavailable: #8a8f98;
+  /* darker versions for status text on light backgrounds (WCAG AA, 4.5:1) */
+  --rvs-available-text: #2e7a52;
+  --rvs-reserved-text: #8f6411;
+  --rvs-sold-text: #a33a2e;
+  --rvs-unavailable-text: #646a73;
   --rvs-radius: 0px;
   --rvs-round: 0px; /* brand: sharp controls; only status dots stay round */
   --rvs-font: var(--font-body), "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -134,9 +139,9 @@ html.rvs-lock { overflow: hidden; }
 .rvs-empty { padding: 40px; text-align: center; font-family: var(--rvs-font-display); font-size: 28px; }
 
 /* status label */
-.rvs-st { display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; color: var(--rvs-available); }
+.rvs-st { display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; color: var(--rvs-available-text); }
 .rvs-st::before { content: ""; width: 8px; height: 8px; border-radius: 999px; background: currentColor; }
-.rvs-st-reserved { color: var(--rvs-reserved); } .rvs-st-sold { color: var(--rvs-sold); } .rvs-st-unavailable { color: var(--rvs-unavailable); }
+.rvs-st-reserved { color: var(--rvs-reserved-text); } .rvs-st-sold { color: var(--rvs-sold-text); } .rvs-st-unavailable { color: var(--rvs-unavailable-text); }
 .rvs-tip .rvs-st-available { color: #7fd3a5; } .rvs-tip .rvs-st-reserved { color: #f0c46d; } .rvs-tip .rvs-st-sold { color: #f08b7d; } .rvs-tip .rvs-st-unavailable { color: #c2c6cc; }
 
 /* ---------- list ---------- */
@@ -182,7 +187,7 @@ html.rvs-lock { overflow: hidden; }
 .rvs a.rvs-btn { color: var(--rvs-ink); text-decoration: none; }
 .rvs-btn svg { width: 18px; height: 18px; }
 .rvs-btn:hover { background: rgba(20, 33, 58, .06); }
-.rvs-btn.is-on { background: rgba(62, 142, 99, .1); border-color: var(--rvs-available); color: var(--rvs-available); }
+.rvs-btn.is-on { background: rgba(62, 142, 99, .1); border-color: var(--rvs-available); color: var(--rvs-available-text); }
 .rvs-btn-primary, .rvs a.rvs-btn-primary { background: var(--rvs-ink); color: var(--rvs-paper); }
 .rvs-btn-primary:hover { background: var(--rvs-ink-2); }
 .rvs-btn-ghost { border-color: var(--rvs-line); height: 42px; font-size: 14px; }
@@ -241,8 +246,8 @@ html.rvs-lock { overflow: hidden; }
 .rvs-hp { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; opacity: 0; }
 .rvs-form .rvs-btn { align-self: flex-start; }
 .rvs-form-status { font-size: 14px; min-height: 0; }
-.rvs-form-status.is-ok { color: var(--rvs-available); }
-.rvs-form-status.is-err { color: var(--rvs-sold); }
+.rvs-form-status.is-ok { color: var(--rvs-available-text); }
+.rvs-form-status.is-err { color: var(--rvs-sold-text); }
 
 /* compare */
 .rvs-cmpbar { position: fixed; left: 50%; bottom: 22px; transform: translate(-50%, 140%); display: flex; align-items: center; gap: 14px; padding: 8px 8px 8px 18px; max-width: calc(100% - 24px); border-radius: var(--rvs-round); background: var(--rvs-ink); color: var(--rvs-paper); box-shadow: 0 18px 50px rgba(8, 14, 26, .35); transition: transform .35s cubic-bezier(.22, .8, .24, 1), visibility .35s; visibility: hidden; }

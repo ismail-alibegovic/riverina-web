@@ -62,13 +62,13 @@ export function ContactPage({ data, lang }: P) {
     <SubPage data={data} lang={lang} route="contact" title={tx(c.title, lang) || t.contact} intro={tx(c.text, lang)}>
       <section className="section contact is-page">
         <div className="wrap contact-grid">
-          <dl className="contact-list">
+          <dl className="contact-list" data-reveal="up">
             {phone && <><dt>{t.phone}</dt><dd><a href={'tel:' + phone.replace(/[^\d+]/g, '')}>{phone}</a></dd></>}
             {c.email && <><dt>{t.email}</dt><dd><a href={'mailto:' + c.email}>{c.email}</a></dd></>}
             {tx(c.address, lang) && <><dt>{t.address}</dt><dd>{tx(c.address, lang)}</dd></>}
             {tx(c.hours, lang) && <><dt>{t.hours}</dt><dd>{tx(c.hours, lang)}</dd></>}
           </dl>
-          <ContactForm lang={lang} />
+          <div data-reveal="up" style={{ '--i': 1 } as React.CSSProperties}><ContactForm lang={lang} /></div>
         </div>
       </section>
     </SubPage>
@@ -81,7 +81,7 @@ export function PrivacyPage({ data, lang }: P) {
   return (
     <SubPage data={data} lang={lang} route="privacy" title={tx(pr.title, lang) || t.privacy}>
       <section className="section">
-        <div className="wrap"><Paras className="prose legal" text={tx(pr.text, lang)} /></div>
+        <div className="wrap" data-reveal="up"><Paras className="prose legal" text={tx(pr.text, lang)} /></div>
       </section>
     </SubPage>
   );
@@ -95,7 +95,7 @@ function CtaBand({ data, lang }: P) {
     <section className="cta-band">
       <div className="wrap cta-inner">
         <Heading text={tx(data.page.buildings?.title, lang) || t.apartments} />
-        <a className="btn btn-light" href={href('apartments', lang)}>{label}</a>
+        <a className="btn btn-light" href={href('apartments', lang)} data-magnetic>{label}</a>
       </div>
     </section>
   );

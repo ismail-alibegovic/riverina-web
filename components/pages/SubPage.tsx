@@ -1,4 +1,4 @@
-import { SiteData, plain } from '@/lib/content';
+import { SiteData, plain, illustrationLabel } from '@/lib/content';
 import { href, Lang, RouteKey } from '@/lib/i18n';
 import { siteNav } from '@/lib/nav';
 import SiteChrome from '../site/SiteChrome';
@@ -24,9 +24,10 @@ export default function SubPage({ data, lang, route, title, image, intro, childr
       <SiteChrome data={data} lang={lang} nav={nav} contactHref={href('contact', lang)} langHref={(l) => href(route, l)} />
       <main id="main">
         <section className={'ph' + (image ? ' has-image' : '')}>
-          {image && <div className="ph-media"><Fill src={image} sizes="100vw" priority quality={72} /></div>}
+          {image && <div className="ph-media" data-parallax="8"><Fill src={image} sizes="100vw" priority quality={72} /></div>}
+          {image && illustrationLabel(data.page, lang) && <span className="ill-tag">{illustrationLabel(data.page, lang)}</span>}
           {image && <div className="hero-shade" aria-hidden="true" />}
-          <div className="wrap wrap-wide ph-inner">
+          <div className="wrap wrap-wide ph-inner" data-parallax-out>
             <h1 className="ph-title">
               {lines.map((l, i) => <span className="hero-line" key={i} style={{ '--i': i } as React.CSSProperties}><span><Rich text={l} /></span></span>)}
             </h1>

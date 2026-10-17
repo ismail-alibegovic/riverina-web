@@ -52,6 +52,8 @@ export type Page = {
   privacy?: { title?: L; text?: L };
   contact?: { title?: L; text?: L; phone?: string; email?: string; address?: L; hours?: L };
   footer?: { text?: L; company?: string };
+  /** small label on AI renders („Ilustracija / idejni prikaz"); show: false hides it everywhere */
+  illustration?: { show?: boolean; text?: L };
 };
 
 export type Settings = {
@@ -157,7 +159,11 @@ export const DEFAULT_PAGE: Page = {
     text: { bs: 'Javite nam se za tlocrte, dostupnost i termin razgovora.', en: 'Get in touch for floor plans, availability and a meeting.' },
   },
   footer: { company: 'ALYASIN Group d.o.o.' },
+  illustration: { show: true, text: { bs: 'Ilustracija / idejni prikaz', en: 'Illustration / concept view' } },
 };
+
+/** Text of the render label, or '' when it is switched off in the CMS. */
+export const illustrationLabel = (p: Page, lang: Lang) => (p.illustration?.show === false ? '' : plain(p.illustration?.text, lang));
 
 /** Key figures derived live from the apartments table (first building with apartments). */
 export function unitFacts(units: any[], lang: Lang): { value: string; label: string }[] {

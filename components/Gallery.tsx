@@ -7,7 +7,7 @@ export type GalleryImage = { src: string; alt: string; caption: string };
 type Labels = { close: string; prev: string; next: string; image: string };
 
 /** Image grid with a full-screen lightbox (rendered outside <main>, which is inert while it is open). Esc, arrows, focus kept inside and returned to the thumbnail. */
-export default function Gallery({ images, labels }: { images: GalleryImage[]; labels: Labels }) {
+export default function Gallery({ images, labels, tag }: { images: GalleryImage[]; labels: Labels; tag?: string }) {
   const [i, setI] = useState<number | null>(null);
   const box = useRef<HTMLDivElement>(null);
   const opener = useRef<HTMLButtonElement | null>(null);
@@ -48,6 +48,7 @@ export default function Gallery({ images, labels }: { images: GalleryImage[]; la
           <button type="button" key={n} className="gal-item" style={n === images.length - 1 && images.length > 1 ? { gridColumn: `span ${1 + ((4 - ((images.length + 3) % 4)) % 4)}` } : undefined} onClick={(e) => { opener.current = e.currentTarget; setI(n); }} aria-label={name(n)}>
             <Image src={g.src} alt="" fill sizes={n === 0 ? '(min-width: 900px) 50vw, 100vw' : '(min-width: 900px) 25vw, 50vw'} quality={78} />
             {g.caption && <span className="gal-cap" aria-hidden="true">{g.caption}</span>}
+            {tag && n === 0 && <span className="ill-tag" aria-hidden="true">{tag}</span>}
           </button>
         ))}
       </div>
@@ -57,7 +58,7 @@ export default function Gallery({ images, labels }: { images: GalleryImage[]; la
           {images.length > 1 && <button type="button" className="lb-nav lb-prev" aria-label={labels.prev} onClick={() => setI((i - 1 + images.length) % images.length)}><span aria-hidden="true">‹</span></button>}
           <figure>
             <Image src={images[i].src} alt={images[i].alt} width={2000} height={1250} sizes="100vw" quality={80} style={{ width: 'auto', height: 'auto' }} />
-            {images[i].caption && <figcaption>{images[i].caption}</figcaption>}
+            {(images[i].caption || tag) && <figcaption>{[images[i].caption, tag].filter(Boolean).join(' · ')}</figcaption>}
           </figure>
           {images.length > 1 && <button type="button" className="lb-nav lb-next" aria-label={labels.next} onClick={() => setI((i + 1) % images.length)}><span aria-hidden="true">›</span></button>}
         </div>,

@@ -5,7 +5,7 @@ import Image from 'next/image';
 export type Slide = { src: string; title: string; text: string };
 
 /** Horizontal slider with a focused centre slide. Native scroll-snap: swipe, trackpad, keyboard and buttons. */
-export default function Details({ slides, labels }: { slides: Slide[]; labels: { prev: string; next: string; region: string } }) {
+export default function Details({ slides, labels, tag }: { slides: Slide[]; labels: { prev: string; next: string; region: string }; tag?: string }) {
   const track = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
 
@@ -48,7 +48,7 @@ export default function Details({ slides, labels }: { slides: Slide[]; labels: {
       <div ref={track} className="det-track" tabIndex={0} role="region" aria-roledescription="carousel" aria-label={labels.region}>
         {slides.map((s, i) => (
           <figure className={'det-slide' + (i === active ? ' is-active' : '')} data-i={i} key={s.src + i} aria-label={`${i + 1} / ${slides.length}`}>
-            <div className="det-img"><Image src={s.src} alt={s.title} fill sizes="(min-width: 900px) 58vw, 84vw" quality={80} draggable={false} /></div>
+            <div className="det-img"><Image src={s.src} alt={s.title} fill sizes="(min-width: 900px) 58vw, 84vw" quality={80} draggable={false} />{tag && <span className="ill-tag">{tag}</span>}</div>
             <figcaption>
               <span className="label">{s.title}</span>
               {s.text && <p>{s.text}</p>}

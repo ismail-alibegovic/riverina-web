@@ -3,11 +3,27 @@
 :root { --hero-d: 1.25s; }
 html.intro-seen { --hero-d: .1s; }
 
-/* ---------- reveals (only after JS marks the page ready, so content is never hidden without it) ---------- */
-html.reveal-ready [data-reveal="up"] { opacity: 0; transform: translateY(32px); transition: opacity 1s var(--ease-out) calc(var(--i, 0) * 90ms), transform 1.2s var(--ease-out) calc(var(--i, 0) * 90ms); }
-html.reveal-ready [data-reveal="up"].is-in { opacity: 1; transform: none; }
-html.reveal-ready [data-reveal="clip"] { clip-path: inset(10% 6% 10% 6%); transition: clip-path 1.5s var(--ease-io); }
-html.reveal-ready [data-reveal="clip"].is-in { clip-path: inset(0 0 0 0); }
+/* ---------- reveals ----------
+   Keyframes wait (paused) until SmoothScroll marks the element .is-in, then play once.
+   Only after JS sets html.reveal-ready, so content is never hidden without JS or under reduced motion.
+   Stagger: style="--i: n" (110 ms per step). */
+html.reveal-ready [data-reveal] { animation-fill-mode: both; animation-play-state: paused; animation-delay: calc(var(--i, 0) * 110ms); }
+html.reveal-ready [data-reveal].is-in { animation-play-state: running; }
+/* text and cards: rise from 56 px out of a soft blur */
+html.reveal-ready [data-reveal="up"] { animation-name: rv-up; animation-duration: 1.2s; animation-timing-function: var(--ease-out); }
+/* images: the frame opens from the bottom while the picture settles from a slight zoom */
+html.reveal-ready [data-reveal="clip"] { animation-name: rv-clip; animation-duration: 1.6s; animation-timing-function: var(--ease-io); }
+html.reveal-ready [data-reveal="clip"] img { animation: rv-settle 2.2s var(--ease-out) both paused; }
+html.reveal-ready [data-reveal="clip"].is-in img { animation-play-state: running; }
+/* plain fade (for things that should not move, e.g. small labels) */
+html.reveal-ready [data-reveal="fade"] { animation-name: rv-fade; animation-duration: 1.2s; animation-timing-function: var(--ease-out); }
+@keyframes rv-up { from { opacity: 0; transform: translateY(56px); filter: blur(8px); } 60% { filter: blur(0); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes rv-clip { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes rv-settle { from { scale: 1.25; } to { scale: 1; } }
+@keyframes rv-fade { from { opacity: 0; } }
+@media (max-width: 760px) {
+  @keyframes rv-up { from { opacity: 0; transform: translateY(32px); filter: blur(6px); } 60% { filter: blur(0); } to { opacity: 1; transform: none; filter: none; } }
+}
 
 /* ---------- two-part headings ---------- */
 .split { display: flex; flex-direction: column; font-size: var(--t-3xl); font-weight: 300; line-height: 1.02; text-transform: uppercase; }
@@ -15,7 +31,7 @@ html.reveal-ready [data-reveal="clip"].is-in { clip-path: inset(0 0 0 0); }
 .split-line { display: block; overflow: hidden; padding-bottom: .1em; }
 .split-line + .split-line { padding-inline-start: 1.4em; }
 .split-line > span { display: inline-block; }
-html.reveal-ready .split .split-line > span { transform: translateY(108%); transition: transform 1.3s var(--ease-out) calc(var(--i) * 120ms); }
+html.reveal-ready .split .split-line > span { transform: translateY(110%) rotate(4deg); transform-origin: 0 100%; transition: transform 1.4s var(--ease-out) calc(var(--i) * 140ms); }
 html.reveal-ready .split.is-in .split-line > span { transform: none; }
 .split.is-center { align-items: center; text-align: center; }
 .split.is-center .split-line + .split-line { padding-inline-start: 0; }
@@ -223,3 +239,46 @@ html.reveal-ready .split.is-in .split-line > span { transform: none; }
 .nf-title { font-size: var(--t-2xl); font-weight: 300; text-transform: uppercase; }
 .nf .link-line { color: var(--ivory); }
 @media (max-width: 760px) { .nf-cols { grid-template-columns: 1fr; } }
+
+/* ---------- details: section numbers, gold hairlines, render labels, hover ---------- */
+.sec-idx { display: flex; align-items: center; gap: var(--s-3); margin-bottom: var(--s-5); font: 500 var(--t-label)/1 var(--body); letter-spacing: var(--track-label); color: var(--muted); }
+.sec-idx::after { content: ""; width: 28px; height: 1px; background: var(--gold); }
+.split.is-center .sec-idx { justify-content: center; }
+.contact .sec-idx, .cta-band .sec-idx { color: var(--on-dark-muted); }
+.sec-rule { display: block; width: 72px; height: 1px; margin-top: var(--s-6); background: var(--gold); transform-origin: 0 50%; }
+.split.is-center .sec-rule { align-self: center; transform-origin: 50% 50%; }
+html.reveal-ready .split .sec-idx { opacity: 0; transform: translateY(12px); transition: opacity .9s var(--ease-out), transform .9s var(--ease-out); }
+html.reveal-ready .split .sec-rule { transform: scaleX(0); transition: transform 1.4s var(--ease-io) .45s; }
+html.reveal-ready .split.is-in .sec-idx { opacity: 1; transform: none; }
+html.reveal-ready .split.is-in .sec-rule { transform: none; }
+
+/* small, quiet label in the corner of AI renders */
+.ill-tag { position: absolute; z-index: 2; inset-inline-end: 12px; bottom: 12px; padding: 6px 9px; font: 500 10px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; color: rgba(246, 241, 231, .92); background: rgba(14, 23, 41, .62); pointer-events: none; }
+.hero .ill-tag, .ph .ill-tag { top: calc(var(--header-h) + 12px); bottom: auto; inset-inline-end: max(var(--gutter), 12px); }
+.cat .ill-tag { top: calc(var(--header-h) + 16px); bottom: auto; inset-inline-end: max(var(--gutter), 20px); }
+
+/* hero: scroll cue (desktop) */
+.hero-scroll { position: absolute; inset-inline-start: 50%; bottom: 0; width: 1px; height: 72px; background: var(--line-light); overflow: hidden; }
+.hero-scroll i { position: absolute; inset: 0; background: var(--gold-soft); transform: translateY(-100%); animation: scroll-cue 2.4s var(--ease-io) calc(var(--hero-d) + 1.2s) 4; }
+@keyframes scroll-cue { 0% { transform: translateY(-100%); } 55% { transform: translateY(0); } 100% { transform: translateY(100%); } }
+@media (max-width: 899px) { .hero-scroll { display: none; } }
+
+/* hover: images lean in, link arrows slide, buttons follow the pointer (scrollFx.magnetic) */
+.link-line::after { content: "→"; display: inline-block; font-size: 1.15em; line-height: 1; transition: transform var(--dur-1) var(--ease-out); }
+[dir="rtl"] .link-line::after { content: "←"; }
+.link-line:hover::after { transform: translateX(5px); }
+[dir="rtl"] .link-line:hover::after { transform: translateX(-5px); }
+.bld-img img, .about-img img, .det-img img, .cat-media img { transition: scale 1.4s var(--ease-out); }
+.bld-link:hover .bld-img img { scale: 1.05; }
+.cat:hover .cat-media img { scale: 1.03; }
+[data-magnetic] { transition: translate .6s var(--ease-out), transform 160ms var(--ease-out), background-color var(--dur-fast) ease, color var(--dur-fast) ease, border-color var(--dur-fast) ease; }
+.fact-v { font-variant-numeric: lining-nums tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-scroll i { animation: none; transform: none; }
+  .link-line:hover::after, .bld-link:hover .bld-img img, .cat:hover .cat-media img { transform: none; scale: none; }
+}
+/* parallax images are taller than their frame so drifting never shows an edge (scrollFx.parallax moves them ±8 %) */
+@media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+  [data-parallax] > img { top: -10% !important; height: 120% !important; }
+}

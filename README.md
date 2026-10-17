@@ -46,6 +46,12 @@ Tekst koji nije preveden pada na `LOCALES[lang].fallback` (EN → BS).
 - Vercel preview deploy je `noindex` (i `robots.txt` zabranjuje sve); indeksira se samo production.
 - `NEXT_PUBLIC_SITE_URL` mora biti stvarna adresa sajta (kanonski URL-ovi, sitemap, OG slike).
 
+## Animacije
+- Ulazak sadržaja pri scrollu (jednom): atribut `data-reveal="up" | "clip" | "fade"` na elementu, stepenasto sa `style="--i: n"`. Keyframes su u `app/home.css`, okidač u `components/site/SmoothScroll.tsx`.
+- `data-count` (broji do vrijednosti), `data-parallax="8"` (slika klizi ±8 %, samo desktop, GSAP se učitava tek na prvi scroll), `data-parallax-out` (hero sadržaj blijedi), `data-magnetic` (dugme prati miš): `components/site/scrollFx.ts`.
+- Naslovi sekcija dobijaju redni broj i zlatnu liniju (`Heading index`). Oznaka „Ilustracija / idejni prikaz" na renderima se uključuje/isključuje i mijenja u CMS-u (Tekstovi sajta → Oznaka na vizualima).
+- Uz `prefers-reduced-motion` sve je odmah vidljivo i mirno; bez JavaScripta sadržaj je takođe vidljiv.
+
 ## Skripte
 - `node scripts/make-brand-assets.mjs` — zadana OG slika, WebP logotipi, favicon i apple ikona iz `public/brand/`.
 - `node scripts/optimize-assets.mjs` — originali rendera → `public/riverina/`.

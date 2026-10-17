@@ -6,7 +6,7 @@ import { whenNear } from '@/lib/motion';
 export type Category = { title: string; src: string; href: string; linkLabel: string };
 
 /** Full-screen image panels; the title spreads letter by letter across the frame as it scrolls in. */
-export default function Categories({ items }: { items: Category[] }) {
+export default function Categories({ items, tag }: { items: Category[]; tag?: string }) {
   const root = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = root.current;
@@ -31,6 +31,7 @@ export default function Categories({ items }: { items: Category[] }) {
         <article className="cat" key={c.title}>
           <div className="cat-media"><Image src={c.src} alt="" fill sizes="100vw" quality={78} /></div>
           <div className="cat-shade" aria-hidden="true" />
+          {tag && <span className="ill-tag">{tag}</span>}
           {c.href && <a className="link-line cat-link" href={c.href}>{c.linkLabel}<span className="sr-only">: {c.title}</span></a>}
           <h2 className="cat-title" aria-label={c.title}>
             {Array.from(c.title.toUpperCase()).map((ch, i) => (

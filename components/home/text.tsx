@@ -8,15 +8,20 @@ export function Rich({ text }: { text: string }) {
   return <>{parts.map((p, i) => (p.startsWith('*') && p.endsWith('*') ? <em key={i}>{p.slice(1, -1)}</em> : <Fragment key={i}>{p}</Fragment>))}</>;
 }
 
-/** Two-part section heading: each CMS line becomes its own stepped line ("O / projektu"). */
-export function Heading({ text, as: Tag = 'h2', className = '' }: { text: string; as?: 'h1' | 'h2' | 'h3'; className?: string }) {
+/**
+ * Two-part section heading: each CMS line becomes its own stepped line ("O / projektu").
+ * `index` adds a small section number above it; every heading gets a gold hairline that draws in after the words.
+ */
+export function Heading({ text, as: Tag = 'h2', className = '', index }: { text: string; as?: 'h1' | 'h2' | 'h3'; className?: string; index?: number }) {
   if (!text) return null;
   const lines = text.split('\n').map((l) => l.trim()).filter(Boolean);
   return (
     <Tag className={'split ' + className} data-reveal="lines">
+      {index != null && <span className="sec-idx" aria-hidden="true">{String(index).padStart(2, '0')}</span>}
       {lines.map((l, i) => (
         <span className="split-line" key={i} style={{ '--i': i } as React.CSSProperties}><span><Rich text={l} /></span></span>
       ))}
+      <span className="sec-rule" aria-hidden="true" />
     </Tag>
   );
 }

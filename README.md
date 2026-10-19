@@ -8,6 +8,8 @@ Next.js 16 (App Router) + Supabase. Javni sajt (BS `/`, EN `/en`) s interaktivni
 - `lib/selector/selector.js` + `app/selector.css` — pregled masterplan → zgrada → sprat → stan (vanilla JS)
 - `lib/admin/app.js` + `app/admin/admin.css` — CMS (sadržaj, mediji, stanovi, scene + editor poligona, upiti, postavke)
 - `lib/content.ts` — model sadržaja, zadani tekstovi, učitavanje podataka
+- `lib/apartmentTypes.ts` — tipovi stanova A–I iz prodajne brošure (Google Drive); sekcija `components/home/Types.tsx`
+- `docs/drive-workflow.md` — kako se materijali s Google Drivea unose u repo
 - `supabase/migrations/0001_init.sql` — šema baze (već primijenjena na projekat „Riverina Residence")
 - `public/demo/` — demo renderi i podaci za dugme „Učitaj demo podatke"
 
@@ -51,10 +53,17 @@ Tekst koji nije preveden pada na `LOCALES[lang].fallback` (EN → BS).
 - `data-count` (broji do vrijednosti), `data-parallax="8"` (slika klizi ±8 %, samo desktop, GSAP se učitava tek na prvi scroll), `data-parallax-out` (hero sadržaj blijedi), `data-magnetic` (dugme prati miš): `components/site/scrollFx.ts`.
 - Naslovi sekcija dobijaju redni broj i zlatnu liniju (`Heading index`). Oznaka „Ilustracija / idejni prikaz" na renderima se uključuje/isključuje i mijenja u CMS-u (Tekstovi sajta → Oznaka na vizualima).
 - Uz `prefers-reduced-motion` sve je odmah vidljivo i mirno; bez JavaScripta sadržaj je takođe vidljiv.
+- `data-reveal="clip"` (slike koje se otvaraju odozdo) prati se po poziciji na skrolu, ne IntersectionObserverom: Chromium računa `clip-path`, pa potpuno odsječen element nikad ne bi „ušao" u ekran i ostao bi skriven.
+- „Život uz rijeku" (`components/home/Showcase.tsx`): na desktopu GSAP pin + horizontalni pomak uz Lenis; na dodir, uz reduced motion i bez JS obična traka sa scroll-snap.
 
 ## Skripte
 - `node scripts/make-brand-assets.mjs` — zadana OG slika, WebP logotipi, favicon i apple ikona iz `public/brand/`.
 - `node scripts/optimize-assets.mjs` — originali rendera → `public/riverina/`.
+- `node scripts/make-type-plans.mjs` — isječci tlocrta iz AutoCAD skica: po stanu (`public/riverina/units/`, pregled stana) i po tipu (`public/riverina/types/`, „Kolekcija stanova").
+- `python3 scripts/make-floor-plans.py` — tlocrti spratova i obrisi svih stanova iz bloka „Pozicija stana u objektu" na PDF skicama (`public/riverina/floors/`, `lib/floorPlans.json`). Pregled stanova ih koristi dok u CMS-u („Označi stanove") zgrada nema svoje tlocrte spratova.
+- `node scripts/make-3d-plans.mjs` — 3D tlocrti s Drivea (`assets-src/3d/I`, `II`) → `public/riverina/3d/` i `lib/plans3d.json`.
+- CMS → „Označi stanove" → zgrada → **Učitaj tlocrte iz skica**: kopira generisane tlocrte spratova u CMS da se linije mogu popravljati (editor: „Prave linije (90°)", „Lijepi na uglove", „Ispravi oblik / sve"). Nakon spremanja sajt koristi verziju iz CMS-a.
+- `npm test` — provjera podataka o tipovima stanova (`lib/apartmentTypes.ts`): prostorije daju ukupnu površinu, 63 stana, slike postoje.
 - Lokalni test bez pristupa Supabaseu: `SITE_DATA_FILE=put/do/public_site_data.json npm run build && npm start` (JSON koji vraća `public_site_data()`). Na Vercelu se ne postavlja.
 
 ## Sigurnost

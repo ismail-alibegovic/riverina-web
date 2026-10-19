@@ -1,6 +1,6 @@
 # Riverina Residence — inventar materijala
 
-Stanje: 16. 10. 2026. Izvor: `Riverina residence/` (glavni folder). Ništa od originala nije mijenjano ni premještano.
+Stanje: 16. 10. 2026. Izvor: `Riverina residence/` (glavni folder). Google Drive folder i radni tok: `docs/drive-workflow.md` (19. 10. 2026). Ništa od originala nije mijenjano ni premještano.
 
 Metoda: pregled foldera, dimenzije i hash slika, čitanje C2PA (Content Credentials) metapodataka, metapodaci PDF-ova, vizuelni pregled uzoraka.
 
@@ -53,6 +53,10 @@ Iz `apartments.json` / `units.json` (izvedeno iz AutoCAD skica):
 | 96,64 | 2 | 2 | `s-p96.png`, `i-r96.jpeg` |
 | 104,35 | 0 (?) | 1 | `s-p104.png`, `i-r104.jpeg` |
 | 110,92 | 2 | 1 | `s-p110.png`, `i-r110.jpeg` |
+
+> **Ispravka 19. 10. 2026 (izvor: brošura zgrade 1 na Google Driveu, `Riverina-Objekat-1-BS.pdf`):** kolona „Spavaće" iznad je
+> iz `apartments.json` i nije tačna za 5. sprat. Brošura i baza se slažu: tipovi **A–I** = 46,44 (1), 49,55 (1), 66,15 (2), 73,93 (2),
+> 86,37 (3), 88,36 (3), 96,64 (3), 104,35 (3), 110,92 (4 spavaće sobe). Lođa ili terasa u svakom stanu. Na sajtu: `lib/apartmentTypes.ts`.
 
 - `units.json` ima i listu prostorija po stanu (naziv + m²). Pojedini nazivi su pogrešno parsirani (npr. „Lođa 4,42/3,31m² Ostava“) — treba čišćenje prije uvoza.
 - Stan 104,35 m² ima `spavace: 0` — vjerovatno greška parsiranja. **Provjeriti na skici.**

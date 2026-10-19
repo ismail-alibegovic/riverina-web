@@ -1,5 +1,8 @@
 // Content model, defaults and data loading for the public site.
 import { href, pick, LOCALES, UI, type Lang, type Localized, type RouteKey } from './i18n';
+import { APARTMENT_TYPES, ROOM_NAMES, unitsOfType } from './apartmentTypes';
+import { DEFAULT_FLOORS } from './floorPlans';
+import PLANS_3D from './plans3d.json';
 export type { Lang } from './i18n';
 export { UI } from './i18n';
 export type L = Localized;
@@ -30,8 +33,8 @@ export const imgAlt = (img: { alt?: L; caption?: L }, lang: Lang) => plain(img.a
 
 /** Search and sharing texts for one page; empty fields fall back to the page's own title and text. */
 export type Seo = { title?: L; description?: L; image?: string };
-export type SectionKey = 'hero' | 'manifest' | 'about' | 'categories' | 'buildings' | 'details' | 'gallery' | 'location' | 'investor' | 'contact';
-export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'categories', 'buildings', 'details', 'gallery', 'location', 'investor', 'contact'];
+export type SectionKey = 'hero' | 'manifest' | 'about' | 'showcase' | 'categories' | 'buildings' | 'types' | 'details' | 'gallery' | 'location' | 'investor' | 'statement' | 'contact';
+export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'showcase', 'categories', 'buildings', 'types', 'details', 'gallery', 'location', 'investor', 'statement', 'contact'];
 
 // Text conventions in the CMS: a new line starts a new heading line; *word* marks the contrasting word.
 export type Page = {
@@ -43,6 +46,12 @@ export type Page = {
   about?: { eyebrow?: L; title?: L; text?: L; image?: string; facts?: { value?: L; label?: L }[]; auto_facts?: boolean };
   categories?: { items?: { title?: L; image?: string; link?: string; link_label?: L }[] };
   buildings?: { title?: L; text?: L };
+  /** horizontal strip of wide renders with captions */
+  showcase?: { title?: L; text?: L; items?: { image?: string; caption?: L }[] };
+  /** full-screen render with a closing statement before the enquiry form */
+  statement?: { eyebrow?: L; title?: L; text?: L; image?: string; cta?: L; cta2?: L };
+  /** apartment types (lib/apartmentTypes.ts); figures come from the brochure and the unit table, texts from the CMS */
+  types?: { title?: L; text?: L; note?: L };
   details?: { title?: L; note?: L; items?: { image?: string; title?: L; text?: L }[] };
   highlights?: { title?: L; items?: { title?: L; text?: L; image?: string }[] };
   selector?: { eyebrow?: L; title?: L; text?: L };
@@ -104,6 +113,27 @@ export const DEFAULT_PAGE: Page = {
     image: `${R}/objekat/objekat-6.webp`,
     auto_facts: true,
   },
+  // Phrases from the sales brochure: "Moderno življenje uz rijeku", "Prostor za vaš novi početak".
+  showcase: {
+    title: { bs: 'Život\n*uz rijeku*', en: 'Living\n*by the river*' },
+    text: { bs: 'Riverina 1 i naselje uz rijeku na Ilidži, u vizualizacijama projekta.', en: 'Riverina 1 and the neighbourhood by the river in Ilidža, in the project visualisations.' },
+    items: [
+      { image: `${R}/naselje/3.webp`, caption: { bs: 'Naselje uz rijeku', en: 'The neighbourhood by the river' } },
+      { image: `${R}/objekat/objekat-1.webp`, caption: { bs: 'Riverina 1', en: 'Riverina 1' } },
+      { image: `${R}/naselje/12.webp`, caption: { bs: 'Ulice naselja', en: 'Neighbourhood streets' } },
+      { image: `${R}/objekat/objekat-7.webp`, caption: { bs: 'Ulaz u zgradu', en: 'Building entrance' } },
+      { image: `${R}/naselje/16.webp`, caption: { bs: 'Zelenilo između zgrada', en: 'Greenery between the buildings' } },
+      { image: `${R}/objekat/objekat-6.webp`, caption: { bs: 'Poslovno prizemlje', en: 'Commercial ground floor' } },
+      { image: `${R}/naselje/2.webp`, caption: { bs: 'Pogled iz zraka', en: 'Aerial view' } },
+    ],
+  },
+  statement: {
+    eyebrow: { bs: 'Riverina Residence', en: 'Riverina Residence' },
+    title: { bs: 'Prostor za vaš\n*novi početak*', en: 'A space for your\n*new beginning*' },
+    text: { bs: 'Stanovi od 46 do 111 m², s jednom do četiri spavaće sobe. Prodaja je u toku.', en: 'Apartments from 46 to 111 m², with one to four bedrooms. Sales are now open.' },
+    image: `${R}/objekat/objekat-8.webp`,
+    cta2: { bs: 'Pošaljite upit', en: 'Send an enquiry' },
+  },
   categories: {
     items: [
       { title: { bs: 'Zgrade', en: 'Buildings' }, image: `${R}/objekat/objekat-1.webp`, link: 'apartments' },
@@ -115,6 +145,17 @@ export const DEFAULT_PAGE: Page = {
     title: { bs: 'Zgrade\n*i stanovi*', en: 'Buildings\n*and apartments*' },
     text: { bs: 'Odaberite zgradu, sprat i stan u interaktivnom pregledu.', en: 'Choose a building, floor and apartment in the interactive view.' },
   },
+  types: {
+    title: { bs: 'Kolekcija\n*stanova*', en: 'Apartment\n*collection*' },
+    text: {
+      bs: 'Devet tipova stanova od 46 do 111 m², s jednom do četiri spavaće sobe. Svaki stan ima lođu ili terasu.',
+      en: 'Nine apartment types from 46 to 111 m², with one to four bedrooms. Every apartment has a loggia or a terrace.',
+    },
+    note: {
+      bs: 'Površine prema prodajnim skicama arhitekta; lođa se obračunava s 0,75, terasa s 0,25 svoje površine. Dopušteno odstupanje kvadrature ±3 %. Podložno raspoloživosti.',
+      en: "Areas as on the architect's sales plans; loggias count at 0.75 and terraces at 0.25 of their size. Permitted area variation ±3%. Subject to availability.",
+    },
+  },
   details: {
     title: { bs: 'Enterijer\n*i detalji*', en: 'Interiors\n*and details*' },
     note: { bs: 'Vizualizacije su ilustrativne.', en: 'Visualisations are for illustration only.' },
@@ -125,6 +166,23 @@ export const DEFAULT_PAGE: Page = {
       { image: `${R}/enterijer/enterijer-6.webp`, title: { bs: 'Spavaća soba', en: 'Bedroom' } },
       { image: `${R}/enterijer/enterijer-9.webp`, title: { bs: 'Kupatilo', en: 'Bathroom' } },
       { image: `${R}/enterijer/enterijer-5.webp`, title: { bs: 'Boravak', en: 'Lounge' } },
+    ],
+  },
+  gallery: {
+    title: { bs: 'Galerija', en: 'Gallery' },
+    images: [
+      { path: `${R}/objekat/objekat-4.webp`, caption: { bs: 'Riverina 1, vizualizacija', en: 'Riverina 1, visualisation' } },
+      { path: `${R}/objekat/objekat-3.webp`, caption: { bs: 'Riverina 1 s ulice, vizualizacija', en: 'Riverina 1 from the street, visualisation' } },
+      { path: `${R}/enterijer/enterijer-2.webp`, caption: { bs: 'Dnevni boravak, vizualizacija', en: 'Living room, visualisation' } },
+      { path: `${R}/naselje/15.webp`, caption: { bs: 'Zgrada s ulice, vizualizacija', en: 'The building from the street, visualisation' } },
+      { path: `${R}/enterijer/enterijer-8.webp`, caption: { bs: 'Kuhinja i trpezarija, vizualizacija', en: 'Kitchen and dining, visualisation' } },
+      { path: `${R}/naselje/11.webp`, caption: { bs: 'Ulica i poslovno prizemlje, vizualizacija', en: 'Street and commercial ground floor, visualisation' } },
+      { path: `${R}/objekat/objekat-5.webp`, caption: { bs: 'Riverina 1, ugao zgrade, vizualizacija', en: 'Riverina 1, corner view, visualisation' } },
+      { path: `${R}/enterijer/enterijer-3.webp`, caption: { bs: 'Spavaća soba, vizualizacija', en: 'Bedroom, visualisation' } },
+      { path: `${R}/naselje/10.webp`, caption: { bs: 'Zgrade naselja, vizualizacija', en: 'Buildings of the neighbourhood, visualisation' } },
+      { path: `${R}/objekat/objekat-2.webp`, caption: { bs: 'Prizemlje uz ulicu, vizualizacija', en: 'Ground floor along the street, visualisation' } },
+      { path: `${R}/naselje/5.webp`, caption: { bs: 'Naselje uz rijeku, vizualizacija', en: 'The neighbourhood by the river, visualisation' } },
+      { path: `${R}/naselje/13.webp`, caption: { bs: 'Ulaz u naselje, vizualizacija', en: 'Entering the neighbourhood, visualisation' } },
     ],
   },
   location: {
@@ -191,11 +249,22 @@ export function resolveLink(link: string | undefined, lang: Lang): string {
   return link;
 }
 
+/** Saved order plus sections it does not know yet (added later), each placed right after its default predecessor. */
+export function withMissing<K extends string>(saved: K[], defaults: K[]): K[] {
+  const out = [...saved];
+  defaults.forEach((k, i) => {
+    if (out.includes(k)) return;
+    const prev = defaults.slice(0, i).reverse().find((x) => out.includes(x));
+    out.splice(prev ? out.indexOf(prev) + 1 : 0, 0, k);
+  });
+  return out;
+}
+
 /** Visible sections in the order chosen in the CMS. The hero always comes first. */
 export function sectionList(p: Page): SectionKey[] {
   const rest: SectionKey[] = SECTION_ORDER.filter((k) => k !== 'hero');
   const order = (p.sections?.order || []).filter((k) => rest.includes(k));
-  const all: SectionKey[] = ['hero', ...order, ...rest.filter((k) => !order.includes(k))];
+  const all: SectionKey[] = ['hero', ...withMissing(order, rest)];
   const hidden = new Set(p.sections?.hidden || []);
   return all.filter((k) => k === 'hero' || !hidden.has(k));
 }
@@ -226,9 +295,14 @@ export async function getSiteData(): Promise<SiteData> {
   }
 }
 
+/** A CMS gallery with fewer images than this is topped up with the project renders from DEFAULT_PAGE. */
+export const GALLERY_MIN = 6;
+
 function mergePage(p: Page): Page {
   const out: any = { ...DEFAULT_PAGE };
   for (const k of Object.keys(p) as (keyof Page)[]) out[k] = { ...(DEFAULT_PAGE as any)[k], ...(p as any)[k] };
+  const own = (p.gallery?.images || []).filter((g) => g.path);
+  if (own.length < GALLERY_MIN) out.gallery = { ...out.gallery, images: [...own, ...(DEFAULT_PAGE.gallery?.images || []).filter((g) => !own.some((o) => o.path === g.path))] };
   return out;
 }
 
@@ -248,7 +322,32 @@ export function toSelectorData(d: SiteData) {
       colors: d.settings.colors || {},
     },
     masterplan: { views: (scenes.masterplan?.views || []).map(view) },
-    buildings: (scenes.buildings || []).map((b: any) => ({ ...b, views: (b.views || []).map(view), floors: (b.floors || []).map(view) })),
-    units: (d.units || []).map((u: any) => ({ ...u, plan: mediaUrl(u.plan), pdf: mediaUrl(u.pdf) })),
+    // floor plans from the CMS; without them, the ones generated from the architect's sheets
+    buildings: (scenes.buildings || []).map((b: any) => ({ ...b, views: (b.views || []).map(view), floors: (b.floors?.length ? b.floors : DEFAULT_FLOORS[b.id] || []).map(view) })),
+    units: (d.units || []).map((u: any) => withTypeData({ ...u, plan: mediaUrl(u.plan), pdf: mediaUrl(u.pdf) })),
+  };
+}
+
+/**
+ * Extra data for the apartment viewer: the clean plan cut from the architect's sheet (while the CMS plan is that
+ * sheet), the 3D plan when there is one, and type letter, outdoor space and rooms from the sales brochure
+ * (lib/apartmentTypes.ts) for units whose CMS fields are empty.
+ */
+function withTypeData(u: any) {
+  const code = String(u.code);
+  const extra = {
+    plan_view: u.plan === `/riverina/plans/${code}.webp` ? `/riverina/units/${code}.webp` : '',
+    plan3d: u.building === 'r1' ? (PLANS_3D as Record<string, string>)[code] || '' : '',
+  };
+  const t = APARTMENT_TYPES.find((ty) => unitsOfType(ty, [u]).length);
+  if (!t) return { ...u, ...extra };
+  return {
+    ...u,
+    ...extra,
+    type_label: u.type_label || `Tip ${t.id}`,
+    type_label_en: u.type_label_en || `Type ${t.id}`,
+    type_id: t.id,
+    outdoor: { kind: t.outdoor.kind, area: t.outdoor.area },
+    rooms: u.rooms?.length ? u.rooms : t.rooms.map(([k, a]) => ({ n: ROOM_NAMES[k].bs, n_en: ROOM_NAMES[k].en, a })),
   };
 }

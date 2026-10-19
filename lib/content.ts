@@ -34,13 +34,14 @@ export const imgAlt = (img: { alt?: L; caption?: L }, lang: Lang) => plain(img.a
 /** Search and sharing texts for one page; empty fields fall back to the page's own title and text. */
 export type Seo = { title?: L; description?: L; image?: string };
 export type SectionKey = 'hero' | 'vision' | 'manifest' | 'about' | 'showcase' | 'categories' | 'buildings' | 'types' | 'details' | 'world' | 'gallery' | 'location' | 'investor' | 'statement' | 'contact';
-export const SECTION_ORDER: SectionKey[] = ['hero', 'vision', 'manifest', 'about', 'showcase', 'categories', 'buildings', 'types', 'details', 'world', 'gallery', 'location', 'investor', 'statement', 'contact'];
+export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'showcase', 'categories', 'buildings', 'types', 'vision', 'details', 'world', 'gallery', 'location', 'investor', 'statement', 'contact'];
 /**
- * Home sections that are off until switched on in the CMS: the home page keeps a short Elicyon-like rhythm
- * (hero, vision, categories, types, details, world, footer with the enquiry form); gallery, location and developer
- * have their own pages. Also in lib/admin/app.js.
+ * Home sections that are off until switched on in the CMS. The home page follows elicyon.com's sequence, one story
+ * from the river to the front door: hero → manifest → categories → apartment types ("services") → vision
+ * ("leading the vision") → interiors carousel ("objects of desire") → world cards ("insights") → closing statement
+ * → footer with the enquiry form. Gallery, location and developer have their own pages. Also in lib/admin/app.js.
  */
-export const DEFAULT_HIDDEN: SectionKey[] = ['manifest', 'about', 'showcase', 'buildings', 'gallery', 'location', 'investor', 'statement', 'contact'];
+export const DEFAULT_HIDDEN: SectionKey[] = ['about', 'showcase', 'buildings', 'gallery', 'location', 'investor', 'contact'];
 
 // Text conventions in the CMS: a new line starts a new heading line; *word* marks the contrasting word.
 export type Page = {
@@ -155,8 +156,8 @@ export const DEFAULT_PAGE: Page = {
   vision: {
     title: { bs: 'Moderno življenje\n*uz rijeku*', en: 'Modern living\n*by the river*' },
     text: {
-      bs: 'Riverina je novi stambeni kompleks na Ilidži. Prva zgrada nudi 63 stana od 46 do 111 m², iznad poslovnog prizemlja, zamišljenih za miran život u Sarajevu.',
-      en: 'Riverina is a new residential development in Ilidža. The first building offers 63 apartments from 46 to 111 m², above a commercial ground floor, designed for a calm life in Sarajevo.',
+      bs: 'Riverina Residence nastaje na Ilidži, u Sarajevu. Prva zgrada, Riverina 1, ima poslovno prizemlje i pet stambenih etaža, s lođom ili terasom uz svaki stan.',
+      en: 'Riverina Residence is being built in Ilidža, Sarajevo. The first building, Riverina 1, has a commercial ground floor and five residential floors, with a loggia or a terrace for every apartment.',
     },
     image: `${R}/naselje/2.webp`,
     image2: `${R}/enterijer/enterijer-3.webp`,

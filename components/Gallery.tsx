@@ -1,45 +1,16 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useRef, useState } from 'react';
 import Image from 'next/image';
+import Lightbox from './Lightbox';
 
 export type GalleryImage = { src: string; alt: string; caption: string };
 type Labels = { close: string; prev: string; next: string; image: string };
 
-/** Image grid with a full-screen lightbox (rendered outside <main>, which is inert while it is open). Esc, arrows, focus kept inside and returned to the thumbnail. */
+/** Editorial image grid; a click opens the full-screen lightbox, focus returns to the thumbnail. */
 export default function Gallery({ images, labels, tag }: { images: GalleryImage[]; labels: Labels; tag?: string }) {
   const [i, setI] = useState<number | null>(null);
-  const box = useRef<HTMLDivElement>(null);
   const opener = useRef<HTMLButtonElement | null>(null);
   const name = (n: number) => images[n].alt || images[n].caption || labels.image.replace('{n}', String(n + 1));
-
-  useEffect(() => {
-    if (i === null) return;
-    const html = document.documentElement;
-    const main = document.getElementById('main');
-    const k = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setI(null);
-      if (e.key === 'ArrowRight') setI((x) => (x === null ? x : (x + 1) % images.length));
-      if (e.key === 'ArrowLeft') setI((x) => (x === null ? x : (x - 1 + images.length) % images.length));
-      if (e.key === 'Tab' && box.current) {
-        const items = Array.from(box.current.querySelectorAll<HTMLElement>('button'));
-        const at = items.indexOf(document.activeElement as HTMLElement);
-        e.preventDefault();
-        items[(at + (e.shiftKey ? -1 : 1) + items.length) % items.length]?.focus();
-      }
-    };
-    window.addEventListener('keydown', k);
-    html.classList.add('menu-open');
-    if (main) main.inert = true;
-    return () => { window.removeEventListener('keydown', k); html.classList.remove('menu-open'); if (main) main.inert = false; };
-  }, [i, images.length]);
-
-  // Focus the close button on open, return focus to the thumbnail on close.
-  const open = i !== null;
-  useEffect(() => {
-    if (open) box.current?.querySelector<HTMLElement>('.lb-close')?.focus();
-    else opener.current?.focus({ preventScroll: true });
-  }, [open]);
 
   return (
     <>
@@ -55,18 +26,7 @@ export default function Gallery({ images, labels, tag }: { images: GalleryImage[
           </li>
         ))}
       </ul>
-      {i !== null && createPortal(
-        <div ref={box} className="lb" role="dialog" aria-modal="true" aria-label={name(i)} onClick={(e) => { if (e.target === e.currentTarget) setI(null); }}>
-          <button type="button" className="lb-close" onClick={() => setI(null)}>{labels.close} <span aria-hidden="true">✕</span></button>
-          {images.length > 1 && <button type="button" className="lb-nav lb-prev" aria-label={labels.prev} onClick={() => setI((i - 1 + images.length) % images.length)}><span aria-hidden="true">‹</span></button>}
-          <figure>
-            <Image src={images[i].src} alt={images[i].alt} width={2000} height={1250} sizes="100vw" quality={80} style={{ width: 'auto', height: 'auto' }} />
-            {(images[i].caption || tag) && <figcaption>{[images[i].caption, tag].filter(Boolean).join(' · ')}</figcaption>}
-          </figure>
-          {images.length > 1 && <button type="button" className="lb-nav lb-next" aria-label={labels.next} onClick={() => setI((i + 1) % images.length)}><span aria-hidden="true">›</span></button>}
-        </div>,
-        document.body,
-      )}
+      <Lightbox images={images} index={i} onChange={(x) => { setI(x); if (x === null) opener.current?.focus({ preventScroll: true }); }} labels={labels} tag={tag} />
     </>
   );
 }

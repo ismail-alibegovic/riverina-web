@@ -1,8 +1,7 @@
-import { SiteData, tx, mediaUrl, imgAlt, illustrationLabel, type Img } from '@/lib/content';
+import { SiteData, tx, mediaUrl, imgAlt, illustrationLabel } from '@/lib/content';
 import { href, UI, Lang } from '@/lib/i18n';
 import ContactForm from '../ContactForm';
-import Gallery from '../Gallery';
-import Showcase from '../home/Showcase';
+import Coverflow from '../Coverflow';
 import { Fill, Heading, Paras } from '../home/text';
 import SubPage from './SubPage';
 
@@ -39,25 +38,35 @@ export function LocationPage({ data, lang }: P) {
   );
 }
 
-/** Every render in one place: the river strip, then the gallery with the images that are no longer on the home page. */
+/** Every render of the project in one coverflow carousel, filtered by building / neighbourhood / interior. */
 export function GalleryPage({ data, lang }: P) {
   const t = UI[lang];
   const p = data.page;
   const tag = illustrationLabel(p, lang);
-  const strip = (p.showcase?.items || []).filter((it) => it.image).map((it) => ({ src: mediaUrl(it.image), caption: tx(it.caption, lang) }));
+  // all pictures the CMS uses anywhere, each once, with the caption it has where it is used
   const seen = new Set<string>();
-  const images: Img[] = [
-    ...(p.gallery?.images || []),
-    ...(p.manifest?.images || []),
-    ...[p.about?.image, p.about?.image2].filter(Boolean).map((path): Img => ({ path: path as string })),
-  ].filter((g) => g.path && !seen.has(g.path) && seen.add(g.path));
+  const all: { path?: string; caption?: string; alt?: string }[] = [
+    ...(p.gallery?.images || []).map((g) => ({ path: g.path, caption: tx(g.caption, lang), alt: imgAlt(g, lang) })),
+    ...(p.showcase?.items || []).map((it) => ({ path: it.image, caption: tx(it.caption, lang) })),
+    ...(p.details?.items || []).map((it) => ({ path: it.image, caption: tx(it.title, lang) })),
+    ...(p.manifest?.images || []).map((g) => ({ path: g.path, caption: tx(g.caption, lang).replace(/,\s*(vizualizacija|visualisation)$/i, '') })),
+    ...[p.about?.image, p.about?.image2, p.vision?.image, p.vision?.image2, p.statement?.image].map((path) => ({ path })),
+    ...(p.categories?.items || []).map((it) => ({ path: it.image })),
+    ...(p.world?.items || []).map((it) => ({ path: it.image })),
+  ];
+  const group = (path: string) => (/\/enterijer\//.test(path) ? 'interior' : /\/naselje\//.test(path) ? 'area' : 'building');
+  const images = all.filter((g) => g.path && !seen.has(g.path) && seen.add(g.path)).map((g) => ({
+    src: mediaUrl(g.path), alt: g.alt || g.caption || '', caption: g.caption || '', group: group(g.path!),
+  }));
   return (
-    <SubPage data={data} lang={lang} route="gallery" title={tx(p.gallery?.title, lang) || t.gallery} image={p.gallery?.page_image} intro={tx(p.gallery?.text, lang) || t.galleryIntro}>
-      {strip.length > 1 && <Showcase title={tx(p.showcase?.title, lang)} text={tx(p.showcase?.text, lang)} items={strip} tag={tag} label={plain(tx(p.showcase?.title, lang))} />}
-      <section className="section gallery">
-        <div className="wrap">
-          <Gallery tag={tag} images={images.map((g) => ({ src: mediaUrl(g.path), alt: imgAlt(g, lang), caption: tx(g.caption, lang) }))} labels={{ close: t.close, prev: t.prev, next: t.next, image: t.image }} />
-        </div>
+    <SubPage data={data} lang={lang} route="gallery" title={tx(p.gallery?.title, lang) || t.gallery} intro={tx(p.gallery?.text, lang) || t.galleryIntro}>
+      <section className="section gallery-page">
+        <Coverflow
+          images={images}
+          groups={[{ key: 'building', label: t.galBuilding }, { key: 'area', label: t.galArea }, { key: 'interior', label: t.galInterior }]}
+          labels={{ close: t.close, prev: t.prev, next: t.next, image: t.image, all: t.galAll, open: t.galOpen }}
+          tag={tag}
+        />
       </section>
       <CtaBand data={data} lang={lang} />
     </SubPage>

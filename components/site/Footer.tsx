@@ -4,9 +4,8 @@ import ContactForm from '../ContactForm';
 import { Rich } from '../home/text';
 
 /**
- * Elicyon-style footer on a soft river-blue field: a stepped invitation with the enquiry form, the menu,
- * the contact details, then the Riverina wordmark across the full width and a thin legal line.
- * The contact page already has the form, so it passes form={false}.
+ * Elicyon-style footer on a soft river-blue field, kept to one band: a stepped invitation, the enquiry form beside it,
+ * the menu and the contact details, then a thin legal line. The contact page already has the form (form={false}).
  */
 export default function Footer({ data, lang, nav, form = true }: { data: SiteData; lang: Lang; nav: { href: string; label: string }[]; form?: boolean }) {
   const t = UI[lang];
@@ -21,8 +20,8 @@ export default function Footer({ data, lang, nav, form = true }: { data: SiteDat
         <div className="footer-join">
           <h2 className="footer-title" data-reveal="up">{t.footerTitle.split('\n').map((l, i) => <span key={i}><Rich text={l} /></span>)}</h2>
           {form && <p className="footer-lead">{tx(c.text, lang) || t.footerText}</p>}
-          {form && <ContactForm lang={lang} />}
         </div>
+        {form && <div className="footer-form"><ContactForm lang={lang} /></div>}
         <nav aria-label={t.mainNav} className="footer-nav">
           <a href={href('home', lang)}>{t.home}</a>
           {nav.map((n) => <a key={n.href} href={n.href}>{n.label}</a>)}
@@ -32,12 +31,8 @@ export default function Footer({ data, lang, nav, form = true }: { data: SiteDat
           {c.email && <a href={'mailto:' + c.email}>{c.email}</a>}
           {tx(c.address, lang) && <p>{tx(c.address, lang)}</p>}
           {tx(c.hours, lang) && <p>{tx(c.hours, lang)}</p>}
-          <img className="footer-mark" src="/brand/mark.png" alt="" width={120} height={91} loading="lazy" />
         </div>
       </div>
-      <a href={href('home', lang)} className="footer-word" aria-label={name} data-reveal="clip" data-reveal-pos>
-        <img src="/brand/wordmark-full.svg" alt="" width={4289} height={622} loading="lazy" />
-      </a>
       <div className="wrap wrap-wide footer-legal">
         <a href={href('privacy', lang)}>{t.privacy}</a>
         {tag && <span>{tag}</span>}

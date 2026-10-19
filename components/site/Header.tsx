@@ -33,10 +33,12 @@ export default function Header(p: HeaderProps) {
   const toggle = useRef<HTMLButtonElement>(null);
 
   // Solid header once the top of the page (hero) has scrolled away. No scroll listener.
+  // The page's first block (hero or page header) decides: solid as soon as its bottom passes under the header.
   useEffect(() => {
     if (p.tone === 'dark' || !sentinel.current) return;
+    const first = document.querySelector('#main > :first-child') || sentinel.current;
     const io = new IntersectionObserver(([e]) => setSolid(!e.isIntersecting), { rootMargin: '-80px 0px 0px 0px' });
-    io.observe(sentinel.current);
+    io.observe(first);
     return () => io.disconnect();
   }, [p.tone]);
 
@@ -85,6 +87,11 @@ export default function Header(p: HeaderProps) {
             </button>
           </div>
           <a href={p.homeHref} className="hdr-brand" aria-label={p.name}>
+            {/* the R mark stands above the name over the hero and folds away once the header turns solid */}
+            <span className="hdr-mark" aria-hidden="true">
+              <img className="on-dark" src="/brand/mark-light.webp" alt="" width={316} height={240} />
+              <img className="on-light" src="/brand/mark.webp" alt="" width={400} height={303} />
+            </span>
             <img className="on-dark" src={p.logoOnDark} alt="" width={480} height={108} fetchPriority="high" />
             <img className="on-light" src={p.logoOnLight} alt="" width={480} height={108} fetchPriority="high" />
           </a>

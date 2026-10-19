@@ -30,3 +30,11 @@ Polazni commit: `0131059`.
 - Reduced motion: uvod se ne prikazuje, bez pinovanja i raspršivanja slova.
 - Mobilni 390: bez horizontalnog skrola; „O projektu" slike jedna ispod druge, činjenice 2 × 2; galerija naizmjenično.
 - `npx tsc --noEmit`, `npm test` prolaze.
+
+## Preuređenje po Elicyonu (19. 10. 2026, poslije povratne informacije)
+
+Početna je skraćena na Elicyonov ritam: naslovna → vizija („Moderno življenje uz rijeku", zatamnjen render, slika i tekst u uskoj koloni) → kategorije preko cijelog ekrana koje se slažu jedna preko druge (ARHITEKTURA / ENTERIJER / LOKACIJA) → tipovi stanova (nepromijenjeno) → enterijer karusel sa središnjom slikom u okviru → „Svijet Riverine" (tri kartice prema podstranicama) → footer.
+
+- Footer: plavo polje, forma za upit, meni, kontakt, znak R i pravi RIVERINA natpis preko cijele širine (`public/brand/wordmark-full.svg`, vektoriziran iz `Riverina-logo.png` s Drivea skriptom `scripts/make-wordmark.py`).
+- Nova stranica `/galerija` (`/en/gallery`): traka „Život uz rijeku" i sve slike koje više nisu na početnoj.
+- Stare sekcije (manifest, o projektu, traka, zgrade, galerija, lokacija, investitor, završni blok, kontakt) su u CMS-u isključene po defaultu (`DEFAULT_HIDDEN`), tekstovi ostaju.

@@ -15,6 +15,8 @@ import Details from './home/Details';
 import Types, { type TypeCard } from './home/Types';
 import Showcase from './home/Showcase';
 import Statement from './home/Statement';
+import Vision from './home/Vision';
+import World from './home/World';
 import { Fill, Heading, Paras } from './home/text';
 import JsonLd from './JsonLd';
 
@@ -37,22 +39,23 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
 
   const nav = siteNav(data, lang);
   const tag = illustrationLabel(page, lang);
-  // Section numbers (01, 02 …) follow the visible order chosen in the CMS; only sections with a heading count.
-  const numbered: SectionKey[] = ['about', 'showcase', 'buildings', 'types', 'details', 'gallery', 'location', 'investor', 'contact'];
-  const idx = (k: SectionKey) => order.filter((x) => numbered.includes(x)).indexOf(k) + 1;
 
   const sections: Record<SectionKey, () => React.ReactNode> = {
     hero: () => <Hero hero={page.hero || {}} lang={lang} name={name} tag={tag} />,
+
+    vision: () => page.vision && tx(page.vision.title, lang) && <Vision vision={page.vision} lang={lang} tag={tag} />,
+
+    world: () => page.world && (page.world.items || []).length > 0 && <World world={page.world} lang={lang} cta={{ href: href('apartments', lang), label: aptLabel }} more={t.learnMore} />,
 
     manifest: () => manifestText && (
       <Manifest text={manifestText} label={t.manifest} images={(page.manifest?.images || []).filter((m) => m.path).map((m) => ({ src: mediaUrl(m.path), alt: imgAlt(m, lang) }))} />
     ),
 
-    about: () => (tx(page.about?.title, lang) || tx(page.about?.text, lang)) && <About about={page.about || {}} units={units} lang={lang} index={idx('about')} tag={tag} />,
+    about: () => (tx(page.about?.title, lang) || tx(page.about?.text, lang)) && <About about={page.about || {}} units={units} lang={lang} tag={tag} />,
 
     showcase: () => {
       const items = (page.showcase?.items || []).filter((it) => it.image).map((it) => ({ src: mediaUrl(it.image), caption: tx(it.caption, lang) }));
-      return items.length > 1 && <Showcase title={tx(page.showcase?.title, lang)} text={tx(page.showcase?.text, lang)} items={items} index={idx('showcase')} tag={tag} label={tx(page.showcase?.title, lang).replace(/\*/g, '').replace(/\n/g, ' ')} />;
+      return items.length > 1 && <Showcase title={tx(page.showcase?.title, lang)} text={tx(page.showcase?.text, lang)} items={items} tag={tag} label={tx(page.showcase?.title, lang).replace(/\*/g, '').replace(/\n/g, ' ')} />;
     },
 
     statement: () => page.statement?.image && tx(page.statement?.title, lang) && <Statement st={page.statement} lang={lang} tag={tag} cta={aptLabel} />,
@@ -61,7 +64,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
       const items = (page.categories?.items || []).filter((c) => tx(c.title, lang) && c.image);
       return items.length > 0 && (
         <section aria-label={t.categories}>
-          <Categories tag={tag} items={items.map((c) => ({ title: tx(c.title, lang), src: mediaUrl(c.image), href: resolveLink(c.link, lang), linkLabel: tx(c.link_label, lang) || (c.link === 'apartments' ? aptLabel : t.categories) }))} />
+          <Categories tag={tag} items={items.map((c) => ({ title: tx(c.title, lang), caption: tx(c.caption, lang), src: mediaUrl(c.image), href: resolveLink(c.link, lang), linkLabel: tx(c.link_label, lang) || (c.link === 'apartments' ? aptLabel : t.categories) }))} />
         </section>
       );
     },
@@ -69,7 +72,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
     buildings: () => buildings.length > 0 && (
       <section className="section blds">
         <div className="wrap blds-head">
-          <Heading text={tx(page.buildings?.title, lang)} index={idx('buildings')} />
+          <Heading text={tx(page.buildings?.title, lang)} />
           {tx(page.buildings?.text, lang) && <p className="lead" data-reveal="up">{tx(page.buildings?.text, lang)}</p>}
         </div>
         <div className={'wrap wrap-wide blds-grid n-' + Math.min(buildings.length, 3)}>
@@ -102,7 +105,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
       return (
         <section id="tipovi" className="section types">
           <div className="wrap types-head">
-            <Heading text={tx(page.types?.title, lang)} index={idx('types')} />
+            <Heading text={tx(page.types?.title, lang)} />
             {tx(page.types?.text, lang) && <p className="lead" data-reveal="up">{tx(page.types?.text, lang)}</p>}
           </div>
           <Types cards={cards} labels={{ filter: t.filterBedrooms, all: t.filterAll, rooms: t.rooms, total: t.total, view: t.viewUnit, area: t.area, outdoor: t.outdoor, floor: t.floor }} />
@@ -115,7 +118,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
       const slides = (page.details?.items || []).filter((d) => d.image).map((d) => ({ src: mediaUrl(d.image), title: tx(d.title, lang), text: tx(d.text, lang) }));
       return slides.length > 0 && (
         <section id="detalji" className="section details">
-          <div className="wrap"><Heading text={tx(page.details?.title, lang)} index={idx('details')} /></div>
+          <div className="wrap"><Heading text={tx(page.details?.title, lang).replace(/\n/g, ' ')} className="is-center det-title" /></div>
           <Details tag={tag} slides={slides} labels={{ prev: t.prev, next: t.next, region: t.slider }} />
           {tx(page.details?.note, lang) && <p className="wrap det-note">{tx(page.details?.note, lang)}</p>}
         </section>
@@ -125,7 +128,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
     gallery: () => gallery.length > 0 && (
       <section id="galerija" className="section gallery">
         <div className="wrap">
-          <Heading text={tx(page.gallery?.title, lang) || t.gallery} index={idx('gallery')} />
+          <Heading text={tx(page.gallery?.title, lang) || t.gallery} />
           <Gallery tag={tag} images={gallery.map((g) => ({ src: mediaUrl(g.path), alt: imgAlt(g, lang), caption: tx(g.caption, lang) }))} labels={{ close: t.close, prev: t.prev, next: t.next, image: t.image }} />
         </div>
       </section>
@@ -135,7 +138,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
       <section id="lokacija" className="section location">
         <div className="wrap loc-grid">
           <div className="loc-text">
-            <Heading text={tx(loc.title, lang) || t.location} index={idx('location')} />
+            <Heading text={tx(loc.title, lang) || t.location} />
             <div data-reveal="up"><Paras className="prose" text={tx(loc.text, lang)} /></div>
             {(loc.points || []).filter((p) => tx(p.name, lang)).length > 0 && (
               <ul className="points" data-reveal="up">
@@ -160,7 +163,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
       <section id="investitor" className="section investor">
         <div className="wrap inv-inner">
           {page.investor.logo && <div className="inv-logo" data-reveal="up"><Fill src={page.investor.logo} alt={page.footer?.company || ''} sizes="240px" /></div>}
-          <Heading text={tx(page.investor.title, lang)} className="is-center" index={idx('investor')} />
+          <Heading text={tx(page.investor.title, lang)} className="is-center" />
           <div data-reveal="up"><Paras className="prose inv-text" text={tx(page.investor.text, lang)} /></div>
           <a className="link-line" href={href('developer', lang)}>{t.moreDeveloper}</a>
         </div>
@@ -171,7 +174,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
       <section id="kontakt" className="section contact">
         <div className="wrap contact-grid">
           <div>
-            <Heading text={tx(contact.title, lang) || t.contact} index={idx('contact')} />
+            <Heading text={tx(contact.title, lang) || t.contact} />
             <div data-reveal="up"><Paras className="prose" text={tx(contact.text, lang)} /></div>
             <dl className="contact-list" data-reveal="up" style={{ '--i': 1 } as React.CSSProperties}>
               {(contact.phone || settings.phone) && <><dt>{t.phone}</dt><dd><a href={'tel:' + String(contact.phone || settings.phone).replace(/[^\d+]/g, '')}>{contact.phone || settings.phone}</a></dd></>}
@@ -192,7 +195,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
       <main id="main">
         {order.map((k) => <SectionSlot key={k}>{sections[k]()}</SectionSlot>)}
       </main>
-      <Footer data={data} lang={lang} nav={nav} />
+      <Footer data={data} lang={lang} nav={nav} form={!has('contact')} />
       <JsonLd data={data} lang={lang} route="home" />
     </>
   );

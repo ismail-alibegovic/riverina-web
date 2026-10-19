@@ -1,6 +1,8 @@
-import { SiteData, tx } from '@/lib/content';
+import { SiteData, tx, mediaUrl, imgAlt, illustrationLabel, type Img } from '@/lib/content';
 import { href, UI, Lang } from '@/lib/i18n';
 import ContactForm from '../ContactForm';
+import Gallery from '../Gallery';
+import Showcase from '../home/Showcase';
 import { Fill, Heading, Paras } from '../home/text';
 import SubPage from './SubPage';
 
@@ -30,6 +32,31 @@ export function LocationPage({ data, lang }: P) {
               ? <iframe src={loc.map_embed} title={t.location} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
               : loc.image ? <Fill src={loc.image} alt={plain(tx(loc.title, lang))} sizes="(min-width: 900px) 58vw, 100vw" /> : null}
           </div>
+        </div>
+      </section>
+      <CtaBand data={data} lang={lang} />
+    </SubPage>
+  );
+}
+
+/** Every render in one place: the river strip, then the gallery with the images that are no longer on the home page. */
+export function GalleryPage({ data, lang }: P) {
+  const t = UI[lang];
+  const p = data.page;
+  const tag = illustrationLabel(p, lang);
+  const strip = (p.showcase?.items || []).filter((it) => it.image).map((it) => ({ src: mediaUrl(it.image), caption: tx(it.caption, lang) }));
+  const seen = new Set<string>();
+  const images: Img[] = [
+    ...(p.gallery?.images || []),
+    ...(p.manifest?.images || []),
+    ...[p.about?.image, p.about?.image2].filter(Boolean).map((path): Img => ({ path: path as string })),
+  ].filter((g) => g.path && !seen.has(g.path) && seen.add(g.path));
+  return (
+    <SubPage data={data} lang={lang} route="gallery" title={tx(p.gallery?.title, lang) || t.gallery} image={p.gallery?.page_image} intro={tx(p.gallery?.text, lang) || t.galleryIntro}>
+      {strip.length > 1 && <Showcase title={tx(p.showcase?.title, lang)} text={tx(p.showcase?.text, lang)} items={strip} tag={tag} label={plain(tx(p.showcase?.title, lang))} />}
+      <section className="section gallery">
+        <div className="wrap">
+          <Gallery tag={tag} images={images.map((g) => ({ src: mediaUrl(g.path), alt: imgAlt(g, lang), caption: tx(g.caption, lang) }))} labels={{ close: t.close, prev: t.prev, next: t.next, image: t.image }} />
         </div>
       </section>
       <CtaBand data={data} lang={lang} />

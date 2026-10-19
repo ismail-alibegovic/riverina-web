@@ -6,3 +6,5 @@ next-env.d.ts
 *.tsbuildinfo
 *.png
 !public/**/*.png
+!app/icon.png
+!app/apple-icon.png

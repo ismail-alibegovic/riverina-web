@@ -57,7 +57,9 @@ Tekst koji nije preveden pada na `LOCALES[lang].fallback` (EN → BS).
 ## Skripte
 - `node scripts/make-brand-assets.mjs` — zadana OG slika, WebP logotipi, favicon i apple ikona iz `public/brand/`.
 - `node scripts/optimize-assets.mjs` — originali rendera → `public/riverina/`.
-- `node scripts/make-type-plans.mjs` — isječci tlocrta za sekciju „Kolekcija stanova" (`public/riverina/types/`) iz AutoCAD skica.
+- `node scripts/make-type-plans.mjs` — isječci tlocrta iz AutoCAD skica: po stanu (`public/riverina/units/`, pregled stana) i po tipu (`public/riverina/types/`, „Kolekcija stanova").
+- `python3 scripts/make-floor-plans.py` — tlocrti spratova i obrisi svih stanova iz bloka „Pozicija stana u objektu" na PDF skicama (`public/riverina/floors/`, `lib/floorPlans.json`). Pregled stanova ih koristi dok u CMS-u („Označi stanove") zgrada nema svoje tlocrte spratova.
+- `node scripts/make-3d-plans.mjs` — 3D tlocrti s Drivea (`assets-src/3d/I`, `II`) → `public/riverina/3d/` i `lib/plans3d.json`.
 - `npm test` — provjera podataka o tipovima stanova (`lib/apartmentTypes.ts`): prostorije daju ukupnu površinu, 63 stana, slike postoje.
 - Lokalni test bez pristupa Supabaseu: `SITE_DATA_FILE=put/do/public_site_data.json npm run build && npm start` (JSON koji vraća `public_site_data()`). Na Vercelu se ne postavlja.
 

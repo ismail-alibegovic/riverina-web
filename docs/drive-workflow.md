@@ -22,16 +22,22 @@ Drive folder: <https://drive.google.com/drive/folders/1QWDt-I1Vd8RESKdetMHw7pwmL
 
 ## Stanje Drive foldera (19. 10. 2026)
 
-| Folder | Sadržaj | Upotreba na sajtu |
+| Folder / fajl | Sadržaj | Upotreba na sajtu |
 |---|---|---|
 | `Riverina-Objekat-1/Without/` | Brošura zgrade 1 (BS, EN, TR, AR), 6. 10. 2026 | **Izvor tipova stanova A–I**: površine, spavaće sobe, lođe/terase, spratovi, prostorije (`lib/apartmentTypes.ts`) |
-| `Riverina-Objekat-1/AlYasin/` | Ista brošura s ALYASIN brendom (BS, EN, TR, AR) | Za preuzimanje / prodaju; tekst isti kao gore |
-| `Katalog/` | Katalog kompleksa bez ALYASIN (BS, EN, TR, AR), ~28 MB, 52 str., samo slike (bez teksta) | Još nije korišten (vidi niže) |
-| `Katalog AlYasin/` | Isti katalog s ALYASIN brendom | Još nije korišten |
-| `Riverina-logo/` | `Riverina-logo.png`, `logo-transparent.PNG` | Već u `public/brand/` |
-| `AlYasin Logo/` | `ALYASINGROUP2.pdf` (vektor), `AlYasin.jpeg` | Već u `public/riverina/investitor/` |
+| `Riverina-Objekat-1/AlYasin/` | Ista brošura s ALYASIN brendom | Za preuzimanje / prodaju; tekst isti kao gore |
+| `Katalog/`, `Katalog AlYasin/` | Katalog kompleksa (BS, EN, TR, AR), 52 str., samo slike (bez teksta) | Još nije korišten |
+| `1-skice prodaja sve+/` | AutoCAD prodajne skice (RAR, 18 MB) | Već na sajtu kao `public/riverina/pdf/*.pdf` i `plans/*.webp`; iz njih su i tlocrti spratova i obrisi stanova (`scripts/make-floor-plans.py`) i isječci tlocrta (`scripts/make-type-plans.mjs`) |
+| `2-stanovi 3d osnova/SKICE 3D/I` i `/II` | **3D tlocrti**: `I/stan 1–14` = stanovi 1–14 na 1.–4. spratu, `II/STAN 1–7` = stanovi 1–7 na 5. spratu (PNG ~2 MB, AI) | Čeka prijenos: `scripts/make-3d-plans.mjs` ih pretvara i stan dobija karticu „3D prikaz" |
+| `Riverina Residence - ESU AG spo IDEJNI.pdf` | Idejni projekat (13 MB): situacija, osnove etaža, presjeci, fasade | Još nije korišten (prizemlje / poslovni prostor) |
+| `3-stanovi enterijer/`, `4-slike objekta+/`, `5-slike naselja+/` | Enterijeri, zgrada, naselje (AI vizuali) | Već na sajtu (`public/riverina/enterijer`, `objekat`, `naselje`) |
+| `01_REFERENCE/` | Tuđe brošure (inspiracija) | Ne koristi se |
+| `Riverina-logo/`, `AlYasin Logo/`, `Riverina-logo.png` | Logotipi | Već u `public/brand/` i `public/riverina/investitor/` |
 
-Renderi, enterijeri i AutoCAD skice nisu u ovom Drive folderu; na sajtu su već (vidi `docs/assets-inventory.md`).
+### Kako fajlovi s Drivea dolaze u ovo okruženje
+Cloud okruženje u kojem radi Claude trenutno **nema mrežni pristup `drive.google.com`** (politika mreže), a Drive konektor vraća sadržaj fajla samo kao tekst/base64, što ne radi za slike od nekoliko MB. Dvije mogućnosti:
+1. U postavkama okruženja (Network access) dodati `drive.google.com` i `drive.usercontent.google.com`, a fajlove podijeliti s „Anyone with the link"; ili
+2. postaviti potrebne fajlove u repo u `assets-src/` (npr. `assets-src/3d/I/`, `assets-src/3d/II/`); taj folder se ne objavljuje, skripte iz njega prave optimizirane verzije.
 
 ## Otvoreno
 

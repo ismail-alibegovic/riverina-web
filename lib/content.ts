@@ -1,5 +1,8 @@
 // Content model, defaults and data loading for the public site.
 import { href, pick, LOCALES, UI, type Lang, type Localized, type RouteKey } from './i18n';
+import { APARTMENT_TYPES, ROOM_NAMES, unitsOfType } from './apartmentTypes';
+import { DEFAULT_FLOORS } from './floorPlans';
+import PLANS_3D from './plans3d.json';
 export type { Lang } from './i18n';
 export { UI } from './i18n';
 export type L = Localized;
@@ -272,7 +275,32 @@ export function toSelectorData(d: SiteData) {
       colors: d.settings.colors || {},
     },
     masterplan: { views: (scenes.masterplan?.views || []).map(view) },
-    buildings: (scenes.buildings || []).map((b: any) => ({ ...b, views: (b.views || []).map(view), floors: (b.floors || []).map(view) })),
-    units: (d.units || []).map((u: any) => ({ ...u, plan: mediaUrl(u.plan), pdf: mediaUrl(u.pdf) })),
+    // floor plans from the CMS; without them, the ones generated from the architect's sheets
+    buildings: (scenes.buildings || []).map((b: any) => ({ ...b, views: (b.views || []).map(view), floors: (b.floors?.length ? b.floors : DEFAULT_FLOORS[b.id] || []).map(view) })),
+    units: (d.units || []).map((u: any) => withTypeData({ ...u, plan: mediaUrl(u.plan), pdf: mediaUrl(u.pdf) })),
+  };
+}
+
+/**
+ * Extra data for the apartment viewer: the clean plan cut from the architect's sheet (while the CMS plan is that
+ * sheet), the 3D plan when there is one, and type letter, outdoor space and rooms from the sales brochure
+ * (lib/apartmentTypes.ts) for units whose CMS fields are empty.
+ */
+function withTypeData(u: any) {
+  const code = String(u.code);
+  const extra = {
+    plan_view: u.plan === `/riverina/plans/${code}.webp` ? `/riverina/units/${code}.webp` : '',
+    plan3d: u.building === 'r1' ? (PLANS_3D as Record<string, string>)[code] || '' : '',
+  };
+  const t = APARTMENT_TYPES.find((ty) => unitsOfType(ty, [u]).length);
+  if (!t) return { ...u, ...extra };
+  return {
+    ...u,
+    ...extra,
+    type_label: u.type_label || `Tip ${t.id}`,
+    type_label_en: u.type_label_en || `Type ${t.id}`,
+    type_id: t.id,
+    outdoor: { kind: t.outdoor.kind, area: t.outdoor.area },
+    rooms: u.rooms?.length ? u.rooms : t.rooms.map(([k, a]) => ({ n: ROOM_NAMES[k].bs, n_en: ROOM_NAMES[k].en, a })),
   };
 }

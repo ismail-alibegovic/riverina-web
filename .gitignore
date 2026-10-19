@@ -8,3 +8,6 @@ next-env.d.ts
 !public/**/*.png
 !app/icon.png
 !app/apple-icon.png
+
+# originals from Google Drive, converted by scripts/ (not published)
+assets-src/

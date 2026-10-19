@@ -45,7 +45,8 @@ export function parallax(): () => void {
     const amount = Number(el.dataset.parallax) || 10;
     if (!target) return;
     offs.push(whenNear(el, ({ gsap }) => {
-      const tw = gsap.fromTo(target, { yPercent: -amount }, { yPercent: amount, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
+      // the picture is enlarged by exactly the travel, so the frame never shows an empty edge
+      const tw = gsap.fromTo(target, { yPercent: -amount, scale: 1 + Math.abs(amount) / 50 }, { yPercent: amount, scale: 1 + Math.abs(amount) / 50, ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true } });
       return () => { tw.scrollTrigger?.kill(); tw.kill(); gsap.set(target, { clearProps: 'transform' }); };
     }));
   });

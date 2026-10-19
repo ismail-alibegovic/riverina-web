@@ -43,15 +43,18 @@ export default function Gallery({ images, labels, tag }: { images: GalleryImage[
 
   return (
     <>
-      <div className={'gal-grid gal-n' + Math.min(images.length, 6)}>
+      {/* editorial layout: a large and a small frame per row, offset against each other; the two columns drift at different speeds */}
+      <ul className="gal-ed">
         {images.map((g, n) => (
-          <button type="button" key={n} className="gal-item" data-reveal="clip" style={{ '--i': n % 4 } as React.CSSProperties} onClick={(e) => { opener.current = e.currentTarget; setI(n); }} aria-label={name(n)}>
-            <Image src={g.src} alt="" fill sizes={n % 6 === 0 ? '(min-width: 900px) 50vw, 100vw' : '(min-width: 900px) 25vw, 50vw'} quality={78} />
-            {g.caption && <span className="gal-cap" aria-hidden="true">{g.caption}</span>}
-            {tag && n === 0 && <span className="ill-tag" aria-hidden="true">{tag}</span>}
-          </button>
+          <li className="gal-cell" key={n}>
+            <button type="button" className="gal-item" data-reveal="clip" data-parallax={n % 2 ? '9' : '4'} onClick={(e) => { opener.current = e.currentTarget; setI(n); }} aria-label={name(n)}>
+              <Image src={g.src} alt="" fill sizes={n % 2 ? '(min-width: 900px) 34vw, 70vw' : '(min-width: 900px) 58vw, 100vw'} quality={80} />
+              {tag && n === 0 && <span className="ill-tag" aria-hidden="true">{tag}</span>}
+            </button>
+            {g.caption && <p className="gal-caption" aria-hidden="true" data-reveal="fade"><span>{String(n + 1).padStart(2, '0')}</span>{g.caption}</p>}
+          </li>
         ))}
-      </div>
+      </ul>
       {i !== null && createPortal(
         <div ref={box} className="lb" role="dialog" aria-modal="true" aria-label={name(i)} onClick={(e) => { if (e.target === e.currentTarget) setI(null); }}>
           <button type="button" className="lb-close" onClick={() => setI(null)}>{labels.close} <span aria-hidden="true">✕</span></button>

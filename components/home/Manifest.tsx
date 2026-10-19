@@ -36,8 +36,8 @@ export default function Manifest({ text, images, label }: { text: string; images
   return (
     <section ref={root} className="mf" aria-label={label}>
       <div className="mf-imgs">
-        {images.slice(0, 5).map((im, i) => (
-          <figure className={`mf-img mf-img-${i + 1}`} key={im.src} data-speed={[0.8, 1.3, 1, 1.6, 0.6][i]}>
+        {images.slice(0, 4).map((im, i) => (
+          <figure className={`mf-img mf-img-${i + 1}`} key={im.src} data-speed={[0.7, 1.4, 1, 1.7][i]}>
             <Image src={im.src} alt={im.alt} fill sizes="(min-width: 900px) 16vw, 45vw" quality={78} />
           </figure>
         ))}

@@ -26,12 +26,13 @@ export function Heading({ text, as: Tag = 'h2', className = '', index }: { text:
   );
 }
 
-/** Paragraphs separated by an empty line; single new lines become <br>. */
+/** Paragraphs separated by an empty line; single new lines become <br>. [[TBD: …]] notes are for the CMS only. */
 export function Paras({ text, className }: { text: string; className?: string }) {
-  if (!text) return null;
+  const paras = (text || '').replace(/\[\[TBD:[^\]]*\]\]/g, '').split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+  if (!paras.length) return null;
   return (
     <div className={className}>
-      {text.split(/\n\s*\n/).map((p, i) => (
+      {paras.map((p, i) => (
         <p key={i}>{p.split('\n').map((line, j) => (j ? [<br key={j} />, line] : line))}</p>
       ))}
     </div>

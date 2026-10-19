@@ -1,6 +1,7 @@
 import { Lang, SiteData, tx, mediaUrl, UI, sectionList, resolveLink, SectionKey, imgAlt, illustrationLabel } from '@/lib/content';
 import { href, LOCALES } from '@/lib/i18n';
 import { APARTMENT_TYPES, ROOM_NAMES, unitsOfType } from '@/lib/apartmentTypes';
+import PLANS_3D from '@/lib/plans3d.json';
 import { siteNav } from '@/lib/nav';
 import SiteChrome from './site/SiteChrome';
 import Footer from './site/Footer';
@@ -12,6 +13,8 @@ import About from './home/About';
 import Categories from './home/Categories';
 import Details from './home/Details';
 import Types, { type TypeCard } from './home/Types';
+import Showcase from './home/Showcase';
+import Statement from './home/Statement';
 import { Fill, Heading, Paras } from './home/text';
 import JsonLd from './JsonLd';
 
@@ -35,7 +38,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
   const nav = siteNav(data, lang);
   const tag = illustrationLabel(page, lang);
   // Section numbers (01, 02 …) follow the visible order chosen in the CMS; only sections with a heading count.
-  const numbered: SectionKey[] = ['about', 'buildings', 'types', 'details', 'gallery', 'location', 'investor', 'contact'];
+  const numbered: SectionKey[] = ['about', 'showcase', 'buildings', 'types', 'details', 'gallery', 'location', 'investor', 'contact'];
   const idx = (k: SectionKey) => order.filter((x) => numbered.includes(x)).indexOf(k) + 1;
 
   const sections: Record<SectionKey, () => React.ReactNode> = {
@@ -46,6 +49,13 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
     ),
 
     about: () => (tx(page.about?.title, lang) || tx(page.about?.text, lang)) && <About about={page.about || {}} units={units} lang={lang} index={idx('about')} tag={tag} />,
+
+    showcase: () => {
+      const items = (page.showcase?.items || []).filter((it) => it.image).map((it) => ({ src: mediaUrl(it.image), caption: tx(it.caption, lang) }));
+      return items.length > 1 && <Showcase title={tx(page.showcase?.title, lang)} text={tx(page.showcase?.text, lang)} items={items} index={idx('showcase')} tag={tag} label={tx(page.showcase?.title, lang).replace(/\*/g, '').replace(/\n/g, ' ')} />;
+    },
+
+    statement: () => page.statement?.image && tx(page.statement?.title, lang) && <Statement st={page.statement} lang={lang} tag={tag} cta={aptLabel} />,
 
     categories: () => {
       const items = (page.categories?.items || []).filter((c) => tx(c.title, lang) && c.image);
@@ -215,6 +225,7 @@ function typeCards({ units, settings }: SiteData, lang: Lang): TypeCard[] {
       price: prices.length ? fill(t.priceFrom, { p: Math.min(...prices).toLocaleString(loc) + ' ' + (settings.currency || 'KM') }) : '',
       href: first ? `${href('apartments', lang)}#rvs/${first.building}/${encodeURIComponent(first.code)}` : href('apartments', lang),
       plan: `/riverina/types/tip-${ty.id.toLowerCase()}.webp`,
+      plan3d: (PLANS_3D as Record<string, string>)[ty.sample] || '',
       planAlt: fill(t.planAlt, { t: ty.id }),
       rooms: ty.rooms.map(([k, a]) => [ROOM_NAMES[k][lang] || ROOM_NAMES[k].bs, m2(a)]),
       total: m2(ty.area),

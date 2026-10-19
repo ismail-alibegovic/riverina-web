@@ -18,6 +18,8 @@ export type TypeCard = {
   href: string;
   /** resolved image URL */
   plan: string;
+  /** 3D plan of the type's sample apartment; shown first, the 2D plan appears on hover */
+  plan3d: string;
   planAlt: string;
   rooms: [string, string][];
   total: string;
@@ -44,7 +46,10 @@ export default function Types({ cards, labels }: { cards: TypeCard[]; labels: La
         {cards.map((c, i) => (
           <li key={c.id} className={'type' + (c.soldOut ? ' is-sold' : '')} hidden={beds !== null && c.bedrooms !== beds} data-reveal="up" style={{ '--i': i % 3 } as React.CSSProperties}>
             <article aria-labelledby={'type-' + c.id}>
-              <div className="type-plan"><Image src={c.plan} alt={c.planAlt} fill sizes="(min-width: 1100px) 400px, (min-width: 700px) 45vw, 90vw" quality={80} /></div>
+              <div className={'type-plan' + (c.plan3d ? ' has-3d' : '')}>
+                {c.plan3d && <Image className="is-3d" src={c.plan3d} alt={c.planAlt} fill sizes="(min-width: 1100px) 400px, (min-width: 700px) 45vw, 90vw" quality={80} />}
+                <Image className="is-2d" src={c.plan} alt={c.plan3d ? '' : c.planAlt} fill sizes="(min-width: 1100px) 400px, (min-width: 700px) 45vw, 90vw" quality={80} />
+              </div>
               <header className="type-head">
                 <h3 id={'type-' + c.id}>{c.name}</h3>
                 <p className="type-area">{c.area}</p>

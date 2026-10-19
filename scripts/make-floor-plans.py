@@ -100,8 +100,23 @@ def outline(mask, cell):
         if loop: loops.append(loop)
     pts = max(loops, key=len)   # the outer edge; holes and specks are shorter loops
     pts = [p for i, p in enumerate(pts) if not collinear(pts[i - 1], p, pts[(i + 1) % len(pts)])]
-    pts = simplify(pts + [pts[0]], 1.6)[:-1]
-    return [(int(x) * cell, int(y) * cell) for x, y in pts]
+    pts = straighten(simplify(pts + [pts[0]], 1.6)[:-1])
+    return [(float(x) * cell, float(y) * cell) for x, y in pts]
+
+
+def straighten(pts):
+    """Nearly horizontal / vertical edges become exact (the CMS editor's "Ispravi oblik" does the same)."""
+    q = [list(p) for p in pts]
+    n = len(q)
+    for _ in range(2):
+        for i in range(n):
+            a, c = q[i], q[(i + 1) % n]
+            dx, dy = abs(c[0] - a[0]), abs(c[1] - a[1])
+            if dy < dx * 0.27:
+                a[1] = c[1] = (a[1] + c[1]) / 2
+            elif dx < dy * 0.27:
+                a[0] = c[0] = (a[0] + c[0]) / 2
+    return [tuple(p) for i, p in enumerate(q) if not collinear(q[i - 1], p, q[(i + 1) % n])]
 
 
 def collinear(a, b, c):

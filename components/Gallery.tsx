@@ -45,8 +45,8 @@ export default function Gallery({ images, labels, tag }: { images: GalleryImage[
     <>
       <div className={'gal-grid gal-n' + Math.min(images.length, 6)}>
         {images.map((g, n) => (
-          <button type="button" key={n} className="gal-item" style={n === images.length - 1 && images.length > 1 ? { gridColumn: `span ${1 + ((4 - ((images.length + 3) % 4)) % 4)}` } : undefined} onClick={(e) => { opener.current = e.currentTarget; setI(n); }} aria-label={name(n)}>
-            <Image src={g.src} alt="" fill sizes={n === 0 ? '(min-width: 900px) 50vw, 100vw' : '(min-width: 900px) 25vw, 50vw'} quality={78} />
+          <button type="button" key={n} className="gal-item" data-reveal="clip" style={{ '--i': n % 4 } as React.CSSProperties} onClick={(e) => { opener.current = e.currentTarget; setI(n); }} aria-label={name(n)}>
+            <Image src={g.src} alt="" fill sizes={n % 6 === 0 ? '(min-width: 900px) 50vw, 100vw' : '(min-width: 900px) 25vw, 50vw'} quality={78} />
             {g.caption && <span className="gal-cap" aria-hidden="true">{g.caption}</span>}
             {tag && n === 0 && <span className="ill-tag" aria-hidden="true">{tag}</span>}
           </button>

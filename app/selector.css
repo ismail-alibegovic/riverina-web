@@ -390,3 +390,8 @@ html.rvs-lock { overflow: hidden; }
 .rvs-plabel[data-status="sold"], .rvs-plabel[data-status="unavailable"] { opacity: .5; }
 @media (max-width: 719px) { .rvs-plabel { padding: 4px 6px 3px; } .rvs-plabel-code { font-size: 13px; } .rvs-plabel-sub { display: none; } }
 @media (prefers-reduced-motion: reduce) { .rvs-plabel { transition: none; } }
+
+/* 3D thumbnail in the apartment tooltip */
+.rvs-tip-img { display: block; width: 180px; height: 150px; object-fit: contain; margin: -4px -4px 8px; background: #fbf8f2; }
+.rvs-tip-type { display: block; font-style: normal; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--rvs-gold); margin-bottom: 2px; }
+@media (hover: none) { .rvs-tip-img { display: none; } }

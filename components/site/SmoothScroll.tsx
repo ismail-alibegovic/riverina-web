@@ -26,7 +26,25 @@ export default function SmoothScroll() {
     }, { rootMargin: '0px 0px -12% 0px', threshold: 0.12 });
     if (reduce) return () => io.disconnect();
     html.classList.add('reveal-ready');
-    document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
+    // Clip reveals start fully clipped (clip-path: inset(100% ...)); Chromium counts clip-path in IntersectionObserver,
+    // so such an element never "intersects" and would stay hidden. They are checked by position on scroll instead.
+    let clips = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal="clip"]'));
+    let raf = 0;
+    const checkClips = () => {
+      raf = 0;
+      const line = window.innerHeight * 0.9;
+      clips = clips.filter((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.top < line && r.bottom > 0 && r.width > 0) { el.classList.add('is-in'); return false; }
+        return true;
+      });
+      if (!clips.length) { window.removeEventListener('scroll', onClipScroll); window.removeEventListener('resize', onClipScroll); }
+    };
+    const onClipScroll = () => { if (!raf) raf = requestAnimationFrame(checkClips); };
+    window.addEventListener('scroll', onClipScroll, { passive: true });
+    window.addEventListener('resize', onClipScroll, { passive: true });
+    onClipScroll();
+    document.querySelectorAll('[data-reveal]:not([data-reveal="clip"])').forEach((el) => io.observe(el));
     document.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
       const host = el.closest('[data-reveal]') || el;
       counters.set(host, prepareCount(el));
@@ -55,7 +73,7 @@ export default function SmoothScroll() {
     if (fine) window.addEventListener('wheel', start, { once: true, passive: true });
     // Fonts change the page height; re-measure pinned sections once they are in.
     onMotion(({ ScrollTrigger }) => { document.fonts?.ready.then(() => ScrollTrigger.refresh()); });
-    return () => { dead = true; window.removeEventListener('wheel', start); window.removeEventListener('scroll', onFirstScroll); offParallax(); offMagnetic(); io.disconnect(); instance?.destroy(); instance = null; };
+    return () => { dead = true; cancelAnimationFrame(raf); window.removeEventListener('scroll', onClipScroll); window.removeEventListener('resize', onClipScroll); window.removeEventListener('wheel', start); window.removeEventListener('scroll', onFirstScroll); offParallax(); offMagnetic(); io.disconnect(); instance?.destroy(); instance = null; };
   }, []);
   return null;
 }

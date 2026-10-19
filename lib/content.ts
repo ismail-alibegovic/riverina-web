@@ -33,8 +33,8 @@ export const imgAlt = (img: { alt?: L; caption?: L }, lang: Lang) => plain(img.a
 
 /** Search and sharing texts for one page; empty fields fall back to the page's own title and text. */
 export type Seo = { title?: L; description?: L; image?: string };
-export type SectionKey = 'hero' | 'manifest' | 'about' | 'categories' | 'buildings' | 'types' | 'details' | 'gallery' | 'location' | 'investor' | 'contact';
-export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'categories', 'buildings', 'types', 'details', 'gallery', 'location', 'investor', 'contact'];
+export type SectionKey = 'hero' | 'manifest' | 'about' | 'showcase' | 'categories' | 'buildings' | 'types' | 'details' | 'gallery' | 'location' | 'investor' | 'statement' | 'contact';
+export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'showcase', 'categories', 'buildings', 'types', 'details', 'gallery', 'location', 'investor', 'statement', 'contact'];
 
 // Text conventions in the CMS: a new line starts a new heading line; *word* marks the contrasting word.
 export type Page = {
@@ -46,6 +46,10 @@ export type Page = {
   about?: { eyebrow?: L; title?: L; text?: L; image?: string; facts?: { value?: L; label?: L }[]; auto_facts?: boolean };
   categories?: { items?: { title?: L; image?: string; link?: string; link_label?: L }[] };
   buildings?: { title?: L; text?: L };
+  /** horizontal strip of wide renders with captions */
+  showcase?: { title?: L; text?: L; items?: { image?: string; caption?: L }[] };
+  /** full-screen render with a closing statement before the enquiry form */
+  statement?: { eyebrow?: L; title?: L; text?: L; image?: string; cta?: L; cta2?: L };
   /** apartment types (lib/apartmentTypes.ts); figures come from the brochure and the unit table, texts from the CMS */
   types?: { title?: L; text?: L; note?: L };
   details?: { title?: L; note?: L; items?: { image?: string; title?: L; text?: L }[] };
@@ -109,6 +113,27 @@ export const DEFAULT_PAGE: Page = {
     image: `${R}/objekat/objekat-6.webp`,
     auto_facts: true,
   },
+  // Phrases from the sales brochure: "Moderno življenje uz rijeku", "Prostor za vaš novi početak".
+  showcase: {
+    title: { bs: 'Život\n*uz rijeku*', en: 'Living\n*by the river*' },
+    text: { bs: 'Riverina 1 i naselje uz rijeku na Ilidži, u vizualizacijama projekta.', en: 'Riverina 1 and the neighbourhood by the river in Ilidža, in the project visualisations.' },
+    items: [
+      { image: `${R}/naselje/3.webp`, caption: { bs: 'Naselje uz rijeku', en: 'The neighbourhood by the river' } },
+      { image: `${R}/objekat/objekat-1.webp`, caption: { bs: 'Riverina 1', en: 'Riverina 1' } },
+      { image: `${R}/naselje/12.webp`, caption: { bs: 'Ulice naselja', en: 'Neighbourhood streets' } },
+      { image: `${R}/objekat/objekat-7.webp`, caption: { bs: 'Ulaz u zgradu', en: 'Building entrance' } },
+      { image: `${R}/naselje/16.webp`, caption: { bs: 'Zelenilo između zgrada', en: 'Greenery between the buildings' } },
+      { image: `${R}/objekat/objekat-6.webp`, caption: { bs: 'Poslovno prizemlje', en: 'Commercial ground floor' } },
+      { image: `${R}/naselje/2.webp`, caption: { bs: 'Pogled iz zraka', en: 'Aerial view' } },
+    ],
+  },
+  statement: {
+    eyebrow: { bs: 'Riverina Residence', en: 'Riverina Residence' },
+    title: { bs: 'Prostor za vaš\n*novi početak*', en: 'A space for your\n*new beginning*' },
+    text: { bs: 'Stanovi od 46 do 111 m², s jednom do četiri spavaće sobe. Prodaja je u toku.', en: 'Apartments from 46 to 111 m², with one to four bedrooms. Sales are now open.' },
+    image: `${R}/objekat/objekat-8.webp`,
+    cta2: { bs: 'Pošaljite upit', en: 'Send an enquiry' },
+  },
   categories: {
     items: [
       { title: { bs: 'Zgrade', en: 'Buildings' }, image: `${R}/objekat/objekat-1.webp`, link: 'apartments' },
@@ -141,6 +166,23 @@ export const DEFAULT_PAGE: Page = {
       { image: `${R}/enterijer/enterijer-6.webp`, title: { bs: 'Spavaća soba', en: 'Bedroom' } },
       { image: `${R}/enterijer/enterijer-9.webp`, title: { bs: 'Kupatilo', en: 'Bathroom' } },
       { image: `${R}/enterijer/enterijer-5.webp`, title: { bs: 'Boravak', en: 'Lounge' } },
+    ],
+  },
+  gallery: {
+    title: { bs: 'Galerija', en: 'Gallery' },
+    images: [
+      { path: `${R}/objekat/objekat-4.webp`, caption: { bs: 'Riverina 1, vizualizacija', en: 'Riverina 1, visualisation' } },
+      { path: `${R}/objekat/objekat-3.webp`, caption: { bs: 'Riverina 1 s ulice, vizualizacija', en: 'Riverina 1 from the street, visualisation' } },
+      { path: `${R}/enterijer/enterijer-2.webp`, caption: { bs: 'Dnevni boravak, vizualizacija', en: 'Living room, visualisation' } },
+      { path: `${R}/naselje/15.webp`, caption: { bs: 'Zgrada s ulice, vizualizacija', en: 'The building from the street, visualisation' } },
+      { path: `${R}/enterijer/enterijer-8.webp`, caption: { bs: 'Kuhinja i trpezarija, vizualizacija', en: 'Kitchen and dining, visualisation' } },
+      { path: `${R}/naselje/11.webp`, caption: { bs: 'Ulica i poslovno prizemlje, vizualizacija', en: 'Street and commercial ground floor, visualisation' } },
+      { path: `${R}/objekat/objekat-5.webp`, caption: { bs: 'Riverina 1, ugao zgrade, vizualizacija', en: 'Riverina 1, corner view, visualisation' } },
+      { path: `${R}/enterijer/enterijer-3.webp`, caption: { bs: 'Spavaća soba, vizualizacija', en: 'Bedroom, visualisation' } },
+      { path: `${R}/naselje/10.webp`, caption: { bs: 'Zgrade naselja, vizualizacija', en: 'Buildings of the neighbourhood, visualisation' } },
+      { path: `${R}/objekat/objekat-2.webp`, caption: { bs: 'Prizemlje uz ulicu, vizualizacija', en: 'Ground floor along the street, visualisation' } },
+      { path: `${R}/naselje/5.webp`, caption: { bs: 'Naselje uz rijeku, vizualizacija', en: 'The neighbourhood by the river, visualisation' } },
+      { path: `${R}/naselje/13.webp`, caption: { bs: 'Ulaz u naselje, vizualizacija', en: 'Entering the neighbourhood, visualisation' } },
     ],
   },
   location: {
@@ -253,9 +295,14 @@ export async function getSiteData(): Promise<SiteData> {
   }
 }
 
+/** A CMS gallery with fewer images than this is topped up with the project renders from DEFAULT_PAGE. */
+export const GALLERY_MIN = 6;
+
 function mergePage(p: Page): Page {
   const out: any = { ...DEFAULT_PAGE };
   for (const k of Object.keys(p) as (keyof Page)[]) out[k] = { ...(DEFAULT_PAGE as any)[k], ...(p as any)[k] };
+  const own = (p.gallery?.images || []).filter((g) => g.path);
+  if (own.length < GALLERY_MIN) out.gallery = { ...out.gallery, images: [...own, ...(DEFAULT_PAGE.gallery?.images || []).filter((g) => !own.some((o) => o.path === g.path))] };
   return out;
 }
 

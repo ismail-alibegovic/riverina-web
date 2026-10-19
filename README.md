@@ -8,6 +8,8 @@ Next.js 16 (App Router) + Supabase. Javni sajt (BS `/`, EN `/en`) s interaktivni
 - `lib/selector/selector.js` + `app/selector.css` — pregled masterplan → zgrada → sprat → stan (vanilla JS)
 - `lib/admin/app.js` + `app/admin/admin.css` — CMS (sadržaj, mediji, stanovi, scene + editor poligona, upiti, postavke)
 - `lib/content.ts` — model sadržaja, zadani tekstovi, učitavanje podataka
+- `lib/apartmentTypes.ts` — tipovi stanova A–I iz prodajne brošure (Google Drive); sekcija `components/home/Types.tsx`
+- `docs/drive-workflow.md` — kako se materijali s Google Drivea unose u repo
 - `supabase/migrations/0001_init.sql` — šema baze (već primijenjena na projekat „Riverina Residence")
 - `public/demo/` — demo renderi i podaci za dugme „Učitaj demo podatke"
 
@@ -55,6 +57,8 @@ Tekst koji nije preveden pada na `LOCALES[lang].fallback` (EN → BS).
 ## Skripte
 - `node scripts/make-brand-assets.mjs` — zadana OG slika, WebP logotipi, favicon i apple ikona iz `public/brand/`.
 - `node scripts/optimize-assets.mjs` — originali rendera → `public/riverina/`.
+- `node scripts/make-type-plans.mjs` — isječci tlocrta za sekciju „Kolekcija stanova" (`public/riverina/types/`) iz AutoCAD skica.
+- `npm test` — provjera podataka o tipovima stanova (`lib/apartmentTypes.ts`): prostorije daju ukupnu površinu, 63 stana, slike postoje.
 - Lokalni test bez pristupa Supabaseu: `SITE_DATA_FILE=put/do/public_site_data.json npm run build && npm start` (JSON koji vraća `public_site_data()`). Na Vercelu se ne postavlja.
 
 ## Sigurnost

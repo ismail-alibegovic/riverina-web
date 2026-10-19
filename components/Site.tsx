@@ -1,5 +1,6 @@
 import { Lang, SiteData, tx, mediaUrl, UI, sectionList, resolveLink, SectionKey, imgAlt, illustrationLabel } from '@/lib/content';
-import { href } from '@/lib/i18n';
+import { href, LOCALES } from '@/lib/i18n';
+import { APARTMENT_TYPES, ROOM_NAMES, unitsOfType } from '@/lib/apartmentTypes';
 import { siteNav } from '@/lib/nav';
 import SiteChrome from './site/SiteChrome';
 import Footer from './site/Footer';
@@ -10,6 +11,7 @@ import Manifest from './home/Manifest';
 import About from './home/About';
 import Categories from './home/Categories';
 import Details from './home/Details';
+import Types, { type TypeCard } from './home/Types';
 import { Fill, Heading, Paras } from './home/text';
 import JsonLd from './JsonLd';
 
@@ -33,7 +35,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
   const nav = siteNav(data, lang);
   const tag = illustrationLabel(page, lang);
   // Section numbers (01, 02 …) follow the visible order chosen in the CMS; only sections with a heading count.
-  const numbered: SectionKey[] = ['about', 'buildings', 'details', 'gallery', 'location', 'investor', 'contact'];
+  const numbered: SectionKey[] = ['about', 'buildings', 'types', 'details', 'gallery', 'location', 'investor', 'contact'];
   const idx = (k: SectionKey) => order.filter((x) => numbered.includes(x)).indexOf(k) + 1;
 
   const sections: Record<SectionKey, () => React.ReactNode> = {
@@ -84,6 +86,20 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
         </div>
       </section>
     ),
+
+    types: () => {
+      const cards = typeCards(data, lang);
+      return (
+        <section id="tipovi" className="section types">
+          <div className="wrap types-head">
+            <Heading text={tx(page.types?.title, lang)} index={idx('types')} />
+            {tx(page.types?.text, lang) && <p className="lead" data-reveal="up">{tx(page.types?.text, lang)}</p>}
+          </div>
+          <Types cards={cards} labels={{ filter: t.filterBedrooms, all: t.filterAll, rooms: t.rooms, total: t.total, view: t.viewUnit, area: t.area, outdoor: t.outdoor, floor: t.floor }} />
+          {tx(page.types?.note, lang) && <p className="wrap types-note">{tx(page.types?.note, lang)}</p>}
+        </section>
+      );
+    },
 
     details: () => {
       const slides = (page.details?.items || []).filter((d) => d.image).map((d) => ({ src: mediaUrl(d.image), title: tx(d.title, lang), text: tx(d.text, lang) }));
@@ -170,6 +186,40 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
       <JsonLd data={data} lang={lang} route="home" />
     </>
   );
+}
+
+/** Cards for the apartment types section: brochure figures, availability and prices live from the unit table. */
+function typeCards({ units, settings }: SiteData, lang: Lang): TypeCard[] {
+  const t = UI[lang];
+  const loc = LOCALES[lang].number;
+  const plural = new Intl.PluralRules(loc);
+  const many = (key: 'bedrooms' | 'typeUnits', n: number) => t[`${key}_${plural.select(n)}` as keyof typeof t] || t[`${key}_other`];
+  const m2 = (n: number) => n.toLocaleString(loc, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' m²';
+  const fill = (s: string, v: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (_, k) => String(v[k] ?? ''));
+  return APARTMENT_TYPES.map((ty) => {
+    const own = unitsOfType(ty, units);
+    const free = own.filter((u) => u.status === 'available');
+    const prices = settings.show_price ? free.map((u) => Number(u.price)).filter((p) => p > 0) : [];
+    const first = free[0] || own[0];
+    return {
+      id: ty.id,
+      name: fill(t.typeName, { t: ty.id }),
+      bedrooms: ty.bedrooms,
+      bedLabel: fill(many('bedrooms', ty.bedrooms), { n: ty.bedrooms }),
+      area: m2(ty.area),
+      outdoor: `${t[ty.outdoor.kind]} ${m2(ty.outdoor.area)}`,
+      floors: ty.floors[0] === ty.floors[1] ? fill(t.floorOne, { n: ty.floors[0] }) : fill(t.floorRange, { a: ty.floors[0], b: ty.floors[1] }),
+      units: fill(many('typeUnits', ty.count), { n: ty.count }),
+      avail: own.length ? (free.length ? fill(t.typeFree, { a: free.length, n: own.length }) : t.soldOut) : '',
+      soldOut: own.length > 0 && free.length === 0,
+      price: prices.length ? fill(t.priceFrom, { p: Math.min(...prices).toLocaleString(loc) + ' ' + (settings.currency || 'KM') }) : '',
+      href: first ? `${href('apartments', lang)}#rvs/${first.building}/${encodeURIComponent(first.code)}` : href('apartments', lang),
+      plan: `/riverina/types/tip-${ty.id.toLowerCase()}.webp`,
+      planAlt: fill(t.planAlt, { t: ty.id }),
+      rooms: ty.rooms.map(([k, a]) => [ROOM_NAMES[k][lang] || ROOM_NAMES[k].bs, m2(a)]),
+      total: m2(ty.area),
+    };
+  });
 }
 
 function SectionSlot({ children }: { children: React.ReactNode }) {

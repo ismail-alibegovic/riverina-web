@@ -282,3 +282,42 @@ html.reveal-ready .split.is-in .sec-rule { transform: none; }
 @media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
   [data-parallax] > img { top: -10% !important; height: 120% !important; }
 }
+
+/* ---------- apartment types (Kolekcija stanova) ---------- */
+.types-head { display: flex; flex-direction: column; gap: var(--s-5); margin-bottom: var(--s-7); }
+.types-filter { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-bottom: var(--s-7); }
+.types-filter button { min-height: 44px; padding: 0 var(--s-5); border: 1px solid var(--line); border-radius: 0; background: none; color: var(--navy); font: 500 var(--t-label)/1 var(--body); letter-spacing: var(--track-label); text-transform: uppercase; cursor: pointer; transition: background-color var(--dur-fast) ease, color var(--dur-fast) ease, border-color var(--dur-fast) ease; }
+.types-filter button:hover { border-color: var(--navy); }
+.types-filter button[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: var(--ivory); }
+.types-filter button:focus-visible, .type-rooms summary:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.types-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: var(--s-8) var(--s-6); margin: 0 auto; padding-block: 0; list-style: none; }
+.type[hidden] { display: none; }
+.type article { display: flex; flex-direction: column; gap: var(--s-3); }
+.type-plan { position: relative; aspect-ratio: 4 / 3; margin-bottom: var(--s-3); overflow: hidden; background: #fff; border: 1px solid var(--line); }
+.type-plan img { object-fit: contain; padding: 5%; transition: scale 1.2s var(--ease-out); }
+.type-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-4); padding-top: var(--s-4); border-top: 1px solid var(--line); }
+.type-head h3 { font-size: var(--t-2xl); font-weight: 300; text-transform: uppercase; }
+.type-area { margin: 0; font-family: var(--display); font-size: var(--t-xl); color: var(--navy); font-variant-numeric: lining-nums tabular-nums; white-space: nowrap; }
+.type-meta { display: flex; flex-wrap: wrap; gap: var(--s-1) var(--s-4); margin: 0; color: var(--muted); font-size: var(--t-sm); }
+.type-meta dd { margin: 0; }
+.type-status { display: inline-flex; align-items: center; gap: var(--s-3); margin: var(--s-1) 0 0; color: var(--navy); }
+.type-status::before { content: ""; width: 24px; height: 1px; background: var(--gold); }
+.type-price { color: var(--muted); }
+.type.is-sold .type-plan img { opacity: .5; }
+.type.is-sold .type-status { color: var(--muted); }
+.type-rooms { border-block: 1px solid var(--line); }
+.type-rooms summary { display: flex; align-items: center; justify-content: space-between; min-height: 44px; font-size: var(--t-label); font-weight: 500; letter-spacing: var(--track-label); text-transform: uppercase; cursor: pointer; list-style: none; }
+.type-rooms summary::-webkit-details-marker { display: none; }
+.type-rooms summary::after { content: "+"; font: 300 20px/1 var(--body); color: var(--gold); transition: rotate var(--dur-fast) ease; }
+.type-rooms[open] summary::after { rotate: 45deg; }
+.type-rooms table { width: 100%; margin-bottom: var(--s-4); border-collapse: collapse; font-size: var(--t-sm); }
+.type-rooms th, .type-rooms td { padding: 6px 0; border-top: 1px solid var(--line); text-align: start; font-weight: 400; }
+.type-rooms th { color: var(--muted); }
+.type-rooms td { text-align: end; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.type-rooms tfoot th, .type-rooms tfoot td { color: var(--navy); font-weight: 600; }
+.type .link-line { padding-top: var(--s-3); align-self: flex-start; }
+.types-note { margin-top: var(--s-7); color: var(--muted); font-size: var(--t-sm); }
+@media (hover: hover) and (pointer: fine) { .type article:hover .type-plan img { scale: 1.03; } }
+@media (max-width: 1099px) { .types-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 699px) { .types-grid { grid-template-columns: 1fr; gap: var(--s-7); } }
+@media (prefers-reduced-motion: reduce) { .type-plan img, .type-rooms summary::after { transition: none; } .type article:hover .type-plan img { scale: none; } }

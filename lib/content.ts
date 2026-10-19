@@ -30,8 +30,8 @@ export const imgAlt = (img: { alt?: L; caption?: L }, lang: Lang) => plain(img.a
 
 /** Search and sharing texts for one page; empty fields fall back to the page's own title and text. */
 export type Seo = { title?: L; description?: L; image?: string };
-export type SectionKey = 'hero' | 'manifest' | 'about' | 'categories' | 'buildings' | 'details' | 'gallery' | 'location' | 'investor' | 'contact';
-export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'categories', 'buildings', 'details', 'gallery', 'location', 'investor', 'contact'];
+export type SectionKey = 'hero' | 'manifest' | 'about' | 'categories' | 'buildings' | 'types' | 'details' | 'gallery' | 'location' | 'investor' | 'contact';
+export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'categories', 'buildings', 'types', 'details', 'gallery', 'location', 'investor', 'contact'];
 
 // Text conventions in the CMS: a new line starts a new heading line; *word* marks the contrasting word.
 export type Page = {
@@ -43,6 +43,8 @@ export type Page = {
   about?: { eyebrow?: L; title?: L; text?: L; image?: string; facts?: { value?: L; label?: L }[]; auto_facts?: boolean };
   categories?: { items?: { title?: L; image?: string; link?: string; link_label?: L }[] };
   buildings?: { title?: L; text?: L };
+  /** apartment types (lib/apartmentTypes.ts); figures come from the brochure and the unit table, texts from the CMS */
+  types?: { title?: L; text?: L; note?: L };
   details?: { title?: L; note?: L; items?: { image?: string; title?: L; text?: L }[] };
   highlights?: { title?: L; items?: { title?: L; text?: L; image?: string }[] };
   selector?: { eyebrow?: L; title?: L; text?: L };
@@ -114,6 +116,17 @@ export const DEFAULT_PAGE: Page = {
   buildings: {
     title: { bs: 'Zgrade\n*i stanovi*', en: 'Buildings\n*and apartments*' },
     text: { bs: 'Odaberite zgradu, sprat i stan u interaktivnom pregledu.', en: 'Choose a building, floor and apartment in the interactive view.' },
+  },
+  types: {
+    title: { bs: 'Kolekcija\n*stanova*', en: 'Apartment\n*collection*' },
+    text: {
+      bs: 'Devet tipova stanova od 46 do 111 m², s jednom do četiri spavaće sobe. Svaki stan ima lođu ili terasu.',
+      en: 'Nine apartment types from 46 to 111 m², with one to four bedrooms. Every apartment has a loggia or a terrace.',
+    },
+    note: {
+      bs: 'Površine prema prodajnim skicama arhitekta; lođa se obračunava s 0,75, terasa s 0,25 svoje površine. Dopušteno odstupanje kvadrature ±3 %. Podložno raspoloživosti.',
+      en: "Areas as on the architect's sales plans; loggias count at 0.75 and terraces at 0.25 of their size. Permitted area variation ±3%. Subject to availability.",
+    },
   },
   details: {
     title: { bs: 'Enterijer\n*i detalji*', en: 'Interiors\n*and details*' },
@@ -191,11 +204,22 @@ export function resolveLink(link: string | undefined, lang: Lang): string {
   return link;
 }
 
+/** Saved order plus sections it does not know yet (added later), each placed right after its default predecessor. */
+export function withMissing<K extends string>(saved: K[], defaults: K[]): K[] {
+  const out = [...saved];
+  defaults.forEach((k, i) => {
+    if (out.includes(k)) return;
+    const prev = defaults.slice(0, i).reverse().find((x) => out.includes(x));
+    out.splice(prev ? out.indexOf(prev) + 1 : 0, 0, k);
+  });
+  return out;
+}
+
 /** Visible sections in the order chosen in the CMS. The hero always comes first. */
 export function sectionList(p: Page): SectionKey[] {
   const rest: SectionKey[] = SECTION_ORDER.filter((k) => k !== 'hero');
   const order = (p.sections?.order || []).filter((k) => rest.includes(k));
-  const all: SectionKey[] = ['hero', ...order, ...rest.filter((k) => !order.includes(k))];
+  const all: SectionKey[] = ['hero', ...withMissing(order, rest)];
   const hidden = new Set(p.sections?.hidden || []);
   return all.filter((k) => k === 'hero' || !hidden.has(k));
 }

@@ -1,6 +1,6 @@
 /* Riverina Residence — home page sections (phase b). Tokens live in globals.css. */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-:root { --hero-d: 1.25s; }
+:root { --hero-d: 2.15s; }
 html.intro-seen { --hero-d: .1s; }
 
 /* ---------- reveals ----------
@@ -92,6 +92,8 @@ html.reveal-ready .split.is-in .split-line > span { transform: none; }
 .cat-link { align-self: center; color: var(--ivory); }
 .cat-title { display: flex; justify-content: space-between; font-weight: 300; font-size: clamp(64px, 14.5vw, 250px); line-height: .9; letter-spacing: 0; text-transform: uppercase; }
 .cat-chw { display: block; overflow: hidden; padding-bottom: .05em; }
+.cat.is-scatter .cat-chw { overflow: visible; }
+.cat.is-scatter .cat-ch { will-change: transform, opacity; }
 .cat-ch { display: block; }
 
 /* ---------- buildings ---------- */
@@ -375,3 +377,11 @@ html.reveal-ready .split.is-in .sec-rule { transform: none; }
 .stm-text { max-width: 44ch; margin: 0; font-size: var(--t-lg); color: var(--on-dark-muted); }
 .stm-ctas { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--s-6); }
 .stm .link-line { color: var(--ivory); }
+
+/* ---------- footer: the name across the full width, letters rising in turn ---------- */
+.footer { overflow: hidden; }
+.footer-word { display: flex; justify-content: space-between; margin: var(--s-8) 0 calc(-0.16em); padding-inline: max(var(--gutter), env(safe-area-inset-left, 0px)); font-family: var(--display); font-weight: 300; font-size: 21.5vw; line-height: .78; color: var(--ivory); opacity: .92; user-select: none; }
+.footer-word > span { display: block; overflow: hidden; padding-top: .04em; }
+.footer-word > span > span { display: block; }
+html.reveal-ready .footer-word > span > span { transform: translateY(105%); transition: transform 1.3s var(--ease-out) calc(var(--i) * 70ms); }
+html.reveal-ready .footer-word.is-in > span > span { transform: none; }

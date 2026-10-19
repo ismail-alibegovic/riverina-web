@@ -81,3 +81,15 @@ Kod nas: ivory/papir pozadina + navy kao velika površina (preloader, meni, foot
 | Full-screen meni overlay, minimalni header | |
 | Footer blok u boji brenda s formom i GDPR checkboxom | |
 | Spori ease-out prijelazi 600–1200 ms, bez bounce-a | |
+
+## 11. Provjera uživo (19. 10. 2026)
+
+Pregledano u Chromiumu (1440×900) uz skrolanje kotačićem. Stack: Next.js, **Lenis** (`html.lenis`), GSAP ScrollTrigger (pin-spacer na manifestu, ~3.400 px), fontovi Elicyon + Antique Legacy. Bez Three.js/canvasa.
+
+| Potez | Elicyon | Riverina (nakon ove izmjene) |
+|---|---|---|
+| Uvod | puna periwinkle podloga; slova logotipa se pojavljuju jedno po jedno, svako na drugoj visini (~3–4 s) | navy podloga; slova „RIVERINA" stižu s različitih visina i slegnu se u riječ, zatim zlatni „RESIDENCE" i podizanje zavjese (~2,7 s, jednom po sesiji; bez JS i uz reduced motion se ne prikazuje) |
+| Hero | 3 ogromne riječi stepenasto, zadnja izlazi iz poluprozirnosti | stepenaste linije (već postojalo) |
+| Manifest | pinned, riječi se pale, fotografije plutaju | isto (već postojalo) |
+| Kategorije | slova riječi razbacana po visini kadra, skupljaju se u riječ dok se skrola | isto: scrub od „top 90%" do „top 10%", pomaci iz `SCATTER` u `components/home/Categories.tsx` |
+| Kraj stranice | footer u boji brenda + ogroman logotip preko cijele širine | navy footer + „RIVERINA" preko cijele širine, slova se dižu redom |

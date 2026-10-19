@@ -5,6 +5,9 @@ import { LANGS, Lang } from '@/lib/i18n';
 
 const SOCIAL_LABELS: Record<string, string> = { instagram: 'Instagram', facebook: 'Facebook', linkedin: 'LinkedIn' };
 
+// Starting heights (in em) of the intro letters: they arrive scattered and settle on one line.
+const INTRO_Y = [-0.42, 0.3, -0.18, 0.46, -0.34, 0.16, -0.26, 0.38];
+
 /** Everything around the page content: intro curtain, smooth scroll, header and full-screen menu. */
 export default function SiteChrome({ data, lang, nav, contactHref, langHref, tone = 'light' }: {
   data: SiteData;
@@ -20,7 +23,12 @@ export default function SiteChrome({ data, lang, nav, contactHref, langHref, ton
   const socials = Object.entries(s.socials || {}).filter(([, v]) => v).map(([k, v]) => ({ label: SOCIAL_LABELS[k] || k, href: String(v) }));
   return (
     <>
-      <div className="intro" aria-hidden="true"><img src="/brand/logo-stacked-light.webp" alt="" width={400} height={348} /></div>
+      <div className="intro" aria-hidden="true">
+        <div className="intro-word">
+          {Array.from('RIVERINA').map((ch, i) => <span key={i} style={{ '--i': i, '--y': INTRO_Y[i] } as React.CSSProperties}>{ch}</span>)}
+        </div>
+        <span className="intro-sub">Residence</span>
+      </div>
       <SmoothScroll />
       <Header
         lang={lang}

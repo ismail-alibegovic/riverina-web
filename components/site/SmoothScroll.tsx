@@ -26,16 +26,19 @@ export default function SmoothScroll() {
     }, { rootMargin: '0px 0px -12% 0px', threshold: 0.12 });
     if (reduce) return () => io.disconnect();
     html.classList.add('reveal-ready');
-    // Clip reveals start fully clipped (clip-path: inset(100% ...)); Chromium counts clip-path in IntersectionObserver,
-    // so such an element never "intersects" and would stay hidden. They are checked by position on scroll instead.
-    let clips = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal="clip"]'));
+    // Checked by position on scroll instead of IntersectionObserver:
+    // - clip reveals start fully clipped (clip-path: inset(100% ...)); Chromium counts clip-path in IntersectionObserver,
+    //   so such an element never "intersects" and would stay hidden;
+    // - [data-reveal-pos] elements at the very end of the page, which can never scroll far enough to pass the threshold.
+    let clips = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal="clip"], [data-reveal][data-reveal-pos]'));
     let raf = 0;
     const checkClips = () => {
       raf = 0;
       const line = window.innerHeight * 0.9;
+      const atEnd = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
       clips = clips.filter((el) => {
         const r = el.getBoundingClientRect();
-        if (r.top < line && r.bottom > 0 && r.width > 0) { el.classList.add('is-in'); return false; }
+        if ((r.top < line || (atEnd && r.top < window.innerHeight)) && r.bottom > 0 && r.width > 0) { el.classList.add('is-in'); return false; }
         return true;
       });
       if (!clips.length) { window.removeEventListener('scroll', onClipScroll); window.removeEventListener('resize', onClipScroll); }
@@ -44,7 +47,7 @@ export default function SmoothScroll() {
     window.addEventListener('scroll', onClipScroll, { passive: true });
     window.addEventListener('resize', onClipScroll, { passive: true });
     onClipScroll();
-    document.querySelectorAll('[data-reveal]:not([data-reveal="clip"])').forEach((el) => io.observe(el));
+    document.querySelectorAll('[data-reveal]:not([data-reveal="clip"]):not([data-reveal-pos])').forEach((el) => io.observe(el));
     document.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
       const host = el.closest('[data-reveal]') || el;
       counters.set(host, prepareCount(el));

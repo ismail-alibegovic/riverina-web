@@ -18,6 +18,9 @@ export default function Footer({ data, lang, nav }: { data: SiteData; lang: Lang
           <p><a href={href('privacy', lang)}>{t.privacy}</a></p>
         </div>
       </div>
+      <p className="footer-word" aria-hidden="true" data-reveal="fade" data-reveal-pos>
+        {Array.from('RIVERINA').map((ch, i) => <span key={i} style={{ '--i': i } as React.CSSProperties}><span>{ch}</span></span>)}
+      </p>
     </footer>
   );
 }

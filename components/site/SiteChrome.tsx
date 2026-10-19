@@ -20,7 +20,10 @@ export default function SiteChrome({ data, lang, nav, contactHref, langHref, ton
   const socials = Object.entries(s.socials || {}).filter(([, v]) => v).map(([k, v]) => ({ label: SOCIAL_LABELS[k] || k, href: String(v) }));
   return (
     <>
-      <div className="intro" aria-hidden="true"><img src="/brand/logo-stacked-light.webp" alt="" width={400} height={348} /></div>
+      <div className="intro" aria-hidden="true">
+        <span className="intro-mark"><img src="/brand/mark-light.webp" alt="" width={316} height={240} /></span>
+        <span className="intro-word"><img src="/brand/wordmark-light.webp" alt="" width={700} height={157} /></span>
+      </div>
       <SmoothScroll />
       <Header
         lang={lang}

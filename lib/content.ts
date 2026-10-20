@@ -88,7 +88,8 @@ export const DEFAULT_PAGE: Page = {
     eyebrow: { bs: 'Ilidža, Sarajevo', en: 'Ilidža, Sarajevo' },
     title: { bs: 'Riverina\n*residence*', en: 'Riverina\n*residence*' },
     subtitle: { bs: 'Novi stambeni kompleks na Ilidži.', en: 'A new residential development in Ilidža.' },
-    image: `${R}/objekat/objekat-8.webp`,
+    // current facade (360° set, angle 315°), confirmed by the owner 20. 10. 2026
+    image: `${R}/objekat/riverina-1-ugao-vecer.webp`,
     cta: { bs: 'Odaberite stan', en: 'Find your apartment' },
   },
   manifest: {

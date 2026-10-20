@@ -82,6 +82,21 @@ html.rvs-lock { overflow: hidden; }
 .rvs-shape.is-flash polygon { animation: rvs-flash .9s ease; }
 @keyframes rvs-flash { 0%, 100% { fill-opacity: 0; } 30% { fill-opacity: .55; } }
 
+/* blurred copy of the picture behind a letterboxed one (full-screen page only) */
+.rvs-ambient { position: absolute; inset: -6%; background-size: cover; background-position: center; filter: blur(34px) brightness(.5) saturate(1.1); transform: translateZ(0); pointer-events: none; }
+.rvs-scrub { position: absolute; z-index: 3; left: 50%; bottom: 20px; transform: translateX(-50%); display: flex; align-items: center; gap: 14px; height: 40px; padding: 0 18px; background: var(--rvs-glass); color: #fff; border: 1px solid rgba(255, 255, 255, .16); backdrop-filter: blur(10px) saturate(1.2); -webkit-backdrop-filter: blur(10px) saturate(1.2); font-size: 12px; letter-spacing: .16em; font-weight: 600; }
+.rvs-scrub-in { -webkit-appearance: none; appearance: none; width: clamp(140px, 22vw, 300px); height: 24px; margin: 0; background: transparent; cursor: ew-resize; touch-action: none; }
+.rvs-scrub-in::-webkit-slider-runnable-track { height: 1px; background: rgba(255, 255, 255, .5); }
+.rvs-scrub-in::-moz-range-track { height: 1px; background: rgba(255, 255, 255, .5); }
+.rvs-scrub-in::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; margin-top: -7px; border-radius: 50%; background: #fff; border: 0; box-shadow: 0 0 0 5px rgba(255, 255, 255, .18); }
+.rvs-scrub-in::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 0; box-shadow: 0 0 0 5px rgba(255, 255, 255, .18); }
+
+@media (max-width: 720px) {
+  .rvs-turn .rvs-rot { display: none; }
+  .rvs-scrub { left: 12px; right: 72px; bottom: 14px; transform: none; }
+  .rvs-scrub-in { flex: 1; width: auto; }
+}
+
 /* chips over the stage */
 .rvs-chip { position: absolute; z-index: 3; display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; border-radius: var(--rvs-round); background: var(--rvs-glass); color: #fff; font-size: 14px; backdrop-filter: blur(10px) saturate(1.2); -webkit-backdrop-filter: blur(10px) saturate(1.2); border: 1px solid rgba(255, 255, 255, .16); box-shadow: 0 6px 24px rgba(10, 18, 32, .16); }
 .rvs-chip svg { width: 18px; height: 18px; flex-shrink: 0; }

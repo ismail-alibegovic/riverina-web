@@ -109,3 +109,12 @@ Zračni prikaz naselja (`5-slike naselja+/1.png`) pokazuje ~10 zgrada uz rijeku 
 2. Podaci o 63 stana iz `units.json` (nakon čišćenja) — uvoz kroz postojeći CSV import u CMS-u.
 3. Logo (`logo-transparent.PNG` / `i-logo_light.png`) uz napomenu o porijeklu.
 4. AI vizuali (zgrada, naselje, enterijer, 3D tlocrti) — odobreni; idu u Supabase Storage / `public/` kao WebP/AVIF, uređivi kroz CMS.
+
+## 8. Dopuna 20. 10. 2026
+
+| Materijal | Nalaz | Šta s tim |
+|---|---|---|
+| `360-RIVERINA/` (novo, 19.–20. 10.) | 24 kadra Riverine 1 u krug, korak 15° (`00.png` … `345.png` + `360.png`), 1672×941 PNG, ukupno 63 MB. `360.png` je isti fajl kao `00.png` (isti hash), pa je stvarnih uglova 24 | Materijal za 360° pregled zgrade. Po dogovoru **vlasnik ga sam unosi kroz CMS** (slike zgrade = uglovi, redoslijed slika = redoslijed rotacije; CMS preporučuje 24–36 za glatku rotaciju); sajt to već podržava (`lib/selector/selector.js`, rotacija lijevo/desno). Na sajt nije ništa kopirano. `360.png` ne treba uploadati (duplikat od `00.png`) |
+| `AI-kadrovi/zgrada1-referenca-1..4.jpg` | Jedine slike zgrade u visokoj rezoluciji (3661×2057). Odgovaraju 3D prikazima iz idejnog projekta (str. 1, 25, 26). Kadrovi 1, 3 i 4 imaju natpis **„URBN LIVING"** na prizemlju (tuđi/izmišljeni brend) | Ne koristiti dok se natpis ne ukloni. Kadar 2 (ugao s rampom garaže) je bez natpisa i mogao bi zamijeniti manje oštru sliku na naslovnoj, uz odobrenje vlasnika |
+| Fasada zgrade u različitim materijalima | Tri verzije izgleda Riverine 1: (a) idejni projekat i `AI-kadrovi`: bež/kamene vertikale; (b) slike na sajtu (`objekat-*`): slično (a), druga svjetla i uglovi; (c) novi `360-RIVERINA`: bijela fasada s drvenim pojasom na čeonoj strani i tamnim stubovima | **Pitanje za vlasnika:** koja je fasada aktuelna? Ako je (c), slike na sajtu prikazuju stariju verziju zgrade |
+| `Riverina-video-30s.mp4`, `Riverina-dron-3D-30s.mp4` | 1920×1080 H.264, 30 s. Natpisi su upečeni u sliku („10 STAMBENIH OBJEKATA", „WELLNESS & SPA", „ZELENILO I SPORT") i na kraju kartica „by ALYASIN GROUP" | Ne stavljati kao pozadinski video na sajt: tvrdnje (broj zgrada, wellness) nisu potvrđene (vidi `content-todo.md` #1, #3, #5), a natpisi se ne mogu prevesti. Za sajt bi trebala verzija bez teksta |

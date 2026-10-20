@@ -1,5 +1,5 @@
 // Content model, defaults and data loading for the public site.
-import { href, pick, LOCALES, UI, type Lang, type Localized, type RouteKey } from './i18n';
+import { href, pick, LOCALES, UI, ROUTE_KEYS, type Lang, type Localized, type RouteKey } from './i18n';
 import { APARTMENT_TYPES, ROOM_NAMES, unitsOfType } from './apartmentTypes';
 import { DEFAULT_FLOORS } from './floorPlans';
 import PLANS_3D from './plans3d.json';
@@ -27,14 +27,21 @@ export function plain(v: L | string | undefined | null, lang: Lang): string {
   return pick(v, lang).replace(/\[\[TBD:[^\]]*\]\]/g, '').replace(/\*/g, '').replace(/\s+/g, ' ').trim();
 }
 
-type Img = { path: string; caption?: L; alt?: L };
+export type Img = { path: string; caption?: L; alt?: L };
 /** Alt text of a CMS image: its own alt text, else the caption. */
 export const imgAlt = (img: { alt?: L; caption?: L }, lang: Lang) => plain(img.alt, lang) || plain(img.caption, lang);
 
 /** Search and sharing texts for one page; empty fields fall back to the page's own title and text. */
 export type Seo = { title?: L; description?: L; image?: string };
-export type SectionKey = 'hero' | 'manifest' | 'about' | 'showcase' | 'categories' | 'buildings' | 'types' | 'details' | 'gallery' | 'location' | 'investor' | 'statement' | 'contact';
-export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'showcase', 'categories', 'buildings', 'types', 'details', 'gallery', 'location', 'investor', 'statement', 'contact'];
+export type SectionKey = 'hero' | 'vision' | 'manifest' | 'about' | 'showcase' | 'categories' | 'buildings' | 'types' | 'details' | 'world' | 'gallery' | 'location' | 'investor' | 'statement' | 'contact';
+export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'showcase', 'categories', 'buildings', 'types', 'vision', 'details', 'world', 'gallery', 'location', 'investor', 'statement', 'contact'];
+/**
+ * Home sections that are off until switched on in the CMS. The home page follows elicyon.com's sequence, one story
+ * from the river to the front door: hero → manifest → categories → apartment types ("services") → vision
+ * ("leading the vision") → interiors carousel ("objects of desire") → world cards ("insights") → closing statement
+ * → footer with the enquiry form. Gallery, location and developer have their own pages. Also in lib/admin/app.js.
+ */
+export const DEFAULT_HIDDEN: SectionKey[] = ['about', 'showcase', 'buildings', 'gallery', 'location', 'investor', 'contact'];
 
 // Text conventions in the CMS: a new line starts a new heading line; *word* marks the contrasting word.
 export type Page = {
@@ -44,7 +51,11 @@ export type Page = {
   hero?: { eyebrow?: L; title?: L; subtitle?: L; image?: string; cta?: L; cta2?: L };
   manifest?: { text?: L; images?: Img[] };
   about?: { eyebrow?: L; title?: L; text?: L; image?: string; image2?: string; facts?: { value?: L; label?: L }[]; auto_facts?: boolean };
-  categories?: { items?: { title?: L; image?: string; link?: string; link_label?: L }[] };
+  categories?: { items?: { title?: L; caption?: L; image?: string; link?: string; link_label?: L }[] };
+  /** full-screen dimmed render with a centred heading, a portrait image and a short text (after the hero) */
+  vision?: { title?: L; text?: L; image?: string; image2?: string };
+  /** three cards leading to the inner pages */
+  world?: { title?: L; text?: L; items?: { label?: L; title?: L; text?: L; image?: string; link?: string; link_label?: L }[] };
   buildings?: { title?: L; text?: L };
   /** horizontal strip of wide renders with captions */
   showcase?: { title?: L; text?: L; items?: { image?: string; caption?: L }[] };
@@ -55,7 +66,8 @@ export type Page = {
   details?: { title?: L; note?: L; items?: { image?: string; title?: L; text?: L }[] };
   highlights?: { title?: L; items?: { title?: L; text?: L; image?: string }[] };
   selector?: { eyebrow?: L; title?: L; text?: L };
-  gallery?: { title?: L; images?: Img[] };
+  /** gallery page (/galerija): page_image is its hero, the river strip (showcase) and these images follow */
+  gallery?: { title?: L; text?: L; images?: Img[]; page_image?: string };
   location?: { title?: L; text?: L; address?: L; map_embed?: string; map_link?: string; image?: string; page_image?: string; points?: { name?: L; value?: L }[] };
   investor?: { title?: L; text?: L; logo?: string; link?: string; page_image?: string };
   privacy?: { title?: L; text?: L };
@@ -135,9 +147,28 @@ export const DEFAULT_PAGE: Page = {
   },
   categories: {
     items: [
-      { title: { bs: 'Zgrade', en: 'Buildings' }, image: `${R}/objekat/objekat-1.webp`, link: 'apartments' },
-      { title: { bs: 'Enterijer', en: 'Interiors' }, image: `${R}/enterijer/enterijer-2.webp`, link: '#detalji', link_label: { bs: 'Pogledajte', en: 'View' } },
-      { title: { bs: 'Lokacija', en: 'Location' }, image: `${R}/naselje/5.webp`, link: '#lokacija', link_label: { bs: 'Pogledajte', en: 'View' } },
+      { title: { bs: 'Arhitektura', en: 'Architecture' }, caption: { bs: 'Riverina 1', en: 'Riverina 1' }, image: `${R}/objekat/objekat-1.webp`, link: 'apartments' },
+      { title: { bs: 'Enterijer', en: 'Interiors' }, caption: { bs: 'Stanovi od\n46 do 111 m²', en: 'Apartments from\n46 to 111 m²' }, image: `${R}/enterijer/enterijer-2.webp`, link: 'gallery', link_label: { bs: 'Pogledajte galeriju', en: 'View the gallery' } },
+      { title: { bs: 'Lokacija', en: 'Location' }, caption: { bs: 'Ilidža,\nSarajevo', en: 'Ilidža,\nSarajevo' }, image: `${R}/naselje/5.webp`, link: 'location', link_label: { bs: 'Pogledajte lokaciju', en: 'View the location' } },
+    ],
+  },
+  // "Moderno življenje uz rijeku" is a phrase from the sales brochure.
+  vision: {
+    title: { bs: 'Moderno življenje\n*uz rijeku*', en: 'Modern living\n*by the river*' },
+    text: {
+      bs: 'Riverina Residence nastaje na Ilidži, u Sarajevu. Prva zgrada, Riverina 1, ima poslovno prizemlje i pet stambenih etaža, s lođom ili terasom uz svaki stan.',
+      en: 'Riverina Residence is being built in Ilidža, Sarajevo. The first building, Riverina 1, has a commercial ground floor and five residential floors, with a loggia or a terrace for every apartment.',
+    },
+    image: `${R}/naselje/2.webp`,
+    image2: `${R}/enterijer/enterijer-3.webp`,
+  },
+  world: {
+    title: { bs: 'Svijet\n*Riverine*', en: 'The world\n*of Riverina*' },
+    text: { bs: 'Zgrada i naselje u vizualizacijama, lokacija na Ilidži i investitor projekta.', en: 'The building and the neighbourhood in visualisations, the location in Ilidža and the developer.' },
+    items: [
+      { label: { bs: 'Vizualizacije', en: 'Visualisations' }, title: { bs: 'Galerija', en: 'Gallery' }, text: { bs: 'Riverina 1, naselje uz rijeku i enterijeri stanova.', en: 'Riverina 1, the neighbourhood by the river and the apartment interiors.' }, image: `${R}/objekat/objekat-4.webp`, link: 'gallery' },
+      { label: { bs: 'Ilidža, Sarajevo', en: 'Ilidža, Sarajevo' }, title: { bs: 'Lokacija', en: 'Location' }, text: { bs: 'Riverina Residence se nalazi na Ilidži, u Sarajevu.', en: 'Riverina Residence is located in Ilidža, Sarajevo.' }, image: `${R}/naselje/9.webp`, link: 'location' },
+      { label: { bs: 'ALYASIN Group', en: 'ALYASIN Group' }, title: { bs: 'Investitor', en: 'Developer' }, text: { bs: 'Investitor projekta Riverina Residence.', en: 'The developer of Riverina Residence.' }, image: `${R}/objekat/objekat-5.webp`, link: 'developer' },
     ],
   },
   buildings: {
@@ -169,6 +200,7 @@ export const DEFAULT_PAGE: Page = {
   },
   gallery: {
     title: { bs: 'Galerija', en: 'Gallery' },
+    page_image: `${R}/naselje/3.webp`,
     images: [
       { path: `${R}/objekat/objekat-4.webp`, caption: { bs: 'Riverina 1', en: 'Riverina 1' } },
       { path: `${R}/naselje/15.webp`, caption: { bs: 'Zgrada s ulice', en: 'The building from the street' } },
@@ -238,7 +270,7 @@ export function unitFacts(units: any[], lang: Lang): { value: string; label: str
 export function resolveLink(link: string | undefined, lang: Lang): string {
   if (!link) return '';
   if (link.startsWith('#')) return (LOCALES[lang].prefix || '/') + link;
-  if (link === 'apartments' || link === 'home') return href(link, lang);
+  if (ROUTE_KEYS.includes(link as RouteKey)) return href(link as RouteKey, lang);
   return link;
 }
 
@@ -258,7 +290,7 @@ export function sectionList(p: Page): SectionKey[] {
   const rest: SectionKey[] = SECTION_ORDER.filter((k) => k !== 'hero');
   const order = (p.sections?.order || []).filter((k) => rest.includes(k));
   const all: SectionKey[] = ['hero', ...withMissing(order, rest)];
-  const hidden = new Set(p.sections?.hidden || []);
+  const hidden = new Set(p.sections?.hidden || DEFAULT_HIDDEN);
   return all.filter((k) => k === 'hero' || !hidden.has(k));
 }
 

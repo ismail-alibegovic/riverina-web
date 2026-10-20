@@ -10,7 +10,7 @@ import JsonLd from '../JsonLd';
 export default function SubPage({ data, lang, route, title, image, intro, children }: {
   data: SiteData;
   lang: Lang;
-  route: Exclude<RouteKey, 'home' | 'apartments'> | 'privacy';
+  route: Exclude<RouteKey, 'home' | 'apartments'>;
   title: string;
   image?: string;
   intro?: string;
@@ -36,7 +36,7 @@ export default function SubPage({ data, lang, route, title, image, intro, childr
         </section>
         {children}
       </main>
-      <Footer data={data} lang={lang} nav={nav} />
+      <Footer data={data} lang={lang} nav={nav} form={route !== 'contact'} />
       <JsonLd data={data} lang={lang} route={route} title={plain(title, lang)} />
     </>
   );

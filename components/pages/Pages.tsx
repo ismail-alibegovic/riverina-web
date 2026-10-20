@@ -1,6 +1,7 @@
-import { SiteData, tx } from '@/lib/content';
+import { SiteData, tx, mediaUrl, imgAlt, illustrationLabel } from '@/lib/content';
 import { href, UI, Lang } from '@/lib/i18n';
 import ContactForm from '../ContactForm';
+import Coverflow from '../Coverflow';
 import { Fill, Heading, Paras } from '../home/text';
 import SubPage from './SubPage';
 
@@ -31,6 +32,41 @@ export function LocationPage({ data, lang }: P) {
               : loc.image ? <Fill src={loc.image} alt={plain(tx(loc.title, lang))} sizes="(min-width: 900px) 58vw, 100vw" /> : null}
           </div>
         </div>
+      </section>
+      <CtaBand data={data} lang={lang} />
+    </SubPage>
+  );
+}
+
+/** Every render of the project in one coverflow carousel, filtered by building / neighbourhood / interior. */
+export function GalleryPage({ data, lang }: P) {
+  const t = UI[lang];
+  const p = data.page;
+  const tag = illustrationLabel(p, lang);
+  // all pictures the CMS uses anywhere, each once, with the caption it has where it is used
+  const seen = new Set<string>();
+  const all: { path?: string; caption?: string; alt?: string }[] = [
+    ...(p.gallery?.images || []).map((g) => ({ path: g.path, caption: tx(g.caption, lang), alt: imgAlt(g, lang) })),
+    ...(p.showcase?.items || []).map((it) => ({ path: it.image, caption: tx(it.caption, lang) })),
+    ...(p.details?.items || []).map((it) => ({ path: it.image, caption: tx(it.title, lang) })),
+    ...(p.manifest?.images || []).map((g) => ({ path: g.path, caption: tx(g.caption, lang).replace(/,\s*(vizualizacija|visualisation)$/i, '') })),
+    ...[p.about?.image, p.about?.image2, p.vision?.image, p.vision?.image2, p.statement?.image].map((path) => ({ path })),
+    ...(p.categories?.items || []).map((it) => ({ path: it.image })),
+    ...(p.world?.items || []).map((it) => ({ path: it.image })),
+  ];
+  const group = (path: string) => (/\/enterijer\//.test(path) ? 'interior' : /\/naselje\//.test(path) ? 'area' : 'building');
+  const images = all.filter((g) => g.path && !seen.has(g.path) && seen.add(g.path)).map((g) => ({
+    src: mediaUrl(g.path), alt: g.alt || g.caption || '', caption: g.caption || '', group: group(g.path!),
+  }));
+  return (
+    <SubPage data={data} lang={lang} route="gallery" title={tx(p.gallery?.title, lang) || t.gallery} intro={tx(p.gallery?.text, lang) || t.galleryIntro}>
+      <section className="section gallery-page">
+        <Coverflow
+          images={images}
+          groups={[{ key: 'building', label: t.galBuilding }, { key: 'area', label: t.galArea }, { key: 'interior', label: t.galInterior }]}
+          labels={{ close: t.close, prev: t.prev, next: t.next, image: t.image, all: t.galAll, open: t.galOpen }}
+          tag={tag}
+        />
       </section>
       <CtaBand data={data} lang={lang} />
     </SubPage>

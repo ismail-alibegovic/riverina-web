@@ -30,3 +30,12 @@ Polazni commit: `0131059`.
 - Reduced motion: uvod se ne prikazuje, bez pinovanja i raspršivanja slova.
 - Mobilni 390: bez horizontalnog skrola; „O projektu" slike jedna ispod druge, činjenice 2 × 2; galerija naizmjenično.
 - `npx tsc --noEmit`, `npm test` prolaze.
+
+## Preuređenje po Elicyonu (19. 10. 2026, poslije povratne informacije)
+
+Početna je skraćena na Elicyonov ritam: naslovna → vizija („Moderno življenje uz rijeku", zatamnjen render, slika i tekst u uskoj koloni) → kategorije preko cijelog ekrana koje se slažu jedna preko druge (ARHITEKTURA / ENTERIJER / LOKACIJA) → tipovi stanova (nepromijenjeno) → enterijer karusel sa središnjom slikom u okviru → „Svijet Riverine" (tri kartice prema podstranicama) → footer.
+
+- Footer: jedna kompaktna plava traka (naslov, forma za upit, meni, kontakt, pravna linija). Veliki natpis preko cijele širine je uklonjen na zahtjev; znak R je sada u navbaru iznad natpisa (na vrhu stranice), a pri skrolanju se sklopi.
+- Redoslijed početne prati elicyon.com: naslovna → manifest → kategorije → tipovi stanova → vizija → enterijer karusel → Svijet Riverine → završna slika s pozivom → footer. Svi naslovi sekcija iste veličine i stila, bez crtica i brojeva.
+- `/galerija`: coverflow karusel (Swiper) sa svim renderima i filterima Zgrada / Naselje / Enterijer; srednja slika u istom okviru kao karusel na početnoj, klik otvara punu sliku.
+- Isključene po defaultu (`DEFAULT_HIDDEN`), tekstovi ostaju u CMS-u: o projektu, traka, zgrade, galerija, lokacija, investitor, kontakt.

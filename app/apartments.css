@@ -1,17 +1,22 @@
 /* Riverina Residence — full-screen apartment finder page (/stanovi, /en/apartments). */
 .apt { min-height: 100svh; background: var(--navy); color: var(--ivory); }
-.apt-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--s-3) var(--s-7); padding-top: calc(var(--header-h) + var(--s-4)); padding-bottom: var(--s-5); }
-.apt-title { font-size: clamp(32px, 3.4vw, 54px); font-weight: 300; line-height: 1; text-transform: uppercase; animation: fade-up 1.1s var(--ease-out) var(--hero-d) both; }
-.apt-text { max-width: 52ch; font-size: var(--t-sm); color: var(--on-dark-muted); animation: fade-up 1.1s var(--ease-out) calc(var(--hero-d) + .12s) both; }
-.apt-finder { animation: apt-in 1.2s var(--ease-out) calc(var(--hero-d) + .2s) both; }
+.apt-main { padding-top: var(--header-h); }
+.apt-finder { animation: apt-in 1s var(--ease-out) var(--hero-d) both; }
 @keyframes apt-in { from { opacity: 0; } }
 
 /* the viewer, re-skinned for the dark full-screen frame */
 .apt .rvs { --rvs-glass: rgba(14, 23, 41, .6); color: var(--ivory); }
-.apt .rvs-bar { background: transparent; border-top: 1px solid var(--line-light); padding: var(--s-3) max(var(--gutter), env(safe-area-inset-left, 0px)); }
-.apt .rvs-brand-name { display: none; }
+.apt .rvs-bar { background: var(--navy); border-top: 1px solid var(--line-light); padding: 10px max(var(--gutter), env(safe-area-inset-left, 0px)); }
+.apt .rvs-brand-name { font-family: var(--display); font-size: 15px; font-weight: 400; letter-spacing: .2em; padding-right: var(--s-4); border-right-color: var(--line-light); }
 .apt .rvs-crumbs { font-size: var(--t-label); letter-spacing: var(--track-label); }
-.apt .rvs-pill { height: 40px; }
+.apt .rvs-pill { height: 36px; }
+.apt .rvs-stage { background: var(--navy-deep); }
+.apt .rvs-rot { width: 46px; height: 46px; margin-top: -23px; background: rgba(14, 23, 41, .45); border-color: rgba(255, 255, 255, .28); box-shadow: none; }
+.apt .rvs-rot:hover { background: rgba(14, 23, 41, .7); transform: none; }
+.apt .rvs-rot svg { width: 22px; height: 22px; }
+.apt .rvs-rot-prev { left: var(--s-4); }
+.apt .rvs[data-level="building"] .rvs-rot-next, .apt .rvs[data-level="floor"] .rvs-rot-next { right: 92px; }
+.apt .rvs-hint { background: rgba(14, 23, 41, .55); }
 .apt .rvs-stage-wrap { padding: 0; background: var(--navy); }
 .apt .rvs-stage { background: var(--navy-deep); }
 .apt .rvs-legend { padding: var(--s-4) max(var(--gutter), env(safe-area-inset-left, 0px)); color: var(--on-dark-muted); font-size: var(--t-sm); }
@@ -31,11 +36,11 @@
 .apt-foot .link-line { color: var(--ivory); }
 
 @media (max-width: 720px) {
-  .apt-head { padding-bottom: var(--s-4); }
-  .apt-text { display: none; }
+  .apt .rvs-brand-name { display: none; }
+  .apt .rvs-scrub { bottom: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .apt-title, .apt-text, .apt-finder { animation: none; }
+  .apt-finder { animation: none; }
 }
 /* Reserve the viewer's space before its script mounts, so the footer does not jump (CLS). */
 .apt-finder .rvs-root:empty { min-height: calc(100svh - var(--header-h)); }

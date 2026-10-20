@@ -10,7 +10,7 @@ declare global {
  * Mounts the interactive viewer (lib/selector/selector.js).
  * `fill` = full-screen mode: the stage takes the rest of the viewport below its toolbar and crops like a cover image.
  */
-export default function Selector({ data, lang, fill = false }: { data: any; lang: Lang; fill?: boolean }) {
+export default function Selector({ data, lang, fill = false, title }: { data: any; lang: Lang; fill?: boolean; title?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     let inst: any = null;
@@ -18,7 +18,8 @@ export default function Selector({ data, lang, fill = false }: { data: any; lang
     const el = ref.current;
     const boot: any = { data, lang, numberLocale: LOCALES[lang].number, strings: SELECTOR_UI[lang], rest: { lead: '/api/lead' } };
     if (fill && el) {
-      boot.maxCrop = 0.4;
+      boot.contain = true;
+      boot.title = title;
       // read on every layout pass, so it follows resizes
       Object.defineProperty(boot, 'maxHeight', {
         get() {
@@ -33,6 +34,6 @@ export default function Selector({ data, lang, fill = false }: { data: any; lang
       inst = window.RiverinaSelector.mount(el, boot);
     });
     return () => { cancelled = true; if (inst && inst.destroy) inst.destroy(); };
-  }, [data, lang, fill]);
+  }, [data, lang, fill, title]);
   return <div ref={ref} className="rvs-root" data-lenis-prevent />;
 }

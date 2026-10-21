@@ -110,9 +110,9 @@ export const DEFAULT_PAGE: Page = {
       en: 'Riverina is a *new* residential development in *Ilidža*. The first building offers *63 apartments* from 46 to 111 m², above a commercial ground floor, designed for a *calm* life in *Sarajevo*.',
     },
     images: [
-      { path: `${R}/enterijer/enterijer-19.webp`, caption: { bs: 'Kupatilo s tušem, vizualizacija', en: 'Shower room, visualisation' } },
       { path: `${R}/objekat/objekat-7.webp`, caption: { bs: 'Ulaz u zgradu, vizualizacija', en: 'Building entrance, visualisation' } },
       { path: `${R}/enterijer/enterijer-8.webp`, caption: { bs: 'Spavaća soba, vizualizacija', en: 'Bedroom, visualisation' } },
+      { path: `${R}/enterijer/enterijer-19.webp`, caption: { bs: 'Kupatilo s tušem, vizualizacija', en: 'Shower room, visualisation' } },
       { path: `${R}/objekat/objekat-2.webp`, caption: { bs: 'Poslovno prizemlje, vizualizacija', en: 'Commercial ground floor, visualisation' } },
     ],
   },

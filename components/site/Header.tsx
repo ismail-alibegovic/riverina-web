@@ -36,7 +36,7 @@ export default function Header(p: HeaderProps) {
   // The page's first block (hero or page header) decides: solid as soon as its bottom passes under the header.
   useEffect(() => {
     if (p.tone === 'dark' || !sentinel.current) return;
-    const first = document.querySelector('#main > :first-child') || sentinel.current;
+    const first = document.querySelector('[data-hdr-until]') || document.querySelector('#main > :first-child') || sentinel.current;
     const io = new IntersectionObserver(([e]) => setSolid(!e.isIntersecting), { rootMargin: '-80px 0px 0px 0px' });
     io.observe(first);
     return () => io.disconnect();

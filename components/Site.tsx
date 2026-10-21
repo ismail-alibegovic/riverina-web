@@ -1,4 +1,4 @@
-import { Lang, SiteData, tx, mediaUrl, UI, sectionList, resolveLink, SectionKey, imgAlt, illustrationLabel } from '@/lib/content';
+import { Lang, SiteData, tx, mediaUrl, UI, sectionList, resolveLink, SectionKey, imgAlt, illustrationLabel, unitFacts, plain } from '@/lib/content';
 import { href, LOCALES } from '@/lib/i18n';
 import { APARTMENT_TYPES, ROOM_NAMES, unitsOfType } from '@/lib/apartmentTypes';
 import PLANS_3D from '@/lib/plans3d.json';
@@ -11,6 +11,7 @@ import Hero from './home/Hero';
 import Manifest from './home/Manifest';
 import About from './home/About';
 import Categories from './home/Categories';
+import Building from './home/Building';
 import Details from './home/Details';
 import Types, { type TypeCard } from './home/Types';
 import Showcase from './home/Showcase';
@@ -48,7 +49,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
     world: () => page.world && (page.world.items || []).length > 0 && <World world={page.world} lang={lang} cta={{ href: href('apartments', lang), label: aptLabel }} more={t.learnMore} />,
 
     manifest: () => manifestText && (
-      <Manifest text={manifestText} label={t.manifest} images={(page.manifest?.images || []).filter((m) => m.path).map((m) => ({ src: mediaUrl(m.path), alt: imgAlt(m, lang) }))} />
+      <Manifest text={manifestText} label={t.manifest} facts={unitFacts(units, lang)} images={(page.manifest?.images || []).filter((m) => m.path).map((m) => ({ src: mediaUrl(m.path), alt: imgAlt(m, lang), caption: plain(m.caption, lang) }))} />
     ),
 
     about: () => (tx(page.about?.title, lang) || tx(page.about?.text, lang)) && <About about={page.about || {}} units={units} lang={lang} tag={tag} />,
@@ -61,6 +62,30 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
     statement: () => page.statement?.image && tx(page.statement?.title, lang) && <Statement st={page.statement} lang={lang} tag={tag} cta={aptLabel} />,
 
     categories: () => {
+      // The building with 360° views turns in its own chapter; without views the category panels stay.
+      const bld = buildings.find((b) => b.status !== 'soon' && (b.views || []).length > 1);
+      if (bld) {
+        const own = units.filter((u) => u.building === bld.id);
+        const levels = Array.from(new Set(own.map((u) => Number(u.floor)).filter((f) => f > 0))).sort((a, b) => b - a);
+        const floors = [
+          ...levels.map((f) => ({ key: String(f), no: String(f), label: t.floor, count: t.unitsCount.replace('{n}', String(own.filter((u) => Number(u.floor) === f).length)), href: `${href('apartments', lang)}#rvs/${bld.id}/floor-${f}` })),
+          { key: 'p', no: 'P', label: t.ground, count: t.commercial },
+        ];
+        return (
+          <Building
+            id={bld.id}
+            name={bld.name}
+            eyebrow={t.architecture}
+            text={tx(page.vision?.text, lang).replace(/\[\[TBD:[^\]]*\]\]/g, '').trim()}
+            frames={bld.views.map((v: any) => mediaUrl(v.image)).filter(Boolean)}
+            start={Number(bld.default_view) || 0}
+            floors={floors}
+            cta={{ href: href('apartments', lang), label: aptLabel }}
+            tag={tag}
+            labels={{ drag: t.dragRotate, left: t.turnLeft, right: t.turnRight, angle: t.viewAngle, floors: t.floor }}
+          />
+        );
+      }
       const items = (page.categories?.items || []).filter((c) => tx(c.title, lang) && c.image);
       return items.length > 0 && (
         <section aria-label={t.categories}>

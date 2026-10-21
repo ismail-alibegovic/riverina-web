@@ -9,7 +9,7 @@ export default function Vision({ vision, lang, tag }: { vision: NonNullable<Page
   const title = tx(vision.title, lang);
   return (
     <section id="projekat" className="vis" aria-label={plain(title, lang)}>
-      {vision.image && <div className="vis-bg" data-parallax="10"><Fill src={vision.image} sizes="100vw" quality={70} /></div>}
+      {vision.image && <div className="vis-bg" data-parallax="10"><Fill src={vision.image} sizes="100vw" quality={72} /></div>}
       <div className="vis-shade" aria-hidden="true" />
       {tag && <span className="ill-tag">{tag}</span>}
       <div className="vis-col">

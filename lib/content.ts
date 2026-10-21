@@ -48,7 +48,8 @@ export type Page = {
   /** home page fields at the top level (kept for older saves), other pages under pages.<route> */
   seo?: Seo & { pages?: Partial<Record<Exclude<RouteKey, 'home'>, Seo>> };
   sections?: { order?: SectionKey[]; hidden?: SectionKey[] };
-  hero?: { eyebrow?: L; title?: L; subtitle?: L; image?: string; cta?: L; cta2?: L };
+  /** words: the three stepped hero words, one per line (the opening); title stays the page's main name */
+  hero?: { eyebrow?: L; title?: L; words?: L; subtitle?: L; image?: string; cta?: L; cta2?: L };
   manifest?: { text?: L; images?: Img[] };
   about?: { eyebrow?: L; title?: L; text?: L; image?: string; image2?: string; facts?: { value?: L; label?: L }[]; auto_facts?: boolean };
   categories?: { items?: { title?: L; caption?: L; image?: string; link?: string; link_label?: L }[] };
@@ -99,6 +100,8 @@ export const DEFAULT_PAGE: Page = {
   hero: {
     eyebrow: { bs: 'Ilidža, Sarajevo', en: 'Ilidža, Sarajevo' },
     title: { bs: 'Riverina\n*residence*', en: 'Riverina\n*residence*' },
+    // approved by the owner 21. 10. 2026, from the brochure line "Moderno življenje uz rijeku"
+    words: { bs: 'Moderno\nŽivljenje\nUz rijeku', en: 'Modern\nLiving\nBy the river' },
     subtitle: { bs: 'Novi stambeni kompleks na Ilidži.', en: 'A new residential development in Ilidža.' },
     // current facade (360° set, angle 315°), confirmed by the owner 20. 10. 2026
     image: `${R}/objekat/riverina-1-ugao-vecer.webp`,
@@ -106,14 +109,17 @@ export const DEFAULT_PAGE: Page = {
   },
   manifest: {
     text: {
-      bs: 'Riverina je *novi* stambeni kompleks na *Ilidži*. Prva zgrada nudi *63 stana* od 46 do 111 m², iznad poslovnog prizemlja, zamišljenih za *miran* život u *Sarajevu*.',
-      en: 'Riverina is a *new* residential development in *Ilidža*. The first building offers *63 apartments* from 46 to 111 m², above a commercial ground floor, designed for a *calm* life in *Sarajevo*.',
+      // One line per row; {words} dissolve as the statement recomposes on scroll, *words* are set in capitals.
+      bs: 'Riverina {je novi stambeni kompleks}\nna *Ilidži*, uz rijeku.\n{Prva zgrada nudi} *63 stana*,\nod 46 do 111 m²,\n{iznad poslovnog prizemlja,}\nza miran život\nu *Sarajevu*.',
+      en: 'Riverina {is a new residential development}\nin *Ilidža*, by the river.\n{The first building offers} *63 apartments*,\nfrom 46 to 111 m²,\n{above a commercial ground floor,}\nfor a calm life\nin *Sarajevo*.',
     },
     images: [
-      { path: `${R}/enterijer/enterijer-19.webp`, caption: { bs: 'Kupatilo s tušem, vizualizacija', en: 'Shower room, visualisation' } },
-      { path: `${R}/objekat/objekat-7.webp`, caption: { bs: 'Ulaz u zgradu, vizualizacija', en: 'Building entrance, visualisation' } },
-      { path: `${R}/enterijer/enterijer-8.webp`, caption: { bs: 'Spavaća soba, vizualizacija', en: 'Bedroom, visualisation' } },
-      { path: `${R}/objekat/objekat-2.webp`, caption: { bs: 'Poslovno prizemlje, vizualizacija', en: 'Commercial ground floor, visualisation' } },
+      // current facade details (360° set) and interiors; see _phase-a/phase-a-audit.md
+      { path: `${R}/editorial/st-facade.webp`, caption: { bs: 'Fasada, detalj, vizualizacija', en: 'Facade detail, visualisation' } },
+      { path: `${R}/editorial/st-dining.webp`, caption: { bs: 'Trpezarija uz prozor, vizualizacija', en: 'Dining by the window, visualisation' } },
+      { path: `${R}/editorial/st-bath.webp`, caption: { bs: 'Kupatilo, vizualizacija', en: 'Bathroom, visualisation' } },
+      { path: `${R}/editorial/st-ground.webp`, caption: { bs: 'Poslovno prizemlje, vizualizacija', en: 'Commercial ground floor, visualisation' } },
+      { path: `${R}/editorial/st-bedroom.webp`, caption: { bs: 'Spavaća soba, vizualizacija', en: 'Bedroom, visualisation' } },
     ],
   },
   about: {

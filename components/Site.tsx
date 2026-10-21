@@ -7,8 +7,8 @@ import SiteChrome from './site/SiteChrome';
 import Footer from './site/Footer';
 import Gallery from './Gallery';
 import ContactForm from './ContactForm';
-import Hero from './home/Hero';
-import Manifest from './home/Manifest';
+import Opening from './home/Opening';
+import Prologue from './home/Prologue';
 import About from './home/About';
 import Categories from './home/Categories';
 import Details from './home/Details';
@@ -41,14 +41,14 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
   const tag = illustrationLabel(page, lang);
 
   const sections: Record<SectionKey, () => React.ReactNode> = {
-    hero: () => <Hero hero={page.hero || {}} lang={lang} name={name} tag={tag} />,
+    hero: () => <Opening hero={page.hero || {}} lang={lang} name={name} tag={tag} />,
 
     vision: () => page.vision && tx(page.vision.title, lang) && <Vision vision={page.vision} lang={lang} tag={tag} />,
 
     world: () => page.world && (page.world.items || []).length > 0 && <World world={page.world} lang={lang} cta={{ href: href('apartments', lang), label: aptLabel }} more={t.learnMore} />,
 
     manifest: () => manifestText && (
-      <Manifest text={manifestText} label={t.manifest} images={(page.manifest?.images || []).filter((m) => m.path).map((m) => ({ src: mediaUrl(m.path), alt: imgAlt(m, lang) }))} />
+      <Prologue text={manifestText} label={t.manifest} images={(page.manifest?.images || []).filter((m) => m.path).map((m) => ({ src: mediaUrl(m.path), alt: imgAlt(m, lang) }))} />
     ),
 
     about: () => (tx(page.about?.title, lang) || tx(page.about?.text, lang)) && <About about={page.about || {}} units={units} lang={lang} tag={tag} />,

@@ -1,0 +1,118 @@
+/* =====================================================================
+   Opening and first editorial section after elicyon.com (values from its code: _phase-a/phase-a-audit.md).
+   Resting states are the no-JS / reduced-motion states; GSAP only animates towards them.
+   ===================================================================== */
+
+/* ---------- loader (first home visit in a session) ---------- */
+html.intro-run { overflow: hidden; }
+html.intro-run .hdr { opacity: 0; transition: opacity .7s cubic-bezier(.25, 1, .5, 1); }
+html.intro-run.intro-header .hdr { opacity: 1; }
+/* the header's own logo appears only when the travelling loader logo has landed on it */
+html.intro-run .hdr-brand { opacity: 0; }
+.hdr-brand { transition: opacity .25s ease-out; }
+
+.ld { position: absolute; inset: 0; z-index: 10; pointer-events: none; }
+html.intro-seen .ld, .eh.intro-done .ld { display: none; }
+.ld-field { position: absolute; inset: 0; background: var(--navy); }
+.ld-stage { position: absolute; inset: 0; display: grid; place-items: center; }
+.ld-logo { position: relative; width: clamp(170px, 18vw, 270px); transform-origin: 50% 50%; will-change: transform; }
+/* each shape is revealed along its stroke by a soft-edged mask (--p moves the edge from 0 % to 130 %) */
+.ld-part { position: absolute; display: block; max-width: none; --p: 130%; -webkit-mask-image: linear-gradient(var(--dir), #000 calc(var(--p) - 30%), transparent var(--p)); mask-image: linear-gradient(var(--dir), #000 calc(var(--p) - 30%), transparent var(--p)); }
+.ld-line { position: absolute; display: block; }
+.ld-ch { position: absolute; top: 0; height: 100%; overflow: hidden; }
+.ld-ch > span { position: absolute; inset: 0; display: block; background-repeat: no-repeat; }
+html:not(.intro-seen) .ld-part { --p: 0%; }
+html:not(.intro-seen) .ld-word .ld-ch > span { transform: translateY(105%); }
+html:not(.intro-seen) .ld-res .ld-ch > span { opacity: 0; }
+/* fail-safe: if the script never runs, the loader steps aside after a few seconds */
+.eh:not(.is-live) .ld { animation: ld-away .8s ease 5s forwards; }
+@keyframes ld-away { to { opacity: 0; visibility: hidden; } }
+
+/* ---------- hero: picture · middle word · building cut-out · ground shade · outer words ---------- */
+.eh {
+  --shift: 13%;      /* the picture sits lower; its sky fades into the navy above, which holds header and first word */
+  --ox: 50%;         /* horizontal crop */
+  --ws: 6.6vw;       /* word size */
+  --w1x: 32px; --w1y: 13.2%;
+  --w2x: 47.9vw; --w2y: 19.6%;
+  --w3x: 23.6vw; --w3y: 85.6%;
+  position: relative; height: 100svh; min-height: 600px; overflow: hidden; isolation: isolate; background: var(--navy-deep); color: var(--ivory);
+}
+.eh-media { position: absolute; left: 0; right: 0; top: var(--shift); height: 100%; pointer-events: none; }
+.eh-zoom { position: absolute; inset: 0; will-change: transform; }
+html:not(.intro-seen) .eh-zoom { transform: scale(1.2); }
+.eh-zoom img { object-fit: cover; object-position: var(--ox) 50%; }
+.eh-bg { z-index: 1; -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 16%); mask-image: linear-gradient(to bottom, transparent 0, #000 16%); }
+/* sky only (the building cut-out lies above it): deep navy at the top, clear towards the roofline */
+.eh-sky { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(14, 23, 41, .9) 0%, rgba(20, 33, 58, .62) 14%, rgba(20, 33, 58, .3) 26%, rgba(20, 33, 58, 0) 40%); }
+.eh-fg { z-index: 3; -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 3%); mask-image: linear-gradient(to bottom, transparent 0, #000 3%); }
+.eh-ground { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; height: 34%; pointer-events: none; background: linear-gradient(to top, rgba(14, 23, 41, .72) 0%, rgba(14, 23, 41, .38) 45%, rgba(14, 23, 41, 0) 100%); }
+
+.eh-title { margin: 0; font: inherit; }
+.eh-w { position: absolute; display: block; white-space: nowrap; font-family: var(--display); font-weight: 300; font-size: var(--ws); line-height: 1; letter-spacing: .02em; text-transform: uppercase; color: var(--ivory); text-shadow: 0 0 28px rgba(14, 23, 41, .28); will-change: transform, opacity; }
+.eh-w1 { z-index: 4; left: var(--w1x); top: var(--w1y); }
+.eh-w2 { z-index: 2; left: var(--w2x); top: var(--w2y); }
+.eh-w3 { z-index: 4; left: var(--w3x); top: var(--w3y); }
+html:not(.intro-seen) .eh:not(.is-live) .eh-w { animation: eh-show 0s 5s both; }
+html:not(.intro-seen) .eh-w { opacity: 0; }
+@keyframes eh-show { to { opacity: 1; } }
+
+.eh-foot { position: absolute; z-index: 5; right: 32px; bottom: 26px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.eh-ctas { display: flex; gap: 30px; }
+.eh-cta { display: inline-flex; align-items: center; min-height: 44px; color: var(--ivory); text-decoration: none; font: 500 12px/1 var(--body); letter-spacing: .15em; text-transform: uppercase; }
+.eh-cta span { position: relative; padding-bottom: 5px; }
+.eh-cta span::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: currentColor; transform-origin: 0 50%; transition: transform .3s cubic-bezier(.4, 0, .2, 1); }
+@media (hover: hover) { .eh-cta:hover span::after { transform: scaleX(0); transform-origin: 100% 50%; } }
+.eh-cap { margin: 0; font-size: 10px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: rgba(246, 241, 231, .78); }
+
+/* tablets and phones in portrait: the words stack and centre (Elicyon mobile), the crop moves to the building's corner */
+@media (max-width: 1024px) and (orientation: portrait), (max-width: 767px) {
+  .eh { --shift: 18%; --ox: 71%; --ws: clamp(40px, 13vw, 92px); --w1y: 17%; --w2y: 30.4%; --w3y: 79%; }
+  .eh-ground { height: 46%; background: linear-gradient(to top, rgba(14, 23, 41, .84) 0%, rgba(14, 23, 41, .6) 38%, rgba(14, 23, 41, 0) 100%); }
+  .eh-w { left: 0 !important; right: 0; text-align: center; }
+  .eh-foot { left: 20px; right: 20px; bottom: 18px; align-items: center; }
+  .eh-ctas { gap: 24px; }
+  .eh-cap { font-size: 9px; }
+}
+
+/* ---------- first editorial section: the statement recomposes ---------- */
+.es { position: relative; z-index: 1; background: var(--paper); color: var(--navy); }
+.es-pin { position: relative; height: 100svh; min-height: 640px; display: grid; place-items: center; overflow: hidden; }
+.es-text { position: relative; z-index: 1; margin: 0; width: min(900px, 78vw); display: flex; flex-direction: column; align-items: flex-start; font-family: var(--display); font-weight: 300; font-size: clamp(30px, 3.4vw, 54px); line-height: 1.18; letter-spacing: -.004em; }
+.es-line { display: block; overflow: hidden; white-space: nowrap; padding-bottom: .04em; will-change: transform; }
+.es-fade { display: inline-block; vertical-align: bottom; overflow: hidden; white-space: pre; }
+.es-em { text-transform: uppercase; letter-spacing: .01em; }
+.es-imgs { position: absolute; inset: 0; pointer-events: none; }
+.es-img { position: absolute; margin: 0; overflow: hidden; background: var(--ivory); will-change: transform; }
+.es-img img { object-fit: cover; }
+/* all five stay in the side margins, outside the text column, so they never cross the words */
+.es-img-1 { left: 4vw; top: 52%; width: 10vw; aspect-ratio: 370 / 540; }
+.es-img-2 { right: 3vw; top: 8%; width: 13vw; aspect-ratio: 5 / 3; }
+.es-img-3 { right: 5.5vw; top: 64%; width: 8.5vw; aspect-ratio: 4 / 5; }
+.es-img-4 { left: 2vw; top: 86%; width: 14vw; aspect-ratio: 2.1; }
+.es-img-5 { right: 2vw; top: 98%; width: 12vw; aspect-ratio: 5 / 3; }
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* tablets: a narrower column, so the images fit in the margins beside it */
+  .es-text { width: 64vw; font-size: clamp(26px, 3.9vw, 34px); }
+  .es-img-1, .es-img-4 { left: 2vw; width: 9vw; }
+  .es-img-2, .es-img-3, .es-img-5 { right: 2vw; width: 9vw; }
+}
+@media (max-width: 767px) {
+  /* phones: the final sentence straight away; the images get their own rows and never cross the words */
+  .es-pin { height: auto; min-height: 0; display: grid; grid-template-columns: 1fr; row-gap: 44px; place-items: initial; padding: 96px 20px 120px; }
+  .es-imgs { display: contents; }
+  .es-img { position: relative; inset: auto; }
+  .es-img-1 { grid-row: 1; justify-self: end; width: 38vw; }
+  .es-text { grid-row: 2; width: auto; font-size: clamp(25px, 7.4vw, 34px); align-items: stretch; }
+  .es-img-2 { grid-row: 3; justify-self: start; width: 58vw; }
+  .es-line { white-space: normal; }
+  .es-fade, .es-line.is-gone { display: none; }
+  .es-img-3, .es-img-4, .es-img-5 { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ld { display: none; }
+  .eh-zoom { transform: none !important; }
+  .eh-w { opacity: 1 !important; animation: none !important; }
+}

@@ -7,7 +7,7 @@ const nextConfig = {
   },
   images: {
     formats: ['image/avif', 'image/webp'],
-    qualities: [72, 75, 78, 80],
+    qualities: [72, 75, 78, 80, 82, 84],
     remotePatterns: [{ protocol: 'https', hostname: '*.supabase.co', pathname: '/storage/v1/object/public/**' }],
   },
 };

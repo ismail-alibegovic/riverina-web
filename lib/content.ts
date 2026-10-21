@@ -34,14 +34,14 @@ export const imgAlt = (img: { alt?: L; caption?: L }, lang: Lang) => plain(img.a
 /** Search and sharing texts for one page; empty fields fall back to the page's own title and text. */
 export type Seo = { title?: L; description?: L; image?: string };
 export type SectionKey = 'hero' | 'vision' | 'manifest' | 'about' | 'showcase' | 'categories' | 'buildings' | 'types' | 'details' | 'world' | 'gallery' | 'location' | 'investor' | 'statement' | 'contact';
-export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'showcase', 'categories', 'buildings', 'types', 'vision', 'details', 'world', 'gallery', 'location', 'investor', 'statement', 'contact'];
+export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'showcase', 'categories', 'buildings', 'types', 'investor', 'location', 'details', 'vision', 'world', 'gallery', 'statement', 'contact'];
 /**
  * Home sections that are off until switched on in the CMS. The home page follows elicyon.com's sequence, one story
  * from the river to the front door: hero → manifest → categories → apartment types ("services") → vision
  * ("leading the vision") → interiors carousel ("objects of desire") → world cards ("insights") → closing statement
  * → footer with the enquiry form. Gallery, location and developer have their own pages. Also in lib/admin/app.js.
  */
-export const DEFAULT_HIDDEN: SectionKey[] = ['about', 'showcase', 'buildings', 'gallery', 'location', 'investor', 'contact'];
+export const DEFAULT_HIDDEN: SectionKey[] = ['about', 'showcase', 'buildings', 'vision', 'world', 'gallery', 'contact'];
 
 // Text conventions in the CMS: a new line starts a new heading line; *word* marks the contrasting word.
 export type Page = {
@@ -61,7 +61,8 @@ export type Page = {
   /** horizontal strip of wide renders with captions */
   showcase?: { title?: L; text?: L; items?: { image?: string; caption?: L }[] };
   /** full-screen render with a closing statement before the enquiry form */
-  statement?: { eyebrow?: L; title?: L; text?: L; image?: string; cta?: L; cta2?: L };
+  /** foot: the second line pair on the closing frame's border (top: title) */
+  statement?: { eyebrow?: L; title?: L; text?: L; foot?: L; image?: string; cta?: L; cta2?: L };
   /** apartment types (lib/apartmentTypes.ts); figures come from the brochure and the unit table, texts from the CMS */
   types?: { title?: L; text?: L; note?: L };
   details?: { title?: L; note?: L; items?: { image?: string; title?: L; text?: L }[] };
@@ -70,7 +71,7 @@ export type Page = {
   /** gallery page (/galerija): page_image is its hero, the river strip (showcase) and these images follow */
   gallery?: { title?: L; text?: L; images?: Img[]; page_image?: string };
   location?: { title?: L; text?: L; address?: L; map_embed?: string; map_link?: string; image?: string; page_image?: string; points?: { name?: L; value?: L }[] };
-  investor?: { title?: L; text?: L; logo?: string; link?: string; page_image?: string };
+  investor?: { title?: L; text?: L; logo?: string; link?: string; image?: string; page_image?: string };
   privacy?: { title?: L; text?: L };
   contact?: { title?: L; text?: L; phone?: string; email?: string; address?: L; hours?: L };
   footer?: { text?: L; company?: string };
@@ -149,14 +150,17 @@ export const DEFAULT_PAGE: Page = {
     eyebrow: { bs: 'Riverina Residence', en: 'Riverina Residence' },
     title: { bs: 'Prostor za vaš\n*novi početak*', en: 'A space for your\n*new beginning*' },
     text: { bs: 'Stanovi od 46 do 111 m², s jednom do četiri spavaće sobe. Prodaja je u toku.', en: 'Apartments from 46 to 111 m², with one to four bedrooms. Sales are now open.' },
-    image: `${R}/naselje/3.webp`,
+    foot: { bs: 'Stanovi od 46 do 111 m²,\n*s jednom do četiri spavaće sobe*', en: 'Apartments from 46 to 111 m²,\n*with one to four bedrooms*' },
+    // current facade, 360° set, angle 150° (2× Lanczos)
+    image: `${R}/chapters/kontakt-150.webp`,
     cta2: { bs: 'Pošaljite upit', en: 'Send an enquiry' },
   },
   categories: {
     items: [
-      { title: { bs: 'Arhitektura', en: 'Architecture' }, caption: { bs: 'Riverina 1', en: 'Riverina 1' }, image: `${R}/objekat/objekat-1.webp`, link: 'apartments' },
-      { title: { bs: 'Enterijer', en: 'Interiors' }, caption: { bs: 'Stanovi od\n46 do 111 m²', en: 'Apartments from\n46 to 111 m²' }, image: `${R}/enterijer/enterijer-2.webp`, link: 'gallery', link_label: { bs: 'Pogledajte galeriju', en: 'View the gallery' } },
-      { title: { bs: 'Lokacija', en: 'Location' }, caption: { bs: 'Ilidža,\nSarajevo', en: 'Ilidža,\nSarajevo' }, image: `${R}/naselje/5.webp`, link: 'location', link_label: { bs: 'Pogledajte lokaciju', en: 'View the location' } },
+      // current facade (360° set, 60°), an interior and the river (concept view of the neighbourhood), all 2× Lanczos
+      { title: { bs: 'Arhitektura', en: 'Architecture' }, caption: { bs: 'Riverina 1', en: 'Riverina 1' }, image: `${R}/chapters/arhitektura-60.webp`, link: 'apartments' },
+      { title: { bs: 'Enterijer', en: 'Interiors' }, caption: { bs: 'Stanovi od\n46 do 111 m²', en: 'Apartments from\n46 to 111 m²' }, image: `${R}/chapters/enterijer-2.webp`, link: 'gallery', link_label: { bs: 'Pogledajte galeriju', en: 'View the gallery' } },
+      { title: { bs: 'Lokacija', en: 'Location' }, caption: { bs: 'Ilidža,\nSarajevo', en: 'Ilidža,\nSarajevo' }, image: `${R}/chapters/lokacija-rijeka.webp`, link: 'location', link_label: { bs: 'Pogledajte lokaciju', en: 'View the location' } },
     ],
   },
   // "Moderno življenje uz rijeku" is a phrase from the sales brochure.
@@ -197,12 +201,13 @@ export const DEFAULT_PAGE: Page = {
     title: { bs: 'Enterijer\n*i detalji*', en: 'Interiors\n*and details*' },
     note: { bs: 'Vizualizacije su ilustrativne.', en: 'Visualisations are for illustration only.' },
     items: [
+      // interiors not shown elsewhere on the home page, and the commercial ground floor (concept)
       { image: `${R}/enterijer/enterijer-1.webp`, title: { bs: 'Dnevni boravak', en: 'Living room' } },
-      { image: `${R}/enterijer/enterijer-4.webp`, title: { bs: 'Trpezarija', en: 'Dining' } },
       { image: `${R}/enterijer/enterijer-7.webp`, title: { bs: 'Kuhinja', en: 'Kitchen' } },
       { image: `${R}/enterijer/enterijer-6.webp`, title: { bs: 'Spavaća soba', en: 'Bedroom' } },
-      { image: `${R}/enterijer/enterijer-9.webp`, title: { bs: 'Kupatilo', en: 'Bathroom' } },
-      { image: `${R}/enterijer/enterijer-5.webp`, title: { bs: 'Boravak', en: 'Lounge' } },
+      { image: `${R}/enterijer/enterijer-3.webp`, title: { bs: 'Boravak', en: 'Lounge' } },
+      { image: `${R}/enterijer/enterijer-5.webp`, title: { bs: 'Boravak i trpezarija', en: 'Living and dining' } },
+      { image: `${R}/editorial/prizemlje-kafe.webp`, title: { bs: 'Poslovno prizemlje', en: 'Commercial ground floor' }, text: { bs: 'Koncept uređenja', en: 'Fit-out concept' } },
     ],
   },
   gallery: {
@@ -230,6 +235,8 @@ export const DEFAULT_PAGE: Page = {
     title: { bs: 'Investitor\n*ALYASIN Group*', en: 'Developer\n*ALYASIN Group*' },
     text: { bs: '[[TBD: tekst o investitoru]]', en: '[[TBD: about the developer]]' },
     logo: `${R}/investitor/alyasin-logo.webp`,
+    // background of the home section: the neighbourhood by the river at night (concept view)
+    image: `${R}/chapters/investitor-noc.webp`,
     page_image: `${R}/objekat/objekat-5.webp`,
   },
   privacy: {

@@ -1,7 +1,6 @@
 /* Riverina Residence — home page sections (phase b). Tokens live in globals.css. */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-:root { --hero-d: 2.15s; }
-html.intro-seen { --hero-d: .1s; }
+:root { --hero-d: .1s; }
 
 /* ---------- reveals ----------
    Keyframes wait (paused) until SmoothScroll marks the element .is-in, then play once.

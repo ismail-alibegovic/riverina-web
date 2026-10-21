@@ -6,5 +6,5 @@ export const metadata: Metadata = { metadataBase: new URL(SITE_URL), title: 'Riv
 export const viewport: Viewport = { themeColor: '#14213a', width: 'device-width', initialScale: 1 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <RootDocument lang="bs" intro>{children}</RootDocument>;
+  return <RootDocument lang="bs">{children}</RootDocument>;
 }

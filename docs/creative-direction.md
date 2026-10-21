@@ -120,3 +120,17 @@ Refinements: an exceptional cinematic hero; a distinct composition, image treatm
 | Architectural presentation | Pinned for 360svh. The CMS 360° views (24 frames) stream in near the section and are drawn on a canvas, making one full turn per scroll. A dial (degrees and ticks), drag-to-turn and arrow buttons with a live readout. The frame opens like shutters, with crop marks. The floor section (5 → P) climbs as the building turns, and each floor links into the apartment finder (`#rvs/r1/floor-N`). It replaces the category panels whenever a building has 360° views | `components/home/Building.tsx`, `components/Site.tsx` |
 
 The header turns solid when the paper sheet reaches it (`[data-hdr-until]`). New UI strings (BS/EN) are in `lib/i18n.ts`. Cormorant italic was added for the second title line. No database, CMS, route or API changes.
+
+---
+
+## 7. Hero review round 2 (21 Oct 2026)
+
+The owner's review of phase 1 rejected the aperture hero: the navy title copy over the render made parts of the headline unreadable, especially on mobile; the navy intro and the narrow slit felt slow; the manifesto left text nearly invisible; the viewer controls needed work; development overlays showed in the screenshots.
+
+Changes made in this round:
+- **Intro curtain removed** (SiteChrome, RootDocument, both layouts, globals.css). The page opens on the hero itself.
+- **Root causes of the overlay's "1 issue":** (1) the cross-document view transitions in globals.css reject their promises whenever the browser skips one (reload, hidden tab, quick second click), which surfaced as `Uncaught AbortError: Transition was skipped`. They are now handled in a small pre-paint script in RootDocument. (2) Vision used image quality 70, which is not in `images.qualities`; it now uses 72. (3) The hydration mismatch seen earlier came from a stale render during hot reload and does not reproduce on a fresh load. The dev-tools badge is switched off in `next.config.mjs` (`devIndicators: false`, local dev only); runtime errors still open the overlay.
+- **Two hero alternatives**, chosen with `lib/heroVariant.ts`. Both keep every word on a solid field and never over the render. Both are authentic assets only: the current Riverina 1 facade render approved on 20 Oct. Both have a CSS entrance that starts at once (the picture fades in over 0.8 s, type rises from 150 ms, everything is done by 1.3 s) and no pinned scroll; only the picture drifts slightly inside its frame on desktop.
+  - **A · Split (navy):** a title column on navy at the left (location at the top; title, gold rule, line and links at the bottom; illustration caption under them) and the render as a tall plate bleeding off the right edge under the header band. Mobile is its own composition: the plate on top, then caption, location, title and links on navy. Branch `feat/editorial-direction`.
+  - **B · Folio (ivory):** a paper page with a dark header; the masthead title "Riverina *Residence*" in one line with the location and line as a note at its right; a hairline with a gold lead; a panoramic plate bleeding off the right edge with links and caption in the side column. Mobile is its own composition: location, two-line title, rule, a full-width plate, then caption and links. Branch `feat/editorial-hero-b`.
+- The manifesto no longer overlaps the hero. Its refinement and the viewer refinement wait for the hero decision.

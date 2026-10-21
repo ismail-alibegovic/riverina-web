@@ -6,15 +6,16 @@ import '@/app/home.css';
 import '@/app/apartments.css';
 import '@/app/editorial.css';
 
-// Runs before first paint: the intro curtain plays once per browser session, and only when the visit starts on a
-// home page (`/`, `/en`, ...). Deep links (apartments, contact, shared links from ads) open straight on their content.
-const INTRO = `try{var s=window.sessionStorage,h=/^\\/([a-z]{2}\\/?)?$/.test(location.pathname);if(s.getItem('rv-intro')||!h)document.documentElement.classList.add('intro-seen');s.setItem('rv-intro','1')}catch(e){document.documentElement.classList.add('intro-seen')}`;
+// Page transitions between documents are a progressive enhancement (globals.css). When the browser skips one
+// (a reload, a hidden tab, a fast second click) it rejects the transition's promises; nothing waits on them, so they
+// are marked handled here instead of surfacing as uncaught errors. Runs before first paint, where pagereveal fires.
+const VT = `(function(){function q(e){var v=e.viewTransition;if(!v)return;['ready','finished','updateCallbackDone'].forEach(function(k){v[k]&&v[k].catch(function(){})})}addEventListener('pagereveal',q);addEventListener('pageswap',q)})()`;
 
 /** Shared <html> shell for every root layout (one per language, plus admin). */
-export default function RootDocument({ lang, children, intro = false }: { lang: Lang; children: React.ReactNode; intro?: boolean }) {
+export default function RootDocument({ lang, children }: { lang: Lang; children: React.ReactNode }) {
   return (
     <html suppressHydrationWarning lang={lang} dir={LOCALES[lang].dir} className={`${display.variable} ${body.variable}`}>
-      <head>{intro && <script dangerouslySetInnerHTML={{ __html: INTRO }} />}</head>
+      <head><script dangerouslySetInnerHTML={{ __html: VT }} /></head>
       <body>{children}</body>
     </html>
   );

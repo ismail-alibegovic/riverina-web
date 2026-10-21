@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // The dev-tools badge sits over the page corner in local review screenshots; runtime errors still open the overlay.
+  devIndicators: false,
   async redirects() {
     return [{ source: '/en/stanovi', destination: '/en/apartments', permanent: true }];
   },

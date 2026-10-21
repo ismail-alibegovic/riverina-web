@@ -20,6 +20,7 @@ import Vision from './home/Vision';
 import World from './home/World';
 import { Fill, Heading, Paras } from './home/text';
 import JsonLd from './JsonLd';
+import { HERO_VARIANT } from '@/lib/heroVariant';
 
 const FALLBACK_BUILDING = '/riverina/objekat/objekat-3.webp';
 
@@ -216,7 +217,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
 
   return (
     <>
-      <SiteChrome data={data} lang={lang} nav={nav} contactHref="#kontakt" langHref={(l) => href('home', l)} />
+      <SiteChrome data={data} lang={lang} nav={nav} contactHref="#kontakt" langHref={(l) => href('home', l)} tone={HERO_VARIANT === 'folio' ? 'dark' : 'light'} />
       <main id="main">
         {order.map((k) => <SectionSlot key={k}>{sections[k]()}</SectionSlot>)}
       </main>

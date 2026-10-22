@@ -411,33 +411,98 @@ html.rvs-lock { overflow: hidden; }
 .rvs-tip-type { display: block; font-style: normal; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--rvs-gold); margin-bottom: 2px; }
 @media (hover: none) { .rvs-tip-img { display: none; } }
 
-/* ---------- apartment sheet, refined (2026-10-22) ---------- */
-/* the plans print on ivory paper: their white ground multiplies away, so there is no white box inside the sheet */
-.rvs-sheet-media { background: var(--rvs-paper); }
-.rvs-media-img, .rvs-media-floor img { mix-blend-mode: multiply; }
-.rvs-media-floor { background: transparent; }
-/* head: the place as a quiet label, round hairline buttons for previous / next / close */
-.rvs-p-head { padding: 16px clamp(18px, 3vw, 40px); }
+/* ---------- apartment drawer (2026-10-22) ----------
+   The apartment opens as a sheet from the right over a navy-tinted scrim, leaving the finder in view behind it: the
+   number large, four fact cards, the actions, the plan on a white card, rooms beside the position on the floor, a few
+   interiors and the enquiry. It leaves the way it came. Full width on phones. */
+.rvs-scrim { background: rgba(5, 24, 54, .42); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); transition: opacity .45s cubic-bezier(.23, 1, .32, 1); }
+.rvs-panel { inset: 0 0 0 auto; width: min(780px, 100%); background: #f7f2ea; box-shadow: -24px 0 70px -20px rgba(5, 24, 54, .35); clip-path: none; transform: translateX(104%); overflow-y: auto; overscroll-behavior: contain; display: block;
+  transition: transform .7s cubic-bezier(.32, .72, 0, 1), visibility 0s .7s; }
+/* ends on a 3D identity, not none: after the slide Chromium otherwise keeps the sheet's paint clipped to the first screen */
+.rvs-panel.is-open { transform: translate3d(0, 0, 0); clip-path: none; transition: transform .7s cubic-bezier(.32, .72, 0, 1), visibility 0s; }
+/* solid, not frosted: a backdrop-filter on this sticky bar makes Chromium skip painting the sheet below the first screen */
+.rvs-p-head { position: sticky; top: 0; z-index: 3; padding: 14px 28px; background: #f7f2ea; border-bottom: 1px solid var(--rvs-line); }
 .rvs-p-where { font-size: 10.5px; letter-spacing: .22em; }
-.rvs-iconbtn { width: 44px; height: 44px; border-radius: 999px; border-color: rgba(20, 33, 58, .2); transition: background .25s, border-color .25s, color .25s, transform .12s ease-out; }
+.rvs-iconbtn { width: 40px; height: 40px; border-radius: 999px; border-color: rgba(20, 33, 58, .18); transition: background .25s, border-color .25s, color .25s, transform .12s ease-out; }
 .rvs-iconbtn:hover:not([disabled]) { background: var(--rvs-ink); border-color: var(--rvs-ink); color: var(--rvs-paper); }
 .rvs-iconbtn:active:not([disabled]) { transform: scale(.94); }
-.rvs-iconbtn svg { width: 18px; height: 18px; }
-/* actions: one solid navy call to action, the rest hairline; all answer on press */
-.rvs-btn { height: 50px; padding: 0 24px; font-size: 12px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; border-color: rgba(20, 33, 58, .28); transition: background .25s, color .25s, border-color .25s, transform .12s ease-out; }
-.rvs-btn:hover { background: rgba(20, 33, 58, .05); border-color: var(--rvs-ink); }
-.rvs-btn:active { transform: scale(.98); }
+.rvs-iconbtn[disabled] { opacity: .3; }
+.rvs-iconbtn svg { width: 17px; height: 17px; }
+
+.rvs-drawer { padding: 30px 28px 40px; display: flex; flex-direction: column; gap: 22px; }
+.rvs-drawer > * { animation: rvs-rise .8s cubic-bezier(.23, 1, .32, 1) both; }
+.rvs-drawer > :nth-child(2) { animation-delay: .05s; } .rvs-drawer > :nth-child(3) { animation-delay: .1s; } .rvs-drawer > :nth-child(n + 4) { animation-delay: .15s; }
+.rvs-p-type { display: inline-flex; align-items: center; gap: 12px; font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--rvs-gold); }
+.rvs-p-type::before { content: ""; width: 28px; height: 1px; background: var(--rvs-gold); }
+.rvs-p-code { font-family: var(--rvs-font-display); font-weight: 300; font-size: clamp(64px, 9vw, 104px); line-height: .9; letter-spacing: -.02em; margin: 10px 0 12px !important; color: var(--rvs-ink); font-variant-numeric: lining-nums; }
+.rvs-p-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 18px; }
+.rvs-p-sub { margin: 0; font-family: var(--rvs-font-display); font-size: 24px; line-height: 1.2; color: var(--rvs-ink-2); }
+.rvs-p-meta .rvs-st { height: 28px; padding: 0 12px; border-radius: 999px; background: #fff; border: 1px solid var(--rvs-line); font-size: 12px; letter-spacing: .08em; }
+
+/* four fact cards */
+.rvs-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 0; border: 0; }
+.rvs-fact { display: flex; flex-direction: column-reverse; justify-content: flex-end; gap: 6px; padding: 14px 16px 16px !important; background: #fff; border: 1px solid rgba(20, 33, 58, .07) !important; border-radius: 10px; }
+.rvs-fact dt { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--rvs-gold); }
+.rvs-fact dd { margin: 0; font-family: var(--rvs-font-display); font-size: clamp(24px, 2.6vw, 30px); font-weight: 400; line-height: 1.05; font-variant-numeric: lining-nums; white-space: nowrap; }
+
+/* actions: one solid navy pill, the rest hairline pills */
+.rvs-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+.rvs-btn { height: 46px; padding: 0 20px; border-radius: 999px; font-size: 11.5px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; border-color: rgba(20, 33, 58, .22); background: rgba(255, 255, 255, .6); transition: background .25s, color .25s, border-color .25s, transform .12s ease-out; }
+.rvs-btn:hover { background: #fff; border-color: var(--rvs-ink); }
+.rvs-btn:active { transform: scale(.97); }
 .rvs-btn svg { width: 16px; height: 16px; }
-.rvs-btn-primary, .rvs a.rvs-btn-primary { border-color: var(--rvs-ink); }
+.rvs-btn-primary, .rvs a.rvs-btn-primary { background: var(--rvs-ink); border-color: var(--rvs-ink); color: var(--rvs-paper); }
 .rvs-btn-primary:hover { background: var(--rvs-ink-2); }
-.rvs-btn-ghost { height: 44px; }
-.rvs-actions { gap: 10px; margin: 32px 0 40px; }
-/* facts: larger figures, gold labels */
-.rvs-fact dd { font-size: clamp(28px, 2.6vw, 38px); font-weight: 400; }
-.rvs-fact dt { color: var(--rvs-gold); }
-.rvs-p-sub { font-size: 24px; color: var(--rvs-ink-2); }
-/* the enquiry form: no box, underlined fields like the site's footer form */
-.rvs-form { padding: 28px 0 0; background: none; border: 0; border-top: 1px solid var(--rvs-line); }
-.rvs-field input, .rvs-field textarea { border: 0; border-bottom: 1px solid rgba(20, 33, 58, .3); background: transparent; padding: 10px 2px; }
+.rvs-btn-ghost { height: 42px; }
+
+/* white cards: the plan, the rooms, the position */
+.rvs-card { background: #fff; border: 1px solid rgba(20, 33, 58, .07); border-radius: 12px; padding: 16px 18px 18px; }
+.rvs-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.rvs-card-head .rvs-tabs { margin: 0; border: 0; gap: 4px; padding: 3px; border-radius: 999px; background: #f4efe6; }
+.rvs-card-head .rvs-tab { padding: 9px 14px; border-radius: 999px; font-size: 10.5px; transition: background .25s, color .25s; }
+.rvs-card-head .rvs-tab::after { display: none; }
+.rvs-card-head .rvs-tab.is-on { background: #fff; color: var(--rvs-ink); box-shadow: 0 1px 3px rgba(5, 24, 54, .12); }
+.rvs-plan-card .rvs-media-frame { height: clamp(300px, 52vh, 480px); flex: none; }
+.rvs-plan-zoom { position: static; height: 36px; padding: 0 14px; border-radius: 999px; background: #fff; color: var(--rvs-ink); border: 1px solid rgba(20, 33, 58, .16); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; transition: background .25s, color .25s; }
+.rvs-plan-zoom:hover { background: var(--rvs-ink); color: var(--rvs-paper); }
+.rvs-plan-zoom svg { width: 15px; height: 15px; }
+.rvs-media-img { mix-blend-mode: normal; }
+.rvs-ill { border-radius: 999px; left: 4px; bottom: 4px; }
+dl.rvs-more { margin: 0; padding: 4px 18px; background: #fff; border: 1px solid rgba(20, 33, 58, .07); border-radius: 12px; }
+dl.rvs-more div:last-child { border-bottom: 0; }
+
+.rvs-dgrid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 10px; align-items: start; }
+.rvs-dgrid.is-single { grid-template-columns: minmax(0, 1fr); }
+.rvs-rooms { margin: 0; }
+.rvs-rooms .rvs-eyebrow, .rvs-pos .rvs-eyebrow, .rvs-gallery .rvs-eyebrow { margin-bottom: 10px; }
+.rvs-room { padding: 9px 0; font-size: 14px; }
+.rvs-room-total { border-bottom: 0; }
+.rvs-pos .rvs-media-floor { border-radius: 8px; overflow: hidden; background: #fbf8f2; }
+.rvs-pos .rvs-media-floor img { mix-blend-mode: multiply; }
+
+/* gallery: three across, each opens large */
+.rvs-gal-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.rvs-gal-item { display: block; aspect-ratio: 4 / 3; padding: 0; border: 0; border-radius: 8px; overflow: hidden; background: #e9e2d6; cursor: zoom-in; }
+.rvs-gal-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .9s cubic-bezier(.23, 1, .32, 1); }
+.rvs-gal-item:hover img { transform: scale(1.05); }
+
+/* the enquiry: a white card with underlined fields */
+.rvs-form { padding: 24px 22px; background: #fff; border: 1px solid rgba(20, 33, 58, .07); border-radius: 12px; }
+.rvs-field input, .rvs-field textarea { border: 0; border-bottom: 1px solid rgba(20, 33, 58, .25); border-radius: 0; background: transparent; padding: 10px 2px; }
 .rvs-field input:focus, .rvs-field textarea:focus { border-bottom-color: var(--rvs-ink); box-shadow: 0 1px 0 var(--rvs-ink); }
-@media (prefers-reduced-motion: reduce) { .rvs-btn, .rvs-iconbtn { transition: none; } }
+.rvs-p-note { margin: 0; font-size: 12px; }
+
+@media (max-width: 720px) {
+  .rvs-p-head { padding: 10px 16px; }
+  .rvs-drawer { padding: 22px 16px 32px; gap: 18px; }
+  .rvs-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rvs-dgrid { grid-template-columns: minmax(0, 1fr); }
+  .rvs-gal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rvs-plan-card .rvs-media-frame { height: min(56svh, 380px); }
+  .rvs-actions .rvs-btn { flex: 1 1 calc(50% - 4px); padding: 0 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rvs-panel, .rvs-panel.is-open { transition: none; }
+  .rvs-drawer > * { animation: none; }
+  .rvs-btn, .rvs-iconbtn, .rvs-gal-item img { transition: none; }
+}

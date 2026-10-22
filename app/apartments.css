@@ -1,5 +1,5 @@
 /* Riverina Residence — full-screen apartment finder page (/stanovi, /en/apartments). */
-.apt { --apt-navy: #051836; --apt-ivory: #faf1e8; min-height: 100svh; background: var(--apt-navy); color: var(--ivory); }
+.apt { --apt-navy: #051836; --apt-ivory: #faf1e8; --apt-paper: #f3ede3; --apt-frame: clamp(12px, 1.6vw, 24px); min-height: 100svh; background: var(--apt-paper); color: var(--ink); }
 .apt-main { padding-top: var(--header-h); }
 /* the finder works like an app: the site header keeps a solid navy ground here, so the bar, the legend and the list
    never run under its type (the home page's blended header would mix with them) */
@@ -9,10 +9,10 @@
 @keyframes apt-in { from { opacity: 0; } }
 
 /* ---------- the viewer, re-skinned for the dark full-screen frame ---------- */
-.apt .rvs { --rvs-glass: rgba(5, 24, 54, .5); color: var(--ivory); }
+.apt .rvs { --rvs-glass: rgba(5, 24, 54, .5); }
 
 /* slim bar: the page name in the display serif, the path, compare as a quiet text button with a gold count */
-.apt .rvs-bar { background: var(--apt-navy); border-top: 1px solid rgba(250, 241, 232, .1); padding: 12px max(var(--gutter), env(safe-area-inset-left, 0px)); }
+.apt .rvs-bar { background: var(--apt-navy); color: var(--ivory); border-top: 1px solid rgba(250, 241, 232, .1); padding: 12px max(var(--gutter), env(safe-area-inset-left, 0px)); }
 .apt .rvs-brand-name { font-family: var(--display); font-size: 17px; font-weight: 400; letter-spacing: .18em; padding-right: var(--s-4); border-right-color: rgba(250, 241, 232, .16); }
 .apt .rvs-crumbs { font-size: 11px; letter-spacing: .18em; }
 .apt .rvs-crumb { opacity: .55; }
@@ -22,8 +22,9 @@
 
 /* The picture is a plate in the brand navy: no blurred, enlarged copy of it around the sides (it read as a stretched
    image). Where the picture is narrower than the screen, its edges fade softly into the navy. */
-.apt .rvs-stage-wrap { padding: 0; background: var(--apt-navy); }
-.apt .rvs-stage { background: var(--apt-navy); }
+.apt .rvs { color: var(--ink); }
+.apt .rvs-stage-wrap { padding: var(--apt-frame) max(var(--apt-frame), env(safe-area-inset-left, 0px)) 0; background: var(--apt-paper); }
+.apt .rvs-stage { background: var(--apt-navy); color: var(--ivory); border-radius: 16px; box-shadow: 0 30px 60px -40px rgba(5, 24, 54, .55); }
 .apt .rvs-ambient { display: none; }
 .apt .rvs-img { -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 3.5%, #000 96.5%, transparent 100%); mask-image: linear-gradient(90deg, transparent 0, #000 3.5%, #000 96.5%, transparent 100%); }
 
@@ -74,44 +75,70 @@
 .apt .rvs-tip-img { background: var(--apt-ivory); mix-blend-mode: normal; }
 
 /* legend: one quiet line under the picture */
-.apt .rvs-legend { justify-content: center; gap: 6px 28px; padding: 16px max(var(--gutter), env(safe-area-inset-left, 0px)); color: rgba(250, 241, 232, .7); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; border-top: 1px solid rgba(250, 241, 232, .08); }
+.apt .rvs-legend { justify-content: center; gap: 6px 28px; padding: 16px 0 0; color: var(--muted, #6c6a64); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; border: 0; }
 .apt .rvs-dotc { width: 7px; height: 7px; }
-.apt .rvs-empty { color: var(--ivory); }
+.apt .rvs-empty { color: var(--ink); }
 
-/* ---------- all apartments: an editorial list on paper ---------- */
-.apt .rvs-list { color: var(--ink); background: var(--paper); padding: clamp(56px, 6vw, 96px) max(var(--gutter), env(safe-area-inset-left, 0px)) clamp(72px, 8vw, 120px); }
-.apt .rvs-filters, .apt .rvs-table, .apt .rvs-count { max-width: 1376px; margin-inline: auto; }
-/* filters: no box, labels over quiet controls on one line */
-.apt .rvs-filters { padding: 0 0 22px; background: none; border: 0; border-bottom: 1px solid var(--line); gap: 18px 36px; }
-.apt .rvs-flabel { font-size: 10.5px; letter-spacing: .18em; }
-.apt .rvs-fchip { height: 36px; padding: 0 14px; border-radius: 999px; border-color: rgba(20, 33, 58, .18); background: transparent; font-size: 13px; transition: border-color .2s, background .2s, color .2s, transform .12s ease-out; }
+/* ---------- all apartments: a filter card, the heading, the table card ---------- */
+.apt .rvs-list { color: var(--ink); background: var(--apt-paper); padding: clamp(36px, 4vw, 64px) max(var(--apt-frame), env(safe-area-inset-left, 0px)) clamp(72px, 8vw, 120px); }
+.apt .rvs-filters, .apt .rvs-list-head, .apt .rvs-table, .apt .rvs-more { max-width: 1440px; margin-inline: auto; }
+.apt .rvs-filters { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(220px, 1.3fr) minmax(220px, 1.3fr); align-items: end; gap: 22px 32px; padding: 24px 28px; background: #fff; border: 1px solid rgba(20, 33, 58, .06); border-radius: 16px; box-shadow: 0 20px 50px -40px rgba(5, 24, 54, .4); }
+.apt .rvs-fgroup:has(.rvs-fchip) { grid-column: span 1; }
+.apt .rvs-flabel { font-size: 10px; letter-spacing: .2em; color: var(--gold); }
+.apt .rvs-fchip { height: 36px; padding: 0 14px; border-radius: 999px; border-color: rgba(20, 33, 58, .16); background: #fff; font-size: 13px; transition: border-color .2s, background .2s, color .2s, transform .12s ease-out; }
 .apt .rvs-fchip:hover { border-color: rgba(20, 33, 58, .5); }
 .apt .rvs-fchip:active { transform: scale(.96); }
-.apt .rvs-fchip.is-on { background: var(--navy); border-color: var(--navy); color: var(--ivory); }
-.apt .rvs-select, .apt .rvs-input { height: 36px; border: 0; border-bottom: 1px solid rgba(20, 33, 58, .3); background: transparent; padding: 0 2px; font-size: 14px; }
-.apt .rvs-select { padding-right: 26px; }
-.apt .rvs-select:focus, .apt .rvs-input:focus { outline: none; border-bottom-color: var(--navy); }
-.apt .rvs-count { padding: 20px 0 8px; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
-/* the list: hairline rows, the number in the display serif, a gold edge on the open one */
-.apt .rvs-table { background: none; border: 0; border-top: 1px solid var(--line); }
-.apt .rvs-tr { min-height: 64px; padding: 0 8px 0 4px; transition: background .2s; }
-.apt .rvs-tr:not(.rvs-th):hover, .apt .rvs-tr.is-active { background: rgba(246, 241, 231, .7); }
-.apt .rvs-th { min-height: 44px; background: none; }
-.apt .rvs-th .rvs-td { font-size: 10.5px; letter-spacing: .18em; }
+.apt .rvs-fchip.is-on { background: var(--apt-navy); border-color: var(--apt-navy); color: var(--ivory); }
+.apt .rvs-select, .apt .rvs-input { height: 44px; border: 1px solid rgba(20, 33, 58, .14); border-radius: 999px; background: #faf7f2; padding: 0 18px; font-size: 14px; transition: border-color .2s, background .2s; }
+.apt .rvs-select { padding-right: 34px; }
+.apt .rvs-select:focus, .apt .rvs-input:focus { outline: none; border-color: var(--apt-navy); background: #fff; }
+.apt .rvs-search { width: 100%; padding-left: 42px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23051836' stroke-width='1.6' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='M16 16l4.5 4.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-size: 17px; background-position: 16px 50%; }
+.apt .rvs-reset { grid-column: -2 / -1; justify-self: end; height: 36px; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
+/* two-handled range: one track, a navy fill between the handles, the values under it */
+.apt .rvs-dual { position: relative; height: 44px; }
+.apt .rvs-dual-track, .apt .rvs-dual-fill { position: absolute; top: 50%; height: 2px; margin-top: -1px; border-radius: 2px; pointer-events: none; }
+.apt .rvs-dual-track { left: 0; right: 0; background: rgba(20, 33, 58, .14); }
+.apt .rvs-dual-fill { background: var(--apt-navy); }
+.apt .rvs-dual input[type="range"] { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; background: none; pointer-events: none; -webkit-appearance: none; appearance: none; }
+.apt .rvs-dual input[type="range"]::-webkit-slider-runnable-track { background: none; height: 100%; }
+.apt .rvs-dual input[type="range"]::-moz-range-track { background: none; }
+.apt .rvs-dual input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; pointer-events: auto; width: 20px; height: 20px; margin-top: 12px; border-radius: 999px; background: #fff; border: 2px solid var(--apt-navy); box-shadow: 0 2px 8px rgba(5, 24, 54, .2); cursor: grab; transition: transform .12s ease-out; }
+.apt .rvs-dual input[type="range"]::-moz-range-thumb { pointer-events: auto; width: 16px; height: 16px; border-radius: 999px; background: #fff; border: 2px solid var(--apt-navy); box-shadow: 0 2px 8px rgba(5, 24, 54, .2); cursor: grab; }
+.apt .rvs-dual input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.12); cursor: grabbing; }
+.apt .rvs-dual input[type="range"]:focus-visible { outline: none; }
+.apt .rvs-dual input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px rgba(184, 149, 90, .45); }
+.apt .rvs-dual-vals { display: flex; justify-content: space-between; margin-top: -4px; font-size: 13px; font-variant-numeric: tabular-nums; color: var(--ink); }
+
+/* heading: "Stanovi" in the display serif, the count beside it */
+.apt .rvs-list-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: clamp(40px, 4vw, 64px) 4px 18px; }
+.apt .rvs-list-title { margin: 0; font-family: var(--display); font-weight: 300; font-size: clamp(44px, 5vw, 76px); line-height: 1; letter-spacing: -.01em; color: var(--apt-navy); }
+.apt .rvs-count { padding: 0; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
+/* the table: a white card, hairline rows, the number in the display serif, a gold edge on the open one */
+.apt .rvs-table { background: #fff; border: 1px solid rgba(20, 33, 58, .06); border-radius: 16px; overflow: hidden; box-shadow: 0 20px 50px -40px rgba(5, 24, 54, .4); }
+.apt .rvs-tr { min-height: 64px; padding: 0 16px 0 24px; transition: background .2s; }
+.apt .rvs-tr:not(.rvs-th):hover, .apt .rvs-tr.is-active { background: #faf6ef; }
+.apt .rvs-th { min-height: 48px; background: #faf7f2; border-top: 0; }
+.apt .rvs-th .rvs-td { font-size: 10px; letter-spacing: .18em; }
 .apt .rvs-td { font-size: 14px; }
 .apt .rvs-c-code strong { font-size: 24px; font-weight: 400; }
-.apt .rvs-cmp-toggle { border-radius: 999px; background: transparent; border-color: rgba(20, 33, 58, .2); }
-.apt .rvs-go { color: var(--navy); transition: transform .3s var(--ease-out); }
+.apt .rvs-cmp-toggle { border-radius: 999px; background: transparent; border-color: rgba(20, 33, 58, .2); transition: background .2s, border-color .2s, color .2s, transform .12s ease-out; }
+.apt .rvs-cmp-toggle:active { transform: scale(.92); }
+.apt .rvs-go { color: var(--apt-navy); transition: transform .3s var(--ease-out); }
 .apt .rvs-tr:hover .rvs-go { transform: translateX(4px); }
+.apt .rvs-list > .rvs-more { margin-top: 20px; border-radius: 999px; }
+@media (max-width: 1080px) { .apt .rvs-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 720px) {
-  .apt .rvs-tr { background: transparent; border: 0 !important; border-bottom: 1px solid var(--line) !important; padding: 16px 0; }
-  .apt .rvs-table { gap: 0; }
+  .apt .rvs-filters { grid-template-columns: minmax(0, 1fr); padding: 20px 18px; gap: 18px; }
+  .apt .rvs-reset { grid-column: auto; justify-self: start; }
+  .apt .rvs-list-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .apt .rvs-table { background: #fff; display: block; }
+  .apt .rvs-tr { background: transparent; border: 0 !important; border-bottom: 1px solid var(--line) !important; border-radius: 0; padding: 16px 18px; }
   /* phones: each row labels its own values, so the column header row goes */
   .apt .rvs-th { display: none; }
 }
 
-.apt .empty-note { padding: var(--s-10) var(--gutter); text-align: center; font-family: var(--display); font-size: var(--t-2xl); color: var(--on-dark-muted); }
-.apt-foot { padding-block: var(--s-6); }
+.apt .empty-note { padding: var(--s-10) var(--gutter); text-align: center; font-family: var(--display); font-size: var(--t-2xl); color: var(--muted, #6c6a64); }
+.apt-foot { padding-block: var(--s-6); background: var(--apt-navy); color: var(--ivory); }
 .apt-foot .link-line { color: var(--ivory); }
 
 @media (max-width: 720px) {
@@ -122,6 +149,7 @@
   .apt .rvs-floor { height: 40px; font-size: 17px; }
   .apt .rvs-rot-prev { left: 12px; }
   .apt .rvs-img { -webkit-mask-image: none; mask-image: none; }
+  .apt .rvs-stage { border-radius: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .apt-finder { animation: none; }

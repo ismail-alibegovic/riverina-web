@@ -33,15 +33,15 @@ export const imgAlt = (img: { alt?: L; caption?: L }, lang: Lang) => plain(img.a
 
 /** Search and sharing texts for one page; empty fields fall back to the page's own title and text. */
 export type Seo = { title?: L; description?: L; image?: string };
-export type SectionKey = 'hero' | 'vision' | 'manifest' | 'about' | 'showcase' | 'categories' | 'buildings' | 'types' | 'details' | 'world' | 'gallery' | 'location' | 'investor' | 'statement' | 'contact';
-export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'showcase', 'categories', 'buildings', 'types', 'investor', 'location', 'details', 'vision', 'world', 'gallery', 'statement', 'contact'];
+export type SectionKey = 'hero' | 'vision' | 'manifest' | 'about' | 'showcase' | 'categories' | 'offer' | 'buildings' | 'types' | 'details' | 'world' | 'gallery' | 'location' | 'investor' | 'statement' | 'contact';
+export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'showcase', 'categories', 'offer', 'buildings', 'types', 'investor', 'location', 'world', 'details', 'vision', 'gallery', 'statement', 'contact'];
 /**
  * Home sections that are off until switched on in the CMS. The home page follows elicyon.com's sequence, one story
  * from the river to the front door: hero → manifest → categories → apartment types ("services") → vision
  * ("leading the vision") → interiors carousel ("objects of desire") → world cards ("insights") → closing statement
  * → footer with the enquiry form. Gallery, location and developer have their own pages. Also in lib/admin/app.js.
  */
-export const DEFAULT_HIDDEN: SectionKey[] = ['about', 'showcase', 'buildings', 'vision', 'world', 'gallery', 'contact'];
+export const DEFAULT_HIDDEN: SectionKey[] = ['about', 'showcase', 'buildings', 'vision', 'gallery', 'contact'];
 
 // Text conventions in the CMS: a new line starts a new heading line; *word* marks the contrasting word.
 export type Page = {
@@ -56,6 +56,8 @@ export type Page = {
   /** full-screen dimmed render with a centred heading, a portrait image and a short text (after the hero) */
   vision?: { title?: L; text?: L; image?: string; image2?: string };
   /** three cards leading to the inner pages */
+  /** after Elicyon's services: a stepped heading and copy, three portrait pictures in a stepped row with their labels, a note and a link */
+  offer?: { title?: L; text?: L; note?: L; cta?: L; items?: { title?: L; image?: string; link?: string }[] };
   world?: { title?: L; text?: L; items?: { label?: L; title?: L; text?: L; image?: string; link?: string; link_label?: L }[] };
   buildings?: { title?: L; text?: L };
   /** horizontal strip of wide renders with captions */
@@ -172,6 +174,18 @@ export const DEFAULT_PAGE: Page = {
     },
     image: `${R}/naselje/2.webp`,
     image2: `${R}/enterijer/enterijer-3.webp`,
+  },
+  // Confirmed facts only: 63 apartments of 46 to 111 m², a commercial ground floor (conceptual design), the river.
+  offer: {
+    title: { bs: 'Prostor\n*za život*', en: 'Space\n*for living*' },
+    text: { bs: 'Riverina 1 ima 63 stana od 46 do 111 m², poslovno prizemlje i naselje uz rijeku na Ilidži.', en: 'Riverina 1 has 63 apartments of 46 to 111 m², a commercial ground floor and a neighbourhood by the river in Ilidža.' },
+    note: { bs: 'Svaki stan ima lođu ili terasu. Površine su prema prodajnim skicama arhitekta.', en: 'Every apartment has a loggia or a terrace. Areas follow the architect\'s sales drawings.' },
+    cta: { bs: 'Pogledajte stanove', en: 'View the apartments' },
+    items: [
+      { title: { bs: 'Stanovi', en: 'Apartments' }, image: `${R}/enterijer/enterijer-3.webp`, link: 'apartments' },
+      { title: { bs: 'Poslovno prizemlje', en: 'Commercial ground floor' }, image: `${R}/editorial/prizemlje-kafe.webp`, link: 'gallery' },
+      { title: { bs: 'Naselje uz rijeku', en: 'By the river' }, image: `${R}/naselje/16.webp`, link: 'location' },
+    ],
   },
   world: {
     title: { bs: 'Svijet\n*Riverine*', en: 'The world\n*of Riverina*' },

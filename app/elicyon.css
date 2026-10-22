@@ -66,9 +66,14 @@ html.intro-run:not(.intro-open) :is(.hero-media, .hero-eyebrow, .hero-line > spa
 /* large display type: tight leading and slightly negative tracking; the capitalised words are set optically smaller
    and tracked out, so they read as emphasis without shouting over the lowercase */
 .es-text { position: relative; z-index: 1; margin: 0; width: min(820px, 64vw); display: flex; flex-direction: column; align-items: flex-start; font-family: var(--display); font-weight: 300; font-size: clamp(30px, 3.2vw, 50px); line-height: 1.12; letter-spacing: -.012em; }
-.es-line { display: block; overflow: hidden; white-space: nowrap; padding-bottom: .04em; will-change: transform; }
-.es-fade { display: inline-block; vertical-align: bottom; overflow: hidden; white-space: pre; }
-.es-em { text-transform: uppercase; font-size: .86em; letter-spacing: .05em; }
+.es-line { display: block; white-space: nowrap; padding-bottom: .04em; will-change: transform; }
+.es-fade { display: inline-block; vertical-align: bottom; white-space: pre; }
+/* each remaining word travels on its own to its place in the final sentence */
+.es-w { display: inline-block; will-change: transform; }
+/* capitals at full size, as on elicyon.com: the contrast is the case, not the scale */
+.es-em { text-transform: uppercase; letter-spacing: .01em; }
+/* the final sentence, centred over the section: measured for the word travel, never shown */
+.es-final { position: absolute; inset: 0; margin: auto; width: min(1000px, 76vw); height: fit-content; text-align: center; visibility: hidden; pointer-events: none; font-family: var(--display); font-weight: 300; font-size: clamp(30px, 3.2vw, 50px); line-height: 1.12; letter-spacing: -.012em; }
 .es-imgs { position: absolute; inset: 0; pointer-events: none; }
 .es-img { position: absolute; margin: 0; overflow: hidden; background: var(--ivory); will-change: transform; }
 .es-img img { object-fit: cover; }
@@ -85,6 +90,7 @@ html.intro-run:not(.intro-open) :is(.hero-media, .hero-eyebrow, .hero-line > spa
 @media (min-width: 768px) and (max-width: 1023px) {
   /* tablets: a narrower column, so the images fit in the margins beside it */
   .es-text { width: 64vw; font-size: clamp(26px, 3.9vw, 34px); }
+  .es-final { font-size: clamp(26px, 3.9vw, 34px); }
   .es-img { height: 34vh; }
   .es-img-1, .es-img-4 { left: 2vw; width: 14vw; }
   .es-img-2, .es-img-3, .es-img-5 { left: auto; right: 2vw; width: 14vw; }
@@ -98,7 +104,7 @@ html.intro-run:not(.intro-open) :is(.hero-media, .hero-eyebrow, .hero-line > spa
   .es-text { grid-row: 2; width: auto; font-size: clamp(25px, 7.4vw, 34px); align-items: stretch; }
   .es-img-2 { grid-row: 3; justify-self: start; width: 66vw; aspect-ratio: 4 / 3; }
   .es-line { white-space: normal; }
-  .es-fade, .es-line.is-gone { display: none; }
+  .es-fade, .es-line.is-gone, .es-final { display: none; }
   .es-img-3, .es-img-4, .es-img-5 { display: none; }
 }
 
@@ -354,3 +360,69 @@ html.intro-run:not(.intro-open) :is(.hero-media, .hero-eyebrow, .hero-line > spa
 .footer-mark img { display: block; width: 100%; height: auto; opacity: .09; }
 .footer-title { font-size: clamp(30px, 2.6vw, 42px); line-height: 1.06; letter-spacing: .01em; }
 @media (max-width: 767px) { .footer-mark { padding-inline: 20px; margin-bottom: -24px; } }
+
+/* ---------- offer (Elicyon "Our services"): heading top left, three stepped portraits, note bottom right ---------- */
+.eof { position: relative; z-index: 1; background: var(--paper); color: var(--navy); padding: clamp(110px, 10vw, 150px) 32px clamp(90px, 8vw, 130px); }
+.eof-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; max-width: 1376px; margin: 0 auto; }
+.eof-head { grid-column: 1 / span 4; grid-row: 1; }
+.eof-text { max-width: 36ch; margin: clamp(28px, 3vw, 44px) 0 0; font-size: 15px; line-height: 1.6; color: var(--ink); }
+.eof-row { grid-column: 4 / span 6; grid-row: 2; list-style: none; margin: clamp(24px, 3vw, 44px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(12px, 1.3vw, 20px); align-items: start; }
+.eof-item-2 { margin-top: clamp(36px, 4.6vw, 66px); }
+.eof-item-3 { margin-top: clamp(16px, 2vw, 28px); }
+.eof-card { position: relative; display: block; color: var(--rv-ivory, #faf1e8); text-decoration: none; }
+.eof-pic { position: relative; display: block; aspect-ratio: 5 / 8; overflow: hidden; background: var(--ivory); }
+.eof-pic-in { position: absolute; inset: -8% 0; }
+.eof-pic-in img { object-fit: cover; transition: transform 1.2s var(--ease-soft); }
+.eof-pic::after { content: ''; position: absolute; inset: 0; background: rgba(14, 23, 41, .18); transition: background-color .5s var(--ease-soft); }
+.eof-name { position: absolute; z-index: 1; left: 12px; right: 12px; top: 50%; translate: 0 -50%; text-align: center; font: 500 clamp(11px, .95vw, 14px)/1.25 var(--body); letter-spacing: .16em; text-transform: uppercase; text-shadow: 0 1px 14px rgba(14, 23, 41, .45); }
+.eof-name::after { content: ''; display: block; width: 0; height: 1px; margin: 8px auto 0; background: currentColor; transition: width .45s var(--ease-soft); }
+@media (hover: hover) {
+  .eof-card:hover .eof-pic-in img { transform: scale(1.05); }
+  .eof-card:hover .eof-pic::after { background: rgba(14, 23, 41, .32); }
+  .eof-card:hover .eof-name::after { width: 40px; }
+}
+.eof-card:active { transform: scale(.985); transition: transform .12s ease-out; }
+.eof-aside { grid-column: 10 / -1; grid-row: 3; margin-top: clamp(40px, 4vw, 64px); display: flex; flex-direction: column; align-items: center; gap: 28px; }
+.eof-note { max-width: 36ch; margin: 0; font-size: 14px; line-height: 1.55; color: var(--ink); }
+.eof-link, .ew-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--navy); text-decoration: none; font: 500 12px/1 var(--body); letter-spacing: .15em; text-transform: uppercase; transition: transform .12s ease-out; }
+.eof-link span, .ew-link span, .ew-more span { position: relative; padding-bottom: 5px; }
+.eof-link span::after, .ew-link span::after, .ew-more span::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: currentColor; transform-origin: 0 50%; transition: transform .3s cubic-bezier(.4, 0, .2, 1); }
+@media (hover: hover) { .eof-link:hover span::after, .ew-link:hover span::after, .ew-card a:hover .ew-more span::after { transform: scaleX(0); transform-origin: 100% 50%; } }
+.eof-link:active, .ew-link:active { transform: scale(.97); }
+@media (max-width: 1023px) {
+  .eof-head { grid-column: 1 / span 8; }
+  .eof-row { grid-column: 1 / -1; }
+  .eof-aside { grid-column: 5 / -1; align-items: flex-start; }
+}
+@media (max-width: 767px) {
+  .eof { padding-inline: 20px; }
+  .eof-head, .eof-aside { grid-column: 1 / -1; }
+  .eof-row { gap: 8px; }
+  .eof-name { font-size: 9.5px; letter-spacing: .1em; left: 4px; right: 4px; }
+}
+
+/* ---------- world (Elicyon "The world of"): heading and link, then three large cards ---------- */
+.ew { position: relative; z-index: 1; background: var(--paper); color: var(--navy); padding: clamp(110px, 10vw, 160px) 32px clamp(100px, 9vw, 140px); }
+.ew-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; max-width: 1376px; margin: 0 auto; }
+.ew-head { grid-column: 1 / span 5; grid-row: 1; }
+.ew-text { max-width: 44ch; margin: clamp(28px, 3vw, 44px) 0 0; font-size: 15px; line-height: 1.6; color: var(--ink); }
+.ew-link { grid-column: 9 / -1; grid-row: 1; justify-self: end; align-self: end; }
+.ew-cards { grid-column: 1 / -1; grid-row: 2; list-style: none; margin: clamp(40px, 4vw, 56px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 2.6vw, 40px); align-items: start; }
+.ew-card a { display: flex; flex-direction: column; color: inherit; text-decoration: none; }
+.ew-pic { position: relative; display: block; overflow: hidden; aspect-ratio: 3 / 4; background: var(--ivory); }
+.ew-card-2 .ew-pic { aspect-ratio: 5 / 6.1; }
+.ew-card-3 .ew-pic { aspect-ratio: 5 / 7; }
+.ew-pic-in { position: absolute; inset: -8% 0; }
+.ew-pic-in img { object-fit: cover; transition: transform 1.2s var(--ease-soft); }
+@media (hover: hover) { .ew-card a:hover .ew-pic-in img { transform: scale(1.04); } }
+.ew-label { margin-top: 20px; font: 500 11px/1.3 var(--body); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.ew-name { margin-top: 10px; font: 300 clamp(26px, 2.1vw, 34px)/1.05 var(--display); text-transform: uppercase; letter-spacing: .005em; }
+.ew-line { margin-top: 10px; max-width: 44ch; font-size: 14px; line-height: 1.55; color: var(--ink); }
+.ew-more { margin-top: 18px; font: 500 12px/1 var(--body); letter-spacing: .15em; text-transform: uppercase; }
+@media (max-width: 767px) {
+  .ew { padding-inline: 20px; }
+  .ew-head, .ew-link { grid-column: 1 / -1; }
+  .ew-link { grid-row: 2; justify-self: start; margin-top: 16px; }
+  .ew-cards { grid-row: 3; grid-template-columns: 1fr; gap: 56px; }
+  .ew-card .ew-pic, .ew-card-2 .ew-pic, .ew-card-3 .ew-pic { aspect-ratio: 4 / 5; }
+}

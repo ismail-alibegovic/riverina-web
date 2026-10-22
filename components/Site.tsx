@@ -19,6 +19,7 @@ import { type TypeCard } from './home/Types';
 import Showcase from './home/Showcase';
 import Vision from './home/Vision';
 import World from './home/World';
+import Offer from './home/Offer';
 import { Fill, Heading, Paras } from './home/text';
 import JsonLd from './JsonLd';
 
@@ -71,6 +72,14 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
     statement: () => page.statement?.image && tx(page.statement?.title, lang) && (
       <ContactFrame top={tx(page.statement.title, lang)} bottom={tx(page.statement.foot, lang) || tx(page.statement.eyebrow, lang)} image={mediaUrl(page.statement.image)} cta={{ href: '#kontakt', label: tx(page.statement.cta2, lang) || t.enquire }} tag={tag} />
     ),
+
+    offer: () => {
+      const o = page.offer;
+      const items = (o?.items || []).filter((it) => tx(it.title, lang) && it.image).map((it) => ({ title: tx(it.title, lang), src: mediaUrl(it.image), href: resolveLink(it.link, lang) }));
+      return o && items.length > 0 && (
+        <Offer title={tx(o.title, lang)} text={tx(o.text, lang)} note={tx(o.note, lang)} cta={{ href: href('apartments', lang), label: tx(o.cta, lang) || aptLabel }} items={items} />
+      );
+    },
 
     categories: () => {
       const items = (page.categories?.items || []).filter((c) => tx(c.title, lang) && c.image);

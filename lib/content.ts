@@ -41,7 +41,7 @@ export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'showca
  * ("leading the vision") → interiors carousel ("objects of desire") → world cards ("insights") → closing statement
  * → footer with the enquiry form. Gallery, location and developer have their own pages. Also in lib/admin/app.js.
  */
-export const DEFAULT_HIDDEN: SectionKey[] = ['about', 'showcase', 'buildings', 'vision', 'gallery', 'contact'];
+export const DEFAULT_HIDDEN: SectionKey[] = ['about', 'showcase', 'buildings', 'vision', 'gallery', 'contact', 'location', 'details'];
 
 // Text conventions in the CMS: a new line starts a new heading line; *word* marks the contrasting word.
 export type Page = {
@@ -152,7 +152,7 @@ export const DEFAULT_PAGE: Page = {
     eyebrow: { bs: 'Riverina Residence', en: 'Riverina Residence' },
     title: { bs: 'Prostor za vaš\n*novi početak*', en: 'A space for your\n*new beginning*' },
     text: { bs: 'Stanovi od 46 do 111 m², s jednom do četiri spavaće sobe. Prodaja je u toku.', en: 'Apartments from 46 to 111 m², with one to four bedrooms. Sales are now open.' },
-    foot: { bs: 'Stanovi od 46 do 111 m²,\n*s jednom do četiri spavaće sobe*', en: 'Apartments from 46 to 111 m²,\n*with one to four bedrooms*' },
+    foot: { bs: 'Riverina Residence\n*Ilidža, Sarajevo*', en: 'Riverina Residence\n*Ilidža, Sarajevo*' },
     // current facade, 360° set, angle 150° (2× Lanczos)
     image: `${R}/chapters/kontakt-150.webp`,
     cta2: { bs: 'Pošaljite upit', en: 'Send an enquiry' },
@@ -161,7 +161,7 @@ export const DEFAULT_PAGE: Page = {
     items: [
       // current facade (360° set, 60°), an interior and the river (concept view of the neighbourhood), all 2× Lanczos
       { title: { bs: 'Arhitektura', en: 'Architecture' }, caption: { bs: 'Riverina 1', en: 'Riverina 1' }, image: `${R}/chapters/arhitektura-60.webp`, link: 'apartments' },
-      { title: { bs: 'Enterijer', en: 'Interiors' }, caption: { bs: 'Stanovi od\n46 do 111 m²', en: 'Apartments from\n46 to 111 m²' }, image: `${R}/chapters/enterijer-2.webp`, link: 'gallery', link_label: { bs: 'Pogledajte galeriju', en: 'View the gallery' } },
+      { title: { bs: 'Enterijer', en: 'Interiors' }, caption: { bs: 'Lođa ili terasa\nuz svaki stan', en: 'A loggia or terrace\nwith every apartment' }, image: `${R}/chapters/enterijer-2.webp`, link: 'gallery', link_label: { bs: 'Pogledajte galeriju', en: 'View the gallery' } },
       { title: { bs: 'Lokacija', en: 'Location' }, caption: { bs: 'Ilidža,\nSarajevo', en: 'Ilidža,\nSarajevo' }, image: `${R}/chapters/lokacija-rijeka.webp`, link: 'location', link_label: { bs: 'Pogledajte lokaciju', en: 'View the location' } },
     ],
   },
@@ -178,8 +178,8 @@ export const DEFAULT_PAGE: Page = {
   // Confirmed facts only: 63 apartments of 46 to 111 m², a commercial ground floor (conceptual design), the river.
   offer: {
     title: { bs: 'Prostor\n*za život*', en: 'Space\n*for living*' },
-    text: { bs: 'Riverina 1 ima 63 stana od 46 do 111 m², poslovno prizemlje i naselje uz rijeku na Ilidži.', en: 'Riverina 1 has 63 apartments of 46 to 111 m², a commercial ground floor and a neighbourhood by the river in Ilidža.' },
-    note: { bs: 'Svaki stan ima lođu ili terasu. Površine su prema prodajnim skicama arhitekta.', en: 'Every apartment has a loggia or a terrace. Areas follow the architect\'s sales drawings.' },
+    text: { bs: 'Stanovi, poslovno prizemlje i naselje uz rijeku: tri dijela jednog projekta na Ilidži.', en: 'Apartments, a commercial ground floor and a neighbourhood by the river: three parts of one project in Ilidža.' },
+    note: { bs: 'Površine i tlocrti su prema prodajnim skicama arhitekta.', en: 'Areas and plans follow the architect\'s sales drawings.' },
     cta: { bs: 'Pogledajte stanove', en: 'View the apartments' },
     items: [
       { title: { bs: 'Stanovi', en: 'Apartments' }, image: `${R}/enterijer/enterijer-3.webp`, link: 'apartments' },
@@ -189,11 +189,11 @@ export const DEFAULT_PAGE: Page = {
   },
   world: {
     title: { bs: 'Svijet\n*Riverine*', en: 'The world\n*of Riverina*' },
-    text: { bs: 'Zgrada i naselje u vizualizacijama, lokacija na Ilidži i investitor projekta.', en: 'The building and the neighbourhood in visualisations, the location in Ilidža and the developer.' },
+    text: { bs: 'Zgrada i naselje u vizualizacijama, lokacija na Ilidži i interaktivni pregled stanova.', en: 'The building and the neighbourhood in visualisations, the location in Ilidža and the interactive apartment view.' },
     items: [
       { label: { bs: 'Vizualizacije', en: 'Visualisations' }, title: { bs: 'Galerija', en: 'Gallery' }, text: { bs: 'Riverina 1, naselje uz rijeku i enterijeri stanova.', en: 'Riverina 1, the neighbourhood by the river and the apartment interiors.' }, image: `${R}/objekat/objekat-4.webp`, link: 'gallery' },
       { label: { bs: 'Ilidža, Sarajevo', en: 'Ilidža, Sarajevo' }, title: { bs: 'Lokacija', en: 'Location' }, text: { bs: 'Riverina Residence se nalazi na Ilidži, u Sarajevu.', en: 'Riverina Residence is located in Ilidža, Sarajevo.' }, image: `${R}/naselje/9.webp`, link: 'location' },
-      { label: { bs: 'ALYASIN Group', en: 'ALYASIN Group' }, title: { bs: 'Investitor', en: 'Developer' }, text: { bs: 'Investitor projekta Riverina Residence.', en: 'The developer of Riverina Residence.' }, image: `${R}/objekat/objekat-5.webp`, link: 'developer' },
+      { label: { bs: 'Riverina 1', en: 'Riverina 1' }, title: { bs: 'Odaberite stan', en: 'Choose an apartment' }, text: { bs: 'Zgrada, sprat i stan u interaktivnom pregledu.', en: 'Building, floor and apartment in the interactive view.' }, image: `${R}/objekat/objekat-5.webp`, link: 'apartments' },
     ],
   },
   buildings: {
@@ -203,8 +203,8 @@ export const DEFAULT_PAGE: Page = {
   types: {
     title: { bs: 'Kolekcija\n*stanova*', en: 'Apartment\n*collection*' },
     text: {
-      bs: 'Devet tipova stanova od 46 do 111 m², s jednom do četiri spavaće sobe. Svaki stan ima lođu ili terasu.',
-      en: 'Nine apartment types from 46 to 111 m², with one to four bedrooms. Every apartment has a loggia or a terrace.',
+      bs: 'Devet tipova stanova od 46 do 111 m², s jednom do četiri spavaće sobe.',
+      en: 'Nine apartment types from 46 to 111 m², with one to four bedrooms.',
     },
     note: {
       bs: 'Površine prema prodajnim skicama arhitekta; lođa se obračunava s 0,75, terasa s 0,25 svoje površine. Dopušteno odstupanje kvadrature ±3 %. Podložno raspoloživosti.',

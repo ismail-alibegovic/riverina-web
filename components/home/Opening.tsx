@@ -123,9 +123,10 @@ export default function Opening({ hero, lang, name, tag }: { hero: NonNullable<P
 
   return (
     <section ref={root} className="hero eh" aria-labelledby="hero-title">
-      <div className="hero-media" data-parallax="8">
-        {/* Full-bleed under a dark shade: a lower quality is not visible and loads faster. */}
-        <Fill src={hero.image || FALLBACK} sizes="100vw" priority quality={72} className="hero-img" />
+      {/* No scroll parallax here: it enlarges the picture (×1.16) and the render is only 1672 px wide, so it went soft.
+          The picture stays at its natural size; only the entrance settles it to ×1. */}
+      <div className="hero-media">
+        <Fill src={hero.image || FALLBACK} sizes="100vw" priority quality={84} className="hero-img" />
       </div>
       <div className="hero-shade" aria-hidden="true" />
       {tag && <span className="ill-tag">{tag}</span>}

@@ -123,68 +123,86 @@ html.intro-run:not(.intro-open) :is(.hero-media, .hero-eyebrow, .hero-line > spa
 .ec-ch { display: inline-block; will-change: transform; text-shadow: 0 0 22px rgba(14, 23, 41, .55), 0 0 2px rgba(14, 23, 41, .35); }
 .ec-foot { position: absolute; z-index: 4; right: 32px; bottom: 32px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; text-align: right; }
 .ec-cap { margin: 0; display: flex; flex-direction: column; font: 300 clamp(26px, 2.3vw, 36px)/1.05 var(--display); text-transform: uppercase; }
-.ec-dots { position: absolute; z-index: 5; left: 32px; bottom: 36px; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; }
-.ec-dot { width: 11px; height: 11px; background: rgba(246, 241, 231, .35); transition: background-color .3s; }
+/* progress as hairline segments, the slider's language */
+.ec-dots { position: absolute; z-index: 5; left: 32px; bottom: 40px; list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; }
+.ec-dot { width: 40px; height: 2px; background: rgba(246, 241, 231, .3); transition: background-color .6s; }
 .ec-dot.is-on { background: var(--ivory); }
 @media (max-width: 767px) {
   .ec-word { padding: 14px 20px; font-size: min(calc((100vw - 40px) / (var(--n) * .74)), 13vw); }
   .ec-foot { left: 24px; right: auto; bottom: 32px; align-items: flex-start; text-align: left; }
   .ec-dots { left: auto; right: 24px; bottom: 40px; }
+  .ec-dot { width: 24px; }
   .ec-media img { object-position: 55% 60%; }
   /* the gathered word fills the top band on phones: the illustration note moves above the dots */
   .ec-panel .ec-tag { top: auto; bottom: 132px; }
 }
 
-/* ---------- residences: the apartment collection as a card carousel ---------- */
-.er { position: relative; z-index: 1; overflow: hidden; background: var(--paper); color: var(--navy); padding: clamp(100px, 11vw, 160px) 0 clamp(80px, 9vw, 130px); }
-/* one head grid for the editorial sections on paper: heading over the first half, copy (and link or arrows) in the
-   last third, both resting on the same baseline */
+/* ---------- the site's one slider (components/Slider.tsx) ----------
+   Slides stay inside the centred page grid and glide with one slow, even ease; under them one control row: the
+   position in the display serif, a hairline that fills as you go, two square arrows. Used by the apartment collection
+   (cards) and the gallery page (feature). */
+.sl { position: relative; }
+.sl-track { overflow: hidden; }
+.sl-track .swiper-wrapper { align-items: stretch; transition-timing-function: cubic-bezier(.65, 0, .35, 1); }
+.sl-slide { height: auto; }
+.sl-nav { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: clamp(20px, 3vw, 48px); margin-top: clamp(28px, 3vw, 44px); }
+.sl-count { display: flex; align-items: baseline; gap: 8px; margin: 0; font-family: var(--display); font-weight: 300; color: var(--navy); font-variant-numeric: lining-nums tabular-nums; }
+.sl-count b { font-weight: 300; font-size: 30px; line-height: 1; }
+.sl-count span { font-size: 16px; color: var(--muted); }
+.sl-bar { position: relative; display: block; height: 1px; background: var(--line); overflow: hidden; }
+.sl-bar i { position: absolute; inset: 0; background: var(--navy); transform-origin: 0 50%; transition: transform .9s cubic-bezier(.65, 0, .35, 1); }
+.sl-arrows { display: flex; gap: 8px; }
+.sl-arrow { display: grid; place-items: center; width: 52px; height: 52px; padding: 0; border: 1px solid rgba(20, 33, 58, .22); border-radius: 0; background: transparent; color: var(--navy); cursor: pointer; transition: background-color .3s var(--ease-soft), color .3s var(--ease-soft), border-color .3s var(--ease-soft), opacity .3s, transform .12s ease-out; }
+.sl-arrow svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+@media (hover: hover) { .sl-arrow:not(:disabled):hover { background: var(--navy); border-color: var(--navy); color: var(--ivory); } }
+.sl-arrow:active:not(:disabled) { transform: scale(.94); }
+.sl-arrow:disabled { opacity: .3; cursor: default; }
+.sl-arrow:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+/* feature: the centre picture full strength, its neighbours stepped back and dimmed */
+.sl-feature .sl-track { overflow: visible; }
+.sl-feature .sl-slide { opacity: .4; transform: scale(.92); transition: opacity .9s cubic-bezier(.65, 0, .35, 1), transform .9s cubic-bezier(.65, 0, .35, 1); }
+.sl-feature .sl-slide.swiper-slide-active { opacity: 1; transform: none; }
+@media (max-width: 767px) {
+  .sl-count b { font-size: 24px; }
+  .sl-arrow { width: 44px; height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) { .sl-bar i, .sl-feature .sl-slide, .sl-arrow { transition: none; } }
+
+/* ---------- residences: the apartment collection on the slider, centred in the page grid ---------- */
+.er { position: relative; z-index: 1; background: var(--paper); color: var(--navy); padding: clamp(100px, 11vw, 160px) 32px clamp(80px, 9vw, 130px); }
+.er-in { max-width: 1376px; margin: 0 auto; }
+/* one head grid for the editorial sections on paper: heading over the first half, copy in the last third, both
+   resting on the same baseline */
 .er-head, .el-head { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: end; max-width: 1376px; margin: 0 auto; }
-.er-head { padding-inline: 32px; box-sizing: content-box; }
 .er-head > :first-child, .el-head > :first-child { grid-column: 1 / span 6; }
-.er-aside, .el-aside { grid-column: 9 / -1; }
-.er-aside { display: flex; flex-direction: column; align-items: flex-start; gap: 28px; }
+.er-text, .el-aside { grid-column: 9 / -1; }
 .er-text { max-width: 400px; margin: 0; font-size: 15px; line-height: 1.6; color: var(--muted); }
 
-/* arrows: square hairline buttons (as in the finder), answer on press, dimmed (but still visible) at either end */
-.er-nav { display: flex; gap: 10px; }
-.er-arrow { display: grid; place-items: center; width: 48px; height: 48px; padding: 0; border: 1px solid rgba(20, 33, 58, .22); border-radius: 0; background: transparent; color: var(--navy); cursor: pointer; transition: background-color .3s var(--ease-soft), color .3s var(--ease-soft), border-color .3s var(--ease-soft), opacity .3s, transform .12s ease-out; }
-.er-arrow svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
-@media (hover: hover) { .er-arrow:not(:disabled):hover { background: var(--navy); border-color: var(--navy); color: var(--ivory); } }
-.er-arrow:active:not(:disabled) { transform: scale(.94); }
-.er-arrow:disabled { opacity: .35; cursor: default; }
-.er-arrow:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
-
 /* bedroom filter: underlined text tabs over a hairline, like the finder's view switch */
-.er-filter { display: flex; flex-wrap: wrap; gap: 8px 32px; max-width: 1376px; margin: clamp(40px, 4vw, 56px) auto 0; padding-inline: 32px; box-sizing: content-box; }
-.er-chip { min-height: 40px; padding: 0; border: 0; border-bottom: 1px solid transparent; border-radius: 0; background: transparent; color: var(--muted); cursor: pointer; font: 500 11px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; transition: background-color .3s var(--ease-soft), color .3s var(--ease-soft), border-color .3s var(--ease-soft), transform .12s ease-out; }
+.er-filter { display: flex; flex-wrap: wrap; gap: 8px 32px; margin: clamp(44px, 4.4vw, 64px) 0 clamp(28px, 2.6vw, 40px); border-bottom: 1px solid var(--line); }
+.er-chip { min-height: 44px; margin-bottom: -1px; padding: 0; border: 0; border-bottom: 1px solid transparent; border-radius: 0; background: transparent; color: var(--muted); cursor: pointer; font: 500 11px/1 var(--body); letter-spacing: .16em; text-transform: uppercase; transition: color .3s var(--ease-soft), border-color .3s var(--ease-soft); }
 @media (hover: hover) { .er-chip:not(.is-on):hover { color: var(--navy); } }
-.er-chip:active { transform: scale(.96); }
 .er-chip.is-on { color: var(--navy); border-bottom-color: var(--gold); }
+.er-chip:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 
-/* the rail runs to the right edge of the screen; its first card lines up with the heading (offset set in JS) */
-.er-rail { margin-top: 28px; overflow: visible; }
-.er-rail .swiper-wrapper { align-items: stretch; }
-.er-rail .er-slide { width: clamp(300px, 26vw, 400px); height: auto; }
-.er-card { display: flex; flex-direction: column; height: 100%; color: var(--navy); text-decoration: none; background: none; transition: transform .12s ease-out; }
+/* the card: the plan on ivory paper, the name and area, the facts over hairlines */
+.er-card { display: flex; flex-direction: column; height: 100%; color: var(--navy); text-decoration: none; transition: transform .12s ease-out; }
 .er-card:active { transform: scale(.99); }
 .er-card:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
-/* the plan printed on the card: its white ground multiplies away into the ivory */
 .er-cplan { position: relative; display: block; aspect-ratio: 1 / 1; overflow: hidden; background: #efe8dc; }
+.er-cplan img { object-fit: contain; padding: 9%; mix-blend-mode: multiply; transition: transform 1.2s var(--ease-soft); -webkit-user-drag: none; }
+@media (hover: hover) { .er-card:hover .er-cplan img { transform: scale(1.04); } }
 /* a gold rule grows under the plan on hover, as on the finder's cards */
 .er-cplan::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform .7s var(--ease-soft); }
 @media (hover: hover) { .er-card:hover .er-cplan::after { transform: none; } }
-.er-cplan img { object-fit: contain; padding: 9%; mix-blend-mode: multiply; transition: transform 1s var(--ease-soft); }
-@media (hover: hover) { .er-card:hover .er-cplan img { transform: scale(1.035); } }
-.er-status { position: absolute; top: 16px; left: 16px; display: inline-flex; align-items: center; gap: 8px; font: 500 10px/1 var(--body); letter-spacing: .2em; text-transform: uppercase; color: var(--navy); }
+.er-status { position: absolute; top: 18px; left: 18px; display: inline-flex; align-items: center; gap: 8px; font: 500 10px/1 var(--body); letter-spacing: .2em; text-transform: uppercase; color: var(--navy); }
 .er-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #3e8e63; }
 .er-card.is-sold .er-status::before { background: #b4473a; }
 .er-card.is-sold .er-cplan img { opacity: .55; }
-.er-cbody { display: flex; flex-direction: column; flex: 1; gap: 16px; padding: 18px 0 4px; }
+.er-cbody { display: flex; flex-direction: column; flex: 1; gap: 16px; padding: 20px 0 4px; }
 .er-cname { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 .er-cname b { font: 300 38px/1 var(--display); letter-spacing: -.01em; }
 .er-cname i { font: 300 24px/1 var(--display); font-style: normal; letter-spacing: -.01em; white-space: nowrap; }
-/* the facts as a two-column spec sheet with hairlines */
 .er-specs { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--navy); }
 .er-specs span { padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 13px; line-height: 1.35; color: var(--ink); }
 .er-specs span:nth-child(odd) { padding-right: 12px; }
@@ -194,11 +212,8 @@ html.intro-run:not(.intro-open) :is(.hero-media, .hero-eyebrow, .hero-line > spa
 .er-go svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; transition: transform .35s var(--ease-soft); }
 @media (hover: hover) { .er-card:hover .er-go svg { transform: translateX(5px); } }
 
-/* a thin progress rule under the rail instead of dots, then the link to every apartment and the note */
-.er-foot { max-width: 1376px; margin: 36px auto 0; padding-inline: 32px; box-sizing: content-box; }
-.er-progress { position: relative; display: block; height: 1px; background: var(--line); overflow: hidden; }
-.er-progress i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--navy); transition: transform .25s linear, width .25s linear; }
-.er-foot-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 18px; align-items: baseline; margin-top: 20px; }
+/* the link to every apartment and the note close the section */
+.er-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 18px; align-items: baseline; margin-top: clamp(36px, 3.4vw, 52px); padding-top: 20px; border-top: 1px solid var(--line); }
 .er-all span, .el-link span { position: relative; padding-bottom: 5px; }
 .er-all span::after, .el-link span::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: currentColor; transform-origin: 0 50%; transition: transform .3s cubic-bezier(.4, 0, .2, 1); }
 @media (hover: hover) { .er-all:hover span::after, .el-link:hover span::after { transform: scaleX(0); transform-origin: 100% 50%; } }
@@ -208,16 +223,15 @@ html.intro-run:not(.intro-open) :is(.hero-media, .hero-eyebrow, .hero-line > spa
 .er-all, .el-link, .ea-link { display: inline-flex; min-height: 44px; align-items: center; color: var(--navy); text-decoration: none; font: 500 12px/1 var(--body); letter-spacing: .15em; text-transform: uppercase; }
 .er-note { max-width: 70ch; margin: 0; font-size: 11.5px; line-height: 1.5; color: var(--muted); }
 @media (max-width: 767px) {
-  .er-head, .er-filter, .er-foot { padding-inline: 20px; }
-  .er-head > :first-child, .el-head > :first-child, .er-aside, .el-aside { grid-column: 1 / -1; }
-  .er-aside, .el-aside { margin-top: 24px; }
-  .er-filter { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-inline: 0; }
+  .er { padding-inline: 20px; }
+  .er-head > :first-child, .el-head > :first-child, .er-text, .el-aside { grid-column: 1 / -1; }
+  .er-text, .el-aside { margin-top: 24px; }
+  .er-filter { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 24px; }
   .er-filter::-webkit-scrollbar { display: none; }
   .er-chip { flex: none; }
-  .er-rail .er-slide { width: 82vw; }
-  .er-cname b { font-size: 26px; } .er-cname i { font-size: 21px; }
+  .er-cname b { font-size: 30px; } .er-cname i { font-size: 21px; }
 }
-@media (prefers-reduced-motion: reduce) { .er-card, .er-cplan img, .er-go svg, .er-progress i { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .er-card, .er-cplan img, .er-go svg { transition: none; } }
 
 /* ---------- investor (Elicyon "Leading the vision"), on ivory ---------- */
 .ei { position: relative; z-index: 1; background: var(--ivory); color: var(--navy); padding: clamp(110px, 11vw, 170px) 32px clamp(110px, 10vw, 160px); overflow: hidden; }

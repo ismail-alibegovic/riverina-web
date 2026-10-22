@@ -34,69 +34,16 @@ html:not(.intro-seen) .ld-res .ld-ch > span { opacity: 0; }
 .eh:not(.is-live) .ld { animation: ld-away .8s ease 5s forwards; }
 @keyframes ld-away { to { opacity: 0; visibility: hidden; } }
 
-/* ---------- hero: picture · middle word · building cut-out · ground shade · outer words ---------- */
-.eh {
-  --shift: 17%;      /* the picture sits lower; its sky fades into the navy above, which holds header and first word */
-  --mh: min(100%, 56.3vw); /* plate height: the whole render at full width (16:9), never taller than the screen */
-  --ox: 50%;         /* horizontal crop */
-  --ws: 6.6vw;       /* word size */
-  --w1x: 32px; --w1y: 13.2%;
-  --w2x: 47.9vw; --w2y: 19.6%;
-  --w3x: 23.6vw; --w3y: 86%;
-  --base: 84%;       /* where the street has dissolved into the navy below (share of the plate's height) */
-  --plate: linear-gradient(to bottom, transparent 0, #000 16%, #000 calc(var(--base) - 16%), transparent var(--base));
-  position: relative; height: 100svh; min-height: 600px; overflow: hidden; isolation: isolate; background: var(--rv-navy); color: var(--rv-ivory);
-}
-/* The render is a plate set into the navy field: its sky fades into the navy above (first and middle word) and its
-   street dissolves into the navy below (last word and links), so no word sits on busy picture. */
-.eh-media { position: absolute; left: 0; right: 0; top: var(--shift); height: var(--mh); pointer-events: none; -webkit-mask-image: var(--plate); mask-image: var(--plate); }
-.eh-zoom { position: absolute; inset: 0; will-change: transform; }
-html:not(.intro-seen) .eh-zoom { transform: scale(1.2); }
-.eh-zoom img { object-fit: cover; object-position: var(--ox) 50%; transition: opacity .9s cubic-bezier(.25, 1, .5, 1); }
-/* the picture eases in once decoded instead of popping in under the words (the loader waits for it) */
-.eh.is-live:not(.is-pic) .eh-zoom img { opacity: 0; }
-.eh-bg { z-index: 1; }
-/* sky only (the building cut-out lies above it): deep navy at the top, clear towards the roofline, a little deeper
-   on the sunset side, where the first word sits */
-.eh-sky { position: absolute; inset: 0; background:
-  radial-gradient(ellipse 48% 32% at 10% 16%, rgba(var(--rv-navy-rgb), .6) 0%, rgba(var(--rv-navy-rgb), 0) 100%),
-  linear-gradient(to bottom, rgba(var(--rv-navy-rgb), .94) 0%, rgba(var(--rv-navy-rgb), .7) 14%, rgba(var(--rv-navy-rgb), .34) 27%, rgba(var(--rv-navy-rgb), 0) 42%); }
-/* the cut-out shares the plate's fades: the tree tops at the left edge sink into the navy instead of reaching into the
-   word band (the picture under it is the same render, so nothing else changes) */
-.eh-fg { z-index: 3; }
-/* above the cut-out, under the words: the ground sinks into navy, and a soft vignette keeps the lit tree tops at the
-   left edge from showing through the first word */
-.eh-ground { position: absolute; z-index: 3; inset: 0; pointer-events: none; background:
-  radial-gradient(ellipse 26% 22% at 6% 17%, rgba(var(--rv-navy-rgb), .8) 0%, rgba(var(--rv-navy-rgb), .45) 55%, rgba(var(--rv-navy-rgb), 0) 100%),
-  linear-gradient(to top, rgba(var(--rv-navy-rgb), .85) 0%, rgba(var(--rv-navy-rgb), .45) 12.6%, rgba(var(--rv-navy-rgb), 0) 28%); }
+/* ---------- hero (home.css .hero): its entrance waits for the loader ---------- */
+/* While the loader runs, the hero's CSS entrance (zoom, rising lines, foot, scroll cue) is held at its first frame and
+   starts as the navy field opens (intro-open), so the picture settles and the name rises inside the opening. */
+html.intro-run:not(.intro-open) :is(.hero-media, .hero-eyebrow, .hero-line > span, .hero-foot, .hero-scroll i) { animation-play-state: paused; }
 
-.eh-title { margin: 0; font: inherit; }
-.eh-w { position: absolute; display: block; white-space: nowrap; font-family: var(--display); font-weight: 300; font-size: var(--ws); line-height: 1; letter-spacing: .02em; text-transform: uppercase; color: var(--rv-ivory); text-shadow: 0 0 32px rgba(var(--rv-navy-rgb), .4); will-change: transform, opacity; }
-.eh-w1 { z-index: 4; left: var(--w1x); top: var(--w1y); }
-.eh-w2 { z-index: 2; left: var(--w2x); top: var(--w2y); }
-.eh-w3 { z-index: 4; left: var(--w3x); top: var(--w3y); }
-html:not(.intro-seen) .eh:not(.is-live) .eh-w { animation: eh-show 0s 5s both; }
-html:not(.intro-seen) .eh-w { opacity: 0; }
-@keyframes eh-show { to { opacity: 1; } }
-
-.eh-foot { position: absolute; z-index: 5; right: 32px; bottom: 26px; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-.eh-ctas { display: flex; gap: 30px; }
+/* small uppercase text link with an underline that retracts on hover (chapters) */
 .eh-cta { display: inline-flex; align-items: center; min-height: 44px; color: var(--ivory); text-decoration: none; font: 500 12px/1 var(--body); letter-spacing: .15em; text-transform: uppercase; }
 .eh-cta span { position: relative; padding-bottom: 5px; }
 .eh-cta span::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: currentColor; transform-origin: 0 50%; transition: transform .3s cubic-bezier(.4, 0, .2, 1); }
 @media (hover: hover) { .eh-cta:hover span::after { transform: scaleX(0); transform-origin: 100% 50%; } }
-.eh-cap { margin: 0; font-size: 10px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: rgba(246, 241, 231, .78); }
-
-/* tablets and phones in portrait: the words stack and centre (Elicyon mobile), the crop moves to the building's corner */
-@media (max-width: 1024px) and (orientation: portrait), (max-width: 767px) {
-  /* a shorter plate: two words in the navy above the roof, the last one in the navy below the ground floor */
-  .eh { --shift: 15%; --mh: 70%; --base: 94%; --ox: 71%; --ws: clamp(40px, 13vw, 92px); --w1y: 17%; --w2y: 30.4%; --w3y: 82%; }
-  .eh-ground { background: linear-gradient(to top, rgba(var(--rv-navy-rgb), .9) 0%, rgba(var(--rv-navy-rgb), .55) 16%, rgba(var(--rv-navy-rgb), 0) 40%); }
-  .eh-w { left: 0 !important; right: 0; text-align: center; }
-  .eh-foot { left: 20px; right: 20px; bottom: 18px; align-items: center; }
-  .eh-ctas { gap: 24px; }
-  .eh-cap { font-size: 9px; }
-}
 
 /* ---------- first editorial section: the statement recomposes ---------- */
 .es { position: relative; z-index: 1; background: var(--paper); color: var(--navy); }
@@ -139,9 +86,6 @@ html:not(.intro-seen) .eh-w { opacity: 0; }
 
 @media (prefers-reduced-motion: reduce) {
   .ld { display: none; }
-  .eh-zoom { transform: none !important; }
-  .eh-zoom img { transition: none; }
-  .eh-w { opacity: 1 !important; animation: none !important; }
 }
 
 /* =====================================================================
@@ -186,63 +130,83 @@ html:not(.intro-seen) .eh-w { opacity: 0; }
   .ec-panel .ec-tag { top: auto; bottom: 132px; }
 }
 
-/* ---------- residences (Elicyon services triptych) ---------- */
-.er { position: relative; z-index: 1; background: var(--paper); color: var(--navy); padding: clamp(100px, 11vw, 160px) 32px clamp(80px, 9vw, 130px); }
-/* one head grid for the editorial sections on paper: heading over the first half, copy (and link) in the last third,
-   both resting on the same baseline */
+/* ---------- residences: the apartment collection as a card carousel ---------- */
+.er { position: relative; z-index: 1; overflow: hidden; background: var(--paper); color: var(--navy); padding: clamp(100px, 11vw, 160px) 0 clamp(80px, 9vw, 130px); }
+/* one head grid for the editorial sections on paper: heading over the first half, copy (and link or arrows) in the
+   last third, both resting on the same baseline */
 .er-head, .el-head { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: end; max-width: 1376px; margin: 0 auto; }
+.er-head { padding-inline: 32px; box-sizing: content-box; }
 .er-head > :first-child, .el-head > :first-child { grid-column: 1 / span 6; }
-.er-text, .el-aside { grid-column: 9 / -1; }
-.er-heading { margin: 0; display: flex; flex-direction: column; font: 300 clamp(36px, 3.4vw, 50px)/1.04 var(--display); text-transform: uppercase; }
+.er-aside, .el-aside { grid-column: 9 / -1; }
+.er-aside { display: flex; flex-direction: column; align-items: flex-start; gap: 28px; }
 .er-text { max-width: 400px; margin: 0; font-size: 15px; line-height: 1.6; color: var(--muted); }
-.er-plates { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 2vw, 32px); max-width: 1040px; margin: clamp(56px, 6vw, 96px) auto 0; align-items: start; }
-/* the plates are paper, not boxes: a hairline frame, the plan printed straight onto it (the plans' white ground
-   multiplies away), and the label underneath */
-.er-plate { position: relative; display: block; padding: 0; border: 1px solid var(--line); background: transparent; color: var(--navy); cursor: pointer; aspect-ratio: 3 / 4; overflow: hidden; outline-offset: 4px; transition: border-color .4s var(--ease-soft), background-color .4s var(--ease-soft), transform .12s ease-out; }
-.er-plate-2 { margin-top: clamp(40px, 5vw, 80px); }
-.er-plan { position: absolute; inset: 9% 9% 24%; }
-.er-plan img, .er-tplan img { mix-blend-mode: multiply; }
-.er-plan img { object-fit: contain; transition: transform .9s var(--ease-soft); }
-@media (hover: hover) {
-  .er-plate:hover { border-color: rgba(20, 33, 58, .35); }
-  .er-plate:hover .er-plan img { transform: scale(1.04); }
-}
-/* feedback on press, not on release */
-.er-plate:active { transform: scale(.985); }
-.er-label { position: absolute; left: 0; right: 0; bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); transition: color .4s var(--ease-soft); }
-.er-label b { font-weight: 500; }
-.er-label span { letter-spacing: .08em; }
-/* chosen: the plate takes the ivory ground and a navy frame, its label turns navy and gets a short gold rule */
-.er-plate.is-on { border-color: var(--navy); background: var(--ivory); }
-.er-plate.is-on .er-label { color: var(--navy); }
-.er-label b::after { content: ''; display: block; width: 0; height: 1px; margin: 8px auto 0; background: var(--gold); transition: width .5s var(--ease-soft); }
-.er-plate.is-on .er-label b::after { width: 28px; }
-.er-panel { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); gap: 40px 24px; max-width: 1240px; margin: clamp(56px, 5vw, 80px) auto 0; animation: er-in .6s var(--ease-soft) both; }
-@keyframes er-in { from { opacity: 0; translate: 0 12px; } }
-.er-type { display: grid; gap: 8px; color: var(--navy); text-decoration: none; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
-.er-tplan { position: relative; aspect-ratio: 4 / 5; background: var(--ivory); overflow: hidden; }
-.er-tplan img { object-fit: contain; padding: 8%; transition: transform .9s var(--ease-soft); }
-@media (hover: hover) { .er-type:hover .er-tplan img { transform: scale(1.04); } }
-.er-tname { display: flex; justify-content: space-between; align-items: baseline; font: 400 24px/1.1 var(--display); }
-.er-tname i { font-style: normal; font-size: 18px; }
-.er-tmeta, .er-tavail { font-size: 12.5px; color: var(--muted); }
-.er-tavail { color: var(--navy); letter-spacing: .04em; }
-.er-type.is-sold { opacity: .55; }
-.er-tlink { font: 500 11px/1 var(--body); letter-spacing: .15em; text-transform: uppercase; }
-.er-tlink span, .er-all span, .el-link span { position: relative; padding-bottom: 5px; }
-.er-tlink span::after, .er-all span::after, .el-link span::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: currentColor; transform-origin: 0 50%; transition: transform .3s cubic-bezier(.4, 0, .2, 1); }
-@media (hover: hover) { .er-type:hover .er-tlink span::after, .er-all:hover span::after, .el-link:hover span::after { transform: scaleX(0); transform-origin: 100% 50%; } }
-.er-foot { max-width: 1240px; margin: 40px auto 0; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 18px; align-items: baseline; }
-.er-all, .el-link { display: inline-flex; min-height: 44px; align-items: center; text-decoration: none; font: 500 12px/1 var(--body); letter-spacing: .15em; text-transform: uppercase; }
-.er-note { max-width: 70ch; font-size: 11.5px; line-height: 1.5; color: var(--muted); }
+
+/* arrows: quiet circles, answer on press, dimmed (but still visible) at either end */
+.er-nav { display: flex; gap: 10px; }
+.er-arrow { display: grid; place-items: center; width: 48px; height: 48px; padding: 0; border: 1px solid rgba(20, 33, 58, .22); border-radius: 50%; background: transparent; color: var(--navy); cursor: pointer; transition: background-color .3s var(--ease-soft), color .3s var(--ease-soft), border-color .3s var(--ease-soft), opacity .3s, transform .12s ease-out; }
+.er-arrow svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+@media (hover: hover) { .er-arrow:not(:disabled):hover { background: var(--navy); border-color: var(--navy); color: var(--ivory); } }
+.er-arrow:active:not(:disabled) { transform: scale(.94); }
+.er-arrow:disabled { opacity: .35; cursor: default; }
+.er-arrow:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+/* bedroom filter: a row of quiet pills under the head */
+.er-filter { display: flex; flex-wrap: wrap; gap: 8px; max-width: 1376px; margin: clamp(40px, 4vw, 56px) auto 0; padding-inline: 32px; box-sizing: content-box; }
+.er-chip { min-height: 38px; padding: 0 18px; border: 1px solid rgba(20, 33, 58, .18); border-radius: 999px; background: transparent; color: var(--navy); cursor: pointer; font: 500 11px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; transition: background-color .3s var(--ease-soft), color .3s var(--ease-soft), border-color .3s var(--ease-soft), transform .12s ease-out; }
+@media (hover: hover) { .er-chip:not(.is-on):hover { border-color: rgba(20, 33, 58, .5); } }
+.er-chip:active { transform: scale(.96); }
+.er-chip.is-on { background: var(--navy); border-color: var(--navy); color: var(--ivory); }
+
+/* the rail runs to the right edge of the screen; its first card lines up with the heading (offset set in JS) */
+.er-rail { margin-top: 28px; overflow: visible; }
+.er-rail .swiper-wrapper { align-items: stretch; }
+.er-rail .er-slide { width: clamp(300px, 26vw, 400px); height: auto; }
+.er-card { display: flex; flex-direction: column; height: 100%; color: var(--navy); text-decoration: none; background: var(--ivory); border: 1px solid transparent; transition: border-color .4s var(--ease-soft), box-shadow .5s var(--ease-soft), transform .12s ease-out; }
+@media (hover: hover) { .er-card:hover { border-color: rgba(20, 33, 58, .16); box-shadow: 0 30px 60px -40px rgba(20, 33, 58, .45); } }
+.er-card:active { transform: scale(.99); }
+.er-card:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+/* the plan printed on the card: its white ground multiplies away into the ivory */
+.er-cplan { position: relative; display: block; aspect-ratio: 1 / 1; overflow: hidden; }
+.er-cplan img { object-fit: contain; padding: 9%; mix-blend-mode: multiply; transition: transform 1s var(--ease-soft); }
+@media (hover: hover) { .er-card:hover .er-cplan img { transform: scale(1.035); } }
+.er-status { position: absolute; top: 16px; left: 16px; padding: 7px 12px; border-radius: 999px; background: rgba(251, 248, 242, .82); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); font: 500 10.5px/1 var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--navy); }
+.er-card.is-sold .er-status { background: var(--navy); color: var(--ivory); }
+.er-card.is-sold .er-cplan img { opacity: .55; }
+.er-cbody { display: flex; flex-direction: column; flex: 1; gap: 18px; padding: 22px 24px 24px; border-top: 1px solid var(--line); }
+.er-cname { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.er-cname b { font: 400 30px/1 var(--display); letter-spacing: -.01em; }
+.er-cname i { font: 300 24px/1 var(--display); font-style: normal; letter-spacing: -.01em; white-space: nowrap; }
+/* the facts as a two-column spec sheet with hairlines */
+.er-specs { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); }
+.er-specs span { padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 13px; line-height: 1.35; color: var(--ink); }
+.er-specs span:nth-child(odd) { padding-right: 12px; }
+.er-specs span:nth-child(even) { padding-left: 12px; border-left: 1px solid var(--line); }
+.er-price { font: 400 18px/1.2 var(--display); }
+.er-go { display: inline-flex; align-items: center; gap: 10px; margin-top: auto; font: 500 11px/1 var(--body); letter-spacing: .15em; text-transform: uppercase; }
+.er-go svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; transition: transform .35s var(--ease-soft); }
+@media (hover: hover) { .er-card:hover .er-go svg { transform: translateX(5px); } }
+
+/* a thin progress rule under the rail instead of dots, then the link to every apartment and the note */
+.er-foot { max-width: 1376px; margin: 36px auto 0; padding-inline: 32px; box-sizing: content-box; }
+.er-progress { position: relative; display: block; height: 1px; background: var(--line); overflow: hidden; }
+.er-progress i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--navy); transition: transform .25s linear, width .25s linear; }
+.er-foot-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 18px; align-items: baseline; margin-top: 20px; }
+.er-all span, .el-link span { position: relative; padding-bottom: 5px; }
+.er-all span::after, .el-link span::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: currentColor; transform-origin: 0 50%; transition: transform .3s cubic-bezier(.4, 0, .2, 1); }
+@media (hover: hover) { .er-all:hover span::after, .el-link:hover span::after { transform: scaleX(0); transform-origin: 100% 50%; } }
+.er-all, .el-link { display: inline-flex; min-height: 44px; align-items: center; color: var(--navy); text-decoration: none; font: 500 12px/1 var(--body); letter-spacing: .15em; text-transform: uppercase; }
+.er-note { max-width: 70ch; margin: 0; font-size: 11.5px; line-height: 1.5; color: var(--muted); }
 @media (max-width: 767px) {
-  .er { padding-inline: 20px; }
-  .er-head > :first-child, .el-head > :first-child, .er-text, .el-aside { grid-column: 1 / -1; }
-  .er-text, .el-aside { margin-top: 24px; }
-  .er-plates { gap: 10px; }
-  .er-label { bottom: 10px; font-size: 9.5px; letter-spacing: .1em; }
-  .er-label span { display: none; }
+  .er-head, .er-filter, .er-foot { padding-inline: 20px; }
+  .er-head > :first-child, .el-head > :first-child, .er-aside, .el-aside { grid-column: 1 / -1; }
+  .er-aside, .el-aside { margin-top: 24px; }
+  .er-filter { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-inline: 0; }
+  .er-filter::-webkit-scrollbar { display: none; }
+  .er-chip { flex: none; }
+  .er-rail .er-slide { width: 82vw; }
+  .er-cname b { font-size: 26px; } .er-cname i { font-size: 21px; }
 }
+@media (prefers-reduced-motion: reduce) { .er-card, .er-cplan img, .er-go svg, .er-progress i { transition: none; } }
 
 /* ---------- investor (Elicyon "Leading the vision") ---------- */
 .ei { position: relative; z-index: 1; overflow: hidden; color: var(--ivory); padding: clamp(100px, 10vw, 140px) 32px; display: grid; place-items: center; min-height: 100svh; }

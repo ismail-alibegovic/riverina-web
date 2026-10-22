@@ -1,62 +1,134 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import type { Swiper as SwiperType } from 'swiper';
+import { A11y, FreeMode, Keyboard } from 'swiper/modules';
+import 'swiper/css';
 import type { TypeCard } from './Types';
 import { Stepped } from './Editorial';
 
-type Group = { key: string; label: string; area: string; cards: TypeCard[] };
-type Labels = { group: string; area: string; outdoor: string; floor: string; view: string; all: string };
+type Labels = { group: string; all: string; view: string; filterAll: string; prev: string; next: string };
+
+/** the head grid's width (elicyon.css .er-head max-width) and side padding: the first card lines up with the heading */
+const GRID = 1376, PAD_DESK = 32, PAD_PHONE = 20;
 
 /**
- * Apartments after Elicyon's services composition: a stepped heading with narrow copy, three portrait plates in a
- * stepped row (the middle one lower), one per bedroom group, each with its 3D plan and label. Choosing a plate opens
- * that group's types below: 3D plan, area, outdoor space, floors and live availability (prices only when the CMS
- * shows them), each linking into the apartment finder.
+ * The apartment collection as a card carousel: a stepped heading with short copy and the arrows beside it, a quiet
+ * bedroom filter, then one card per apartment type running off the right edge of the screen. Each card shows the
+ * type's 3D plan printed on the paper, its name and area, bedrooms, outdoor space, floors, how many apartments share
+ * it and the live availability (prices only when the CMS shows them), and opens that type in the apartment finder.
+ * Drag with momentum and soft edges (Swiper), arrows, keyboard; a thin progress rule shows where you are.
  */
 export default function Residences({ cards, heading, text, note, labels, bedsMany, allHref }: { cards: TypeCard[]; heading: string; text: string; note: string; labels: Labels; bedsMany: string; allHref: string }) {
-  const groups: Group[] = [1, 2, 3].map((b) => {
-    const own = cards.filter((c) => (b === 3 ? c.bedrooms >= 3 : c.bedrooms === b));
-    // "46,44 m²" (bs) or "46.44 m²" (en): the last separator is the decimal one
-    const areas = own.map((c) => parseFloat(c.area.replace(/[^\d.,]/g, '').replace(/[.,](?=\d{3}(\D|$))/g, '').replace(',', '.'))).filter((n) => n > 0);
-    const fmt = (n: number) => String(Math.round(n));
-    return { key: String(b), label: b === 3 ? bedsMany : own[0]?.bedLabel || '', area: areas.length ? `${fmt(Math.min(...areas))}–${fmt(Math.max(...areas))} m²` : '', cards: own };
-  }).filter((g) => g.cards.length);
-  const [open, setOpen] = useState(0);
-  const g = groups[open];
+  const groups = useMemo(() => [
+    { key: 'all', label: labels.filterAll, test: () => true },
+    ...[1, 2, 3].map((b) => {
+      const own = cards.filter((c) => (b === 3 ? c.bedrooms >= 3 : c.bedrooms === b));
+      return { key: String(b), label: b === 3 ? bedsMany : own[0]?.bedLabel || '', test: (c: TypeCard) => (b === 3 ? c.bedrooms >= 3 : c.bedrooms === b), n: own.length };
+    }).filter((g) => g.n),
+  ], [cards, bedsMany, labels.filterAll]);
+  const [group, setGroup] = useState('all');
+  const shown = cards.filter((groups.find((g) => g.key === group) || groups[0]).test);
+
+  const api = useRef<SwiperType | null>(null);
+  const [edge, setEdge] = useState({ start: true, end: false });
+  const [bar, setBar] = useState({ w: 100, x: 0 });
+
+  /** first card on the heading's left edge, the last one ending on its right edge */
+  const align = (s: SwiperType) => {
+    const vw = window.innerWidth, pad = vw < 768 ? PAD_PHONE : PAD_DESK;
+    const off = Math.max(pad, (vw - GRID) / 2);
+    s.params.slidesOffsetBefore = off;
+    s.params.slidesOffsetAfter = off;
+    s.update();
+  };
+  const track = (s: SwiperType) => {
+    setEdge({ start: s.isBeginning, end: s.isEnd });
+    // virtualSize (the rail's full length) is set by Swiper at runtime but missing from its types
+    const total = (s as SwiperType & { virtualSize?: number }).virtualSize || 0;
+    const w = total > 0 ? Math.min(100, (s.width / total) * 100) : 100;
+    setBar({ w, x: Math.max(0, Math.min(1, s.progress)) * (100 - w) });
+  };
+
+  useEffect(() => {
+    const s = api.current;
+    if (!s) return;
+    s.slideTo(0, 0);
+    s.update();
+    track(s);
+  }, [group]);
+
+  const reduce = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   return (
     <section id="tipovi" className="er" aria-labelledby="er-title">
       <div className="er-head">
         <Stepped id="er-title" text={heading} />
-        {text && <p className="er-text" data-ed="fade">{text}</p>}
-      </div>
-      <div className="er-plates" role="tablist" aria-label={labels.group}>
-        {groups.map((gr, i) => {
-          const sample = gr.cards[0];
-          return (
-            <button key={gr.key} type="button" role="tab" id={`er-tab-${gr.key}`} aria-selected={open === i} aria-controls="er-panel" className={'er-plate er-plate-' + (i + 1) + (open === i ? ' is-on' : '')} onClick={() => setOpen(i)}>
-              <span className="er-plan"><Image src={sample.plan3d || sample.plan} alt="" fill sizes="(min-width: 1024px) 18vw, 30vw" quality={80} /></span>
-              <span className="er-label"><b>{gr.label}</b><span>{gr.area}</span></span>
+        <div className="er-aside" data-ed="fade">
+          {text && <p className="er-text">{text}</p>}
+          <div className="er-nav">
+            <button type="button" className="er-arrow" aria-label={labels.prev} disabled={edge.start} onClick={() => api.current?.slidePrev()}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m6-6-6 6 6 6" /></svg>
             </button>
-          );
-        })}
-      </div>
-      {g && (
-        <div id="er-panel" role="tabpanel" aria-labelledby={`er-tab-${g.key}`} className="er-panel" key={g.key}>
-          {g.cards.map((c) => (
-            <a key={c.id} className={'er-type' + (c.soldOut ? ' is-sold' : '')} href={c.href}>
-              <span className="er-tplan"><Image src={c.plan3d || c.plan} alt={c.planAlt} fill sizes="(min-width: 1024px) 22vw, 70vw" quality={78} /></span>
-              <span className="er-tname">{c.name}<i>{c.area}</i></span>
-              <span className="er-tmeta">{c.bedLabel} · {c.outdoor} · {c.floors}</span>
-              {(c.avail || c.price) && <span className="er-tavail">{[c.avail, c.price].filter(Boolean).join(' · ')}</span>}
-              <span className="er-tlink"><span>{labels.view}</span></span>
-            </a>
-          ))}
+            <button type="button" className="er-arrow" aria-label={labels.next} disabled={edge.end} onClick={() => api.current?.slideNext()}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" /></svg>
+            </button>
+          </div>
         </div>
-      )}
+      </div>
+
+      <div className="er-filter" role="group" aria-label={labels.group}>
+        {groups.map((g) => (
+          <button key={g.key} type="button" className={'er-chip' + (group === g.key ? ' is-on' : '')} aria-pressed={group === g.key} onClick={() => setGroup(g.key)}>{g.label}</button>
+        ))}
+      </div>
+
+      <Swiper
+        className="er-rail"
+        modules={[A11y, FreeMode, Keyboard]}
+        slidesPerView="auto"
+        spaceBetween={24}
+        speed={reduce ? 0 : 650}
+        grabCursor
+        keyboard={{ enabled: true, onlyInViewport: true }}
+        freeMode={{ enabled: true, momentum: true, momentumRatio: 0.6, sticky: false }}
+        breakpoints={{ 768: { freeMode: { enabled: false }, spaceBetween: 28 } }}
+        a11y={{ prevSlideMessage: labels.prev, nextSlideMessage: labels.next, slideLabelMessage: '{{index}} / {{slidesLength}}' }}
+        onSwiper={(s) => { api.current = s; align(s); track(s); }}
+        onResize={(s) => { align(s); track(s); }}
+        onProgress={track}
+        onSlideChange={track}
+      >
+        {shown.map((c) => (
+          <SwiperSlide key={c.id} className="er-slide">
+            <a className={'er-card' + (c.soldOut ? ' is-sold' : '')} href={c.href}>
+              <span className="er-cplan">
+                <Image src={c.plan3d || c.plan} alt={c.planAlt} fill sizes="(min-width: 1024px) 400px, 82vw" quality={80} />
+                {c.avail && <span className="er-status">{c.avail}</span>}
+              </span>
+              <span className="er-cbody">
+                <span className="er-cname"><b>{c.name}</b><i>{c.area}</i></span>
+                <span className="er-specs">
+                  <span>{c.bedLabel}</span>
+                  <span>{c.outdoor}</span>
+                  <span>{c.floors}</span>
+                  <span>{c.units}</span>
+                </span>
+                {c.price && <span className="er-price">{c.price}</span>}
+                <span className="er-go">{labels.view}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" /></svg></span>
+              </span>
+            </a>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+
       <div className="er-foot">
-        <a className="er-all" href={allHref}><span>{labels.all}</span></a>
-        {note && <p className="er-note">{note}</p>}
+        <span className="er-progress" aria-hidden="true"><i style={{ width: `${bar.w}%`, transform: `translateX(${(bar.x / bar.w) * 100}%)` }} /></span>
+        <div className="er-foot-row">
+          <a className="er-all" href={allHref}><span>{labels.all}</span></a>
+          {note && <p className="er-note">{note}</p>}
+        </div>
       </div>
     </section>
   );

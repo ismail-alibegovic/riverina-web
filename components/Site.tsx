@@ -109,7 +109,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
       const cards = typeCards(data, lang);
       return cards.length > 0 && (
         <Residences cards={cards} heading={tx(page.types?.title, lang)} text={tx(page.types?.text, lang)} note={tx(page.types?.note, lang)} bedsMany={t.bedsMany} allHref={href('apartments', lang)}
-          labels={{ group: t.filterBedrooms, area: t.area, outdoor: t.outdoor, floor: t.floor, view: t.viewUnit, all: t.allApartments }} />
+          labels={{ group: t.filterBedrooms, all: t.allApartments, view: t.viewUnit, filterAll: t.filterAll, prev: t.prevSlide, next: t.nextSlide }} />
       );
     },
 

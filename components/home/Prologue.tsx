@@ -12,10 +12,12 @@ function parse(line: string): Part[] {
     s.startsWith('{') ? { t: s.slice(1, -1), fade: true, em: false } : s.startsWith('*') ? { t: s.slice(1, -1), fade: false, em: true } : { t: s, fade: false, em: false });
 }
 
-// Line offsets in px at 1440 px (scaled with the viewport): where each line starts, and where it settles once the
-// extra words have dissolved. Elicyon staggers its seven lines the same way and re-offsets them on scroll.
-const FROM = [40, 150, 0, 210, 90, 260, 170];
-const TO = [120, 40, 180, 60, 0, 220, 110];
+// Line offsets in steps of STEP px at 1440 px (scaled with the viewport): where each line starts, and where it
+// settles once the extra words have dissolved. On a fixed step the stagger reads as a deliberate staircase rather
+// than as loose alignment; Elicyon staggers its seven lines the same way and re-offsets them on scroll.
+const STEP = 72;
+const FROM = [1, 2, 0, 3, 1, 3, 2].map((s) => s * STEP);
+const TO = [0, 1, 0, 2, 1, 3, 2].map((s) => s * STEP);
 // Five images rise past the text at five speeds (Elicyon: start +100…+400 px, end −260 % … −400 % of their height).
 const IMG_FROM = [100, 200, 100, 400, 300];
 const IMG_TO = [-260, -400, -300, -320, -280];

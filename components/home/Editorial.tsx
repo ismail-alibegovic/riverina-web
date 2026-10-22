@@ -12,24 +12,22 @@ export function Stepped({ text, id, className = '', as: Tag = 'h2' }: { text: st
 }
 
 /**
- * Developer, after Elicyon's "Leading the vision": a full-screen picture (slow parallax) with a framed plate at its
- * centre and the heading stepped across the plate's top edge. The plate carries the developer's logo; only the
- * confirmed line about its role is shown (the CMS text appears once it is filled in).
+ * Developer, after Elicyon's "Leading the vision": the night picture of the river (slow parallax) with one frosted
+ * ivory panel floating over it, so the picture stays the subject and the panel reads as a layer above it. The panel
+ * carries the heading as a quiet label, the developer's logo, the confirmed line about its role (the CMS text once it
+ * is filled in) and the link.
  */
 export function Investor({ title, text, role, logo, image, link, tag }: { title: string; text: string; role: string; logo?: string; image: string; link: { href: string; label: string }; tag?: string }) {
   return (
     <section id="investitor" className="ei" aria-labelledby="ei-title">
       <div className="ei-bg" data-ed="parallax" aria-hidden="true"><Image src={image} alt="" fill sizes="100vw" quality={72} /></div>
       <div className="ei-shade" aria-hidden="true" />
-      <div className="ei-inner">
+      <div className="ei-panel" data-ed="fade">
         <Stepped id="ei-title" text={title} className="ei-heading" />
-        <div className="ei-plate" data-ed="frame">
-          {logo && <div className="ei-logo"><Image src={logo} alt={title.replace(/\*/g, '').replace(/\n/g, ' ')} fill sizes="240px" /></div>}
-        </div>
-        <div className="ei-copy" data-ed="fade">
-          {text ? <Paras className="ei-text" text={text} /> : <p className="ei-text">{role}</p>}
-          <a className="eh-cta" href={link.href}><span>{link.label}</span></a>
-        </div>
+        {logo && <div className="ei-logo"><Image src={logo} alt={title.replace(/\*/g, '').replace(/\n/g, ' ')} fill sizes="200px" /></div>}
+        <span className="ei-rule" aria-hidden="true" />
+        {text ? <Paras className="ei-text" text={text} /> : <p className="ei-text">{role}</p>}
+        <a className="ei-link" href={link.href}><span>{link.label}</span></a>
       </div>
       {tag && <span className="ec-tag">{tag}</span>}
     </section>
@@ -45,11 +43,11 @@ export function Location({ title, text, map, alt, link }: { title: string; text:
   return (
     <section id="lokacija" className="el" aria-labelledby="el-title">
       <div className="el-head">
-        <div>
-          <Stepped id="el-title" text={title} />
-          {text && <div data-ed="fade"><Paras className="el-text" text={text} /></div>}
+        <Stepped id="el-title" text={title} />
+        <div className="el-aside" data-ed="fade">
+          {text && <Paras className="el-text" text={text} />}
+          <a className="el-link" href={link.href}><span>{link.label}</span></a>
         </div>
-        <a className="el-link" href={link.href} data-ed="fade"><span>{link.label}</span></a>
       </div>
       <figure className="el-map" data-ed="frame">
         <div className="el-map-in" data-ed="parallax"><Image src={map} alt={alt} fill sizes="(min-width: 1024px) 92vw, 100vw" quality={84} /></div>

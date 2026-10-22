@@ -17,13 +17,19 @@ export default function EditorialMotion() {
       if (dead) return;
       const below = (el: Element) => el.getBoundingClientRect().top > window.innerHeight * 0.92;
       const ctx = gsap.context(() => {
-        const watched = new Map<Element, Element>();
+        // frames are watched through their parent; several frames may share one (the developer collage)
+        const watched = new Map<Element, Element[]>();
         const io = new IntersectionObserver((entries) => {
           entries.forEach((e) => {
             if (!e.isIntersecting) return;
             io.unobserve(e.target);
             // a clipped frame is watched through its parent (Chromium counts clip-path in IntersectionObserver)
-            const el = (watched.get(e.target) || e.target) as HTMLElement, kind = el.dataset.ed;
+            const frames = watched.get(e.target);
+            if (frames) {
+              gsap.to(frames, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.3, ease: 'power3.inOut', stagger: 0.15 });
+              return;
+            }
+            const el = e.target as HTMLElement, kind = el.dataset.ed;
             if (kind === 'heading') {
               const lines = el.querySelectorAll('.ed-hl-in');
               gsap.to(lines, { yPercent: 0, duration: 0.85, stagger: 0.1, delay: 0.2, ease: 'power3.out' });
@@ -31,8 +37,6 @@ export default function EditorialMotion() {
               if (second) gsap.to(second, { x: 0, duration: 0.8, delay: 0.45, ease: 'power3.inOut' });
             } else if (kind === 'fade') {
               gsap.to(el, { opacity: 1, y: 0, duration: 0.6, delay: 0.25, ease: 'power3.out' });
-            } else if (kind === 'frame') {
-              gsap.to(el, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.3, ease: 'power3.inOut' });
             }
           });
         }, { threshold: 0.35 });
@@ -48,7 +52,8 @@ export default function EditorialMotion() {
         document.querySelectorAll<HTMLElement>('[data-ed="frame"]').forEach((el) => {
           if (!below(el) || !el.parentElement) return;
           gsap.set(el, { clipPath: 'inset(100% 0% 0% 0%)' });
-          watched.set(el.parentElement, el); io.observe(el.parentElement);
+          const p = el.parentElement, list = watched.get(p);
+          if (list) list.push(el); else { watched.set(p, [el]); io.observe(p); }
         });
         document.querySelectorAll<HTMLElement>('[data-ed="parallax"]').forEach((el) => {
           gsap.fromTo(el, { yPercent: -6 }, { yPercent: 6, ease: 'none', scrollTrigger: { trigger: el.parentElement, start: 'top bottom', end: 'bottom top', scrub: true } });

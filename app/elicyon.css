@@ -38,6 +38,21 @@ html:not(.intro-seen) .ld-res .ld-ch > span { opacity: 0; }
 /* While the loader runs, the hero's CSS entrance (zoom, rising lines, foot, scroll cue) is held at its first frame and
    starts as the navy field opens (intro-open), so the picture settles and the name rises inside the opening. */
 html.intro-run:not(.intro-open) :is(.hero-media, .hero-eyebrow, .hero-line > span, .hero-foot, .hero-scroll i) { animation-play-state: paused; }
+/* in the opening the picture settles from deeper (×1.22) with the hole, and the name rises as the window is mostly open */
+.hero.is-intro { --hero-d: 1.05s; }
+.hero.is-intro .hero-media { animation: hero-zoom-intro 2.4s cubic-bezier(.65, 0, .35, 1) both; }
+@keyframes hero-zoom-intro { from { transform: scale(1.22); } }
+/* the travelling logo keeps a soft shadow while it crosses the picture */
+.ld-logo { filter: drop-shadow(0 4px 24px rgba(5, 24, 54, .45)); }
+
+/* the name across the hero, large: RIVERINA, then RESIDENCE stepped in, as one block over the lower half */
+.hero .hero-title { font-size: clamp(64px, 11vw, 230px); line-height: .88; letter-spacing: -.01em; }
+.hero .hero-line:nth-child(2) { padding-inline-start: clamp(0px, 12vw, 260px); }
+.hero .hero-title em { text-transform: uppercase; }
+@media (max-width: 899px) {
+  .hero .hero-title { font-size: clamp(44px, 13vw, 110px); }
+  .hero .hero-line:nth-child(2) { padding-inline-start: 0; }
+}
 
 /* small uppercase text link with an underline that retracts on hover (chapters) */
 .eh-cta { display: inline-flex; align-items: center; min-height: 44px; color: var(--ivory); text-decoration: none; font: 500 12px/1 var(--body); letter-spacing: .15em; text-transform: uppercase; }
@@ -57,28 +72,31 @@ html.intro-run:not(.intro-open) :is(.hero-media, .hero-eyebrow, .hero-line > spa
 .es-imgs { position: absolute; inset: 0; pointer-events: none; }
 .es-img { position: absolute; margin: 0; overflow: hidden; background: var(--ivory); will-change: transform; }
 .es-img img { object-fit: cover; }
-/* all five stay in the side margins, outside the text column, so they never cross the words: two portrait, three
-   landscape, on a shared 4vw inset */
-.es-img-1 { left: 4vw; top: 48%; width: 13vw; aspect-ratio: 3 / 4; }
-.es-img-2 { right: 4vw; top: 9%; width: 15vw; aspect-ratio: 4 / 3; }
-.es-img-3 { right: 7vw; top: 62%; width: 11vw; aspect-ratio: 3 / 4; }
-.es-img-4 { left: 4vw; top: 90%; width: 15vw; aspect-ratio: 4 / 3; }
-.es-img-5 { right: 4vw; top: 102%; width: 13vw; aspect-ratio: 4 / 3; }
+/* as on elicyon.com: five tall pictures (half the screen high, 15 to 23vw wide) rise past the statement at five
+   speeds, close to the edges, one of them through the right of the text column; they are the section's architecture,
+   not decoration in the margins */
+.es-img { height: clamp(340px, 50vh, 520px); }
+.es-img-1 { left: 1.4vw; top: 46%; width: 14.8vw; }
+.es-img-2 { right: 1.4vw; top: 16%; width: 16.2vw; }
+.es-img-3 { left: 58vw; top: 96%; width: 23vw; }
+.es-img-4 { left: 1.4vw; top: 118%; width: 23vw; }
+.es-img-5 { right: 1.4vw; top: 78%; width: 14.8vw; }
 
 @media (min-width: 768px) and (max-width: 1023px) {
   /* tablets: a narrower column, so the images fit in the margins beside it */
   .es-text { width: 64vw; font-size: clamp(26px, 3.9vw, 34px); }
-  .es-img-1, .es-img-4 { left: 2vw; width: 9vw; }
-  .es-img-2, .es-img-3, .es-img-5 { right: 2vw; width: 9vw; }
+  .es-img { height: 34vh; }
+  .es-img-1, .es-img-4 { left: 2vw; width: 14vw; }
+  .es-img-2, .es-img-3, .es-img-5 { left: auto; right: 2vw; width: 14vw; }
 }
 @media (max-width: 767px) {
   /* phones: the final sentence straight away; the images get their own rows and never cross the words */
   .es-pin { height: auto; min-height: 0; display: grid; grid-template-columns: 1fr; row-gap: 44px; place-items: initial; padding: 96px 20px 120px; }
   .es-imgs { display: contents; }
-  .es-img { position: relative; inset: auto; }
-  .es-img-1 { grid-row: 1; justify-self: end; width: 38vw; }
+  .es-img { position: relative; inset: auto; height: auto; }
+  .es-img-1 { grid-row: 1; justify-self: end; width: 42vw; aspect-ratio: 3 / 4; }
   .es-text { grid-row: 2; width: auto; font-size: clamp(25px, 7.4vw, 34px); align-items: stretch; }
-  .es-img-2 { grid-row: 3; justify-self: start; width: 58vw; }
+  .es-img-2 { grid-row: 3; justify-self: start; width: 66vw; aspect-ratio: 4 / 3; }
   .es-line { white-space: normal; }
   .es-fade, .es-line.is-gone { display: none; }
   .es-img-3, .es-img-4, .es-img-5 { display: none; }
@@ -208,37 +226,47 @@ html.intro-run:not(.intro-open) :is(.hero-media, .hero-eyebrow, .hero-line > spa
 }
 @media (prefers-reduced-motion: reduce) { .er-card, .er-cplan img, .er-go svg, .er-progress i { transition: none; } }
 
-/* ---------- investor (Elicyon "Leading the vision") ---------- */
-.ei { position: relative; z-index: 1; overflow: hidden; color: var(--ivory); padding: clamp(100px, 10vw, 140px) 32px; display: grid; place-items: center; min-height: 100svh; }
-.ei-bg { position: absolute; inset: -8% 0; }
-.ei-bg img { object-fit: cover; }
-/* the night picture stays the subject: only a light dusk, a little deeper towards the edges */
-.ei-shade { position: absolute; inset: 0; background:
-  radial-gradient(ellipse 70% 70% at 50% 50%, rgba(5, 24, 54, 0) 40%, rgba(5, 24, 54, .45) 100%),
-  rgba(5, 24, 54, .18); }
-/* one frosted ivory panel floating over the picture: a material layer, so the picture reads through its edges and
-   the panel reads as the thing to look at; a bright top edge catches the light, a deep soft shadow lifts it */
-.ei-panel { position: relative; z-index: 1; width: min(440px, 100%); padding: clamp(36px, 3.4vw, 52px) clamp(28px, 3vw, 48px) clamp(32px, 3vw, 44px); display: flex; flex-direction: column; align-items: center; text-align: center; color: var(--navy);
-  background: rgba(250, 241, 232, .8); -webkit-backdrop-filter: blur(24px) saturate(150%); backdrop-filter: blur(24px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, .5);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .6), 0 40px 90px -30px rgba(5, 24, 54, .75), 0 12px 30px -18px rgba(5, 24, 54, .5); }
-/* the heading becomes the panel's label: one quiet line, the logo carries the name */
-.ei-heading { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 0 .6em; margin: 0 0 clamp(24px, 2.4vw, 32px); font: 500 11px/1.4 var(--body); letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
-.ei-heading .ed-hl + .ed-hl { margin-left: 0; }
-.ei-heading .ed-hl + .ed-hl::before { content: '·'; margin-right: .6em; }
-.ei-heading em { text-transform: uppercase; }
-.ei-logo { position: relative; width: min(190px, 56%); aspect-ratio: 900 / 965; }
-.ei-logo img { object-fit: contain; }
-.ei-rule { width: 28px; height: 1px; margin: clamp(22px, 2.2vw, 30px) 0 18px; background: var(--gold); }
-.ei-text { max-width: 30ch; margin: 0; font-size: 15px; line-height: 1.6; color: var(--ink); }
-.ei-link { display: inline-flex; align-items: center; min-height: 44px; margin-top: 10px; color: var(--navy); text-decoration: none; font: 500 12px/1 var(--body); letter-spacing: .15em; text-transform: uppercase; transition: transform .12s ease-out; }
+/* ---------- investor (Elicyon "Leading the vision"), on ivory ---------- */
+.ei { position: relative; z-index: 1; background: var(--ivory); color: var(--navy); padding: clamp(110px, 11vw, 170px) 32px clamp(110px, 10vw, 160px); overflow: hidden; }
+.ei-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; align-items: center; max-width: 1376px; margin: 0 auto; }
+.ei-copy { grid-column: 1 / span 5; display: flex; flex-direction: column; align-items: flex-start; }
+/* the logo, built in three bands of one picture: buildings and swoosh (0–70 %), the name (70–87.5 %), GROUP and
+   d.o.o. with their rules (87.5–100 %) */
+.ei-logo { position: relative; width: clamp(150px, 13vw, 210px); aspect-ratio: 900 / 965; margin-bottom: clamp(36px, 3.6vw, 56px); }
+.ei-band { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; transition: clip-path 1.4s cubic-bezier(.65, 0, .35, 1), transform 1.4s cubic-bezier(.22, 1, .36, 1), opacity .9s ease; }
+.ei-band-mark { clip-path: inset(70% 0 30% 0); transform: translateY(8%); }
+.ei-band-name { clip-path: inset(70% 100% 12.5% 0); transition-delay: .55s; }
+.ei-band-sub { clip-path: inset(87.5% 50% 0 50%); opacity: 0; transition-delay: .95s; }
+.ei-logo.is-in .ei-band-mark { clip-path: inset(0 0 30% 0); transform: none; }
+.ei-logo.is-in .ei-band-name { clip-path: inset(70% 0 12.5% 0); }
+.ei-logo.is-in .ei-band-sub { clip-path: inset(87.5% 0 0 0); opacity: 1; }
+.ei-heading { font-size: clamp(40px, 4vw, 64px); }
+.ei-heading em { text-transform: none; }
+.ei-role { margin: clamp(22px, 2vw, 30px) 0 0; font: 400 clamp(20px, 1.6vw, 24px)/1.35 var(--display); color: var(--ink); max-width: 28ch; }
+.ei-body { margin-top: 18px; display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
+.ei-text { max-width: 44ch; margin: 0; font-size: 15px; line-height: 1.7; color: var(--muted); }
+.ei-text + .ei-text { margin-top: 12px; }
+.ei-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--navy); text-decoration: none; font: 500 12px/1 var(--body); letter-spacing: .15em; text-transform: uppercase; transition: transform .12s ease-out; }
 .ei-link span { position: relative; padding-bottom: 5px; }
 .ei-link span::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: currentColor; transform-origin: 0 50%; transition: transform .3s cubic-bezier(.4, 0, .2, 1); }
 @media (hover: hover) { .ei-link:hover span::after { transform: scaleX(0); transform-origin: 100% 50%; } }
-/* no translucency wanted, or more contrast: the panel turns solid ivory with a defined edge */
-@media (prefers-reduced-transparency: reduce) { .ei-panel { background: var(--rv-ivory, #faf1e8); -webkit-backdrop-filter: none; backdrop-filter: none; } }
-@media (prefers-contrast: more) { .ei-panel { background: #faf1e8; border-color: var(--navy); } .ei-heading { color: var(--navy); } }
-@media (max-width: 767px) { .ei { padding-inline: 20px; } }
+
+/* the collage: a tall picture at the right, a wide one stepped down across its lower left corner, a small portrait
+   above it; each frame opens from below and its picture drifts at its own pace */
+.ei-pics { grid-column: 7 / -1; position: relative; aspect-ratio: 1 / 1.08; }
+.ei-pic { position: absolute; margin: 0; overflow: hidden; background: var(--paper); }
+.ei-pic-in { position: absolute; inset: -8% 0; }
+.ei-pic-in img { object-fit: cover; }
+.ei-pic-1 { right: 0; top: 0; width: 64%; height: 78%; }
+.ei-pic-2 { left: 0; bottom: 0; width: 58%; height: 40%; z-index: 1; box-shadow: 0 0 0 clamp(8px, .8vw, 12px) var(--ivory); }
+.ei-pic-3 { left: 6%; top: 8%; width: 26%; height: 36%; }
+.ei-tag { position: absolute; right: 0; bottom: 0; transform: translateY(calc(100% + 12px)); font-size: 10px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+@media (max-width: 1023px) {
+  .ei-copy, .ei-pics { grid-column: 1 / -1; }
+  .ei-pics { margin-top: 64px; aspect-ratio: 1 / 1.1; }
+}
+@media (max-width: 767px) { .ei { padding-inline: 20px; } .ei-heading { font-size: clamp(36px, 10vw, 48px); } }
+@media (prefers-reduced-motion: reduce) { .ei-band { transition: none; } }
 
 /* ---------- location (Elicyon journal slot) ---------- */
 .el { position: relative; z-index: 1; background: var(--paper); color: var(--navy); padding: clamp(100px, 11vw, 160px) 32px clamp(80px, 8vw, 120px); }

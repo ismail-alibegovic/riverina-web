@@ -95,10 +95,10 @@ p { margin: 0; text-wrap: pretty; }
 /* ---------- header ---------- */
 .hdr { position: fixed; z-index: var(--z-header); inset: 0 0 auto; padding-top: env(safe-area-inset-top, 0px); color: var(--ivory); transition: color var(--dur-1) var(--ease-out), background-color var(--dur-1) var(--ease-out), box-shadow var(--dur-1) var(--ease-out); }
 .hdr[data-tone="dark"] { color: var(--navy); }
-/* solid header: a translucent paper material over the page; its edge is a soft shadow that fades into the content
-   scrolling underneath, not a ruled line */
-.hdr.is-solid { color: var(--navy); background: rgba(251, 248, 242, .78); -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%); box-shadow: 0 14px 28px -24px rgba(20, 33, 58, .45); }
-@media (prefers-reduced-transparency: reduce) { .hdr.is-solid { background: var(--paper); -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: 0 1px 0 var(--line); } }
+/* No bar, ever (as on elicyon.com): ivory type straight over the hero. Past the hero (and on paper pages) the header
+   is pure white with mix-blend-mode: exclusion, so the same type reads near-black over paper and light over pictures
+   and navy, wherever it is. The logo is turned pure white for it. */
+.hdr.is-solid, .hdr[data-tone="dark"] { color: #fff; mix-blend-mode: exclusion; }
 /* every control answers on press, not on release */
 .hdr-btn, .eh-cta, .er-all, .el-link, .ec-cta, .eo-nav button, .footer .cform .btn { transition-property: transform, opacity, color, background-color; transition-duration: .12s; transition-timing-function: ease-out; }
 .hdr-btn:active, .eh-cta:active, .er-all:active, .el-link:active, .ei-link:active, .ec-cta:active, .eo-nav button:active, .footer .cform .btn:active { transform: scale(.97); }
@@ -123,9 +123,19 @@ p { margin: 0; text-wrap: pretty; }
 @media (max-width: 760px) { .hdr-mark, .hdr-brand .hdr-mark img { height: 34px; } .hdr-mark { margin-bottom: 6px; } }
 .hdr-brand .on-dark { display: block; }
 .hdr-brand .on-light { display: none; }
-.hdr.is-solid .hdr-brand .on-dark, .hdr[data-tone="dark"] .hdr-brand .on-dark { display: none; }
-.hdr.is-solid .hdr-brand .on-light, .hdr[data-tone="dark"] .hdr-brand .on-light { display: block; }
-.hdr.menu-is-open { z-index: calc(var(--z-menu) + 1); color: var(--ivory); background: transparent; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.hdr.is-solid .hdr-brand .on-dark, .hdr[data-tone="dark"] .hdr-brand .on-dark { filter: brightness(0) invert(1); }
+/* links on wide screens, the menu button below 1100 px; languages sit beside Kontakt on wide screens */
+.hdr-links, .hdr-langs { display: none; align-items: center; }
+.hdr-links { gap: clamp(20px, 2.2vw, 36px); }
+.hdr-langs { gap: 14px; }
+.hdr-link, .hdr-lang { position: relative; }
+.hdr-link::after { content: ""; position: absolute; left: 0; right: 0; bottom: 12px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: 100% 50%; transition: transform .35s cubic-bezier(.4, 0, .2, 1); }
+@media (hover: hover) { .hdr-link:hover::after { transform: scaleX(1); transform-origin: 0 50%; } }
+.hdr-link[aria-current="page"]::after { transform: scaleX(1); }
+.hdr-lang { opacity: .55; } .hdr-lang[aria-current="true"] { opacity: 1; }
+@media (min-width: 1100px) { .hdr-toggle { display: none; } .hdr-links, .hdr-langs { display: inline-flex; } }
+.hdr.menu-is-open { z-index: calc(var(--z-menu) + 1); color: var(--ivory); mix-blend-mode: normal; }
+.hdr.menu-is-open .hdr-brand .on-dark { filter: none; }
 .hdr.menu-is-open .hdr-brand .on-dark { display: block; }
 .hdr.menu-is-open .hdr-brand .on-light { display: none; }
 .hdr.menu-is-open .hdr-burger i:first-child { top: 4.5px; transform: rotate(45deg); }

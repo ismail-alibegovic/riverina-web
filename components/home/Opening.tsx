@@ -11,9 +11,10 @@ import { Fill, Rich } from './text';
  * The opening: the logo loader in front of the home hero.
  *
  * Loader (first home visit in a session): on the brand navy the Riverina logo is drawn shape by shape and a gold base
- * line draws under it. The logo then rises into the header, so it never crosses the picture, and the navy field opens
- * from the centre to the edges (an even-odd hole, power3.inOut), but only onto a decoded picture: no wait when it is
- * ready, at most 2.5 s more on a slow line. The header's own logo cross-fades in where the loader logo lands.
+ * line draws under it. Then, as on elicyon.com, the navy field opens from the centre to the edges (an even-odd hole,
+ * power3.inOut) onto the hero picture, which settles from ×1.22, while the logo travels into the header. It opens only
+ * onto a decoded picture: no wait when it is ready, at most 2.5 s more on a slow line. The header's own logo
+ * cross-fades in where the loader logo lands.
  *
  * Hero (the composition of the live site): the render full-bleed under a shade, the stepped name at the bottom left,
  * then the subtitle and the two links. Its CSS entrance (home.css) is held while the loader runs and starts as the
@@ -42,6 +43,7 @@ export default function Opening({ hero, lang, name, tag }: { hero: NonNullable<P
     const intro = !html.classList.contains('intro-seen') && !reduce;
     el.classList.add('is-live'); // switches off the CSS fail-safes
     if (!intro) return;
+    el.classList.add('is-intro'); // the hero entrance of the opening: a deeper zoom, the name later (elicyon.css)
 
     // the loader opens only onto a decoded picture
     const pic = el.querySelector<HTMLImageElement>('.hero-img');
@@ -72,10 +74,11 @@ export default function Opening({ hero, lang, name, tag }: { hero: NonNullable<P
         const pictured = Promise.race([picReady, new Promise((r) => setTimeout(r, 2500))]);
         Promise.all([drawn, pictured]).then(() => { if (!dead) ctx.add(reveal); });
 
-        // 2 · the logo rises into the header; then the navy field opens and the hero's own entrance starts with it
+        // 2 · as on elicyon.com: the navy field opens from the centre onto the picture while the logo, still over it,
+        //     travels into the header; the hero's own entrance (zoom, then the name) starts with the opening
         const reveal = () => {
           const hole = { p: 50 };
-          const travel = 1.5, open = 0.5, dur = 1.7;
+          const travel = 1.8, open = 0.05, dur = 1.8;
           gsap.timeline({
             onComplete: () => {
               html.classList.remove('intro-run', 'intro-header', 'intro-landed', 'intro-open');

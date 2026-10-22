@@ -81,10 +81,16 @@ export default function Header(p: HeaderProps) {
       <header ref={header} className={cls} data-tone={p.tone || 'light'}>
         <div className="wrap wrap-wide hdr-inner">
           <div className="hdr-side">
-            <button ref={toggle} type="button" className="hdr-btn" aria-expanded={open} aria-controls="site-menu" onClick={() => (open ? close() : setOpen(true))}>
+            <button ref={toggle} type="button" className="hdr-btn hdr-toggle" aria-expanded={open} aria-controls="site-menu" onClick={() => (open ? close() : setOpen(true))}>
               <span className="hdr-burger" aria-hidden="true"><i /><i /></span>
               <span className="hdr-swap"><span aria-hidden={open}>{t.menu}</span><span aria-hidden={!open}>{t.close}</span></span>
             </button>
+            {/* wide screens: the sections as plain links, as on elicyon.com; the menu button takes over below 1100 px */}
+            <nav className="hdr-links" aria-label={t.mainNav}>
+              {p.nav.filter((n) => n.href !== p.contactHref && !/kontakt|contact/.test(n.href)).slice(0, 4).map((n) => (
+                <a key={n.href} className="hdr-btn hdr-link" href={n.href} aria-current={n.current ? 'page' : undefined} tabIndex={open ? -1 : undefined}>{n.label}</a>
+              ))}
+            </nav>
           </div>
           <a href={p.homeHref} className="hdr-brand" aria-label={p.name}>
             {/* the R mark stands above the name over the hero and folds away once the header turns solid */}
@@ -96,6 +102,11 @@ export default function Header(p: HeaderProps) {
             <img className="on-light" src={p.logoOnLight} alt="" width={480} height={108} fetchPriority="high" />
           </a>
           <div className="hdr-side is-end">
+            <span className="hdr-langs">
+              {p.langLinks.map((l) => (
+                <a key={l.lang} className="hdr-btn hdr-lang" href={l.href} hrefLang={l.lang} lang={l.lang} aria-current={l.lang === p.lang ? 'true' : undefined} tabIndex={open ? -1 : undefined}>{l.lang.toUpperCase()}</a>
+              ))}
+            </span>
             <a className="hdr-btn hdr-contact" href={p.contactHref} tabIndex={open ? -1 : undefined}>{t.contact}</a>
           </div>
         </div>

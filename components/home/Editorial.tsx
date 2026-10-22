@@ -68,22 +68,26 @@ export function Location({ title, text, map, alt, link }: { title: string; text:
 }
 
 /**
- * Closing frame, after Elicyon's "Get in touch": a full-screen picture inside a thick ivory border (a passe-partout).
- * The two text lines sit on the border, the invitation in the open window; hovering the invitation thins the border,
- * so the window widens.
+ * Closing invitation: the building full-bleed under a navy veil that deepens towards the foot, like the hero. At the
+ * lower left the stepped heading and one line; at the right one solid ivory button (the enquiry) and the quiet link
+ * to the apartments; a hairline row with the place closes it. The picture drifts slowly.
  */
-export function ContactFrame({ top, bottom, image, cta, tag }: { top: string; bottom: string; image: string; cta: { href: string; label: string }; tag?: string }) {
+export function ContactFrame({ top, text, place, image, cta, link, tag }: { top: string; text?: string; place?: string; image: string; cta: { href: string; label: string }; link: { href: string; label: string }; tag?: string }) {
   return (
-    <section className="ef" aria-label={top.replace(/\*/g, '').replace(/\n/g, ' ')}>
-      <div className="ef-bg" data-ed="parallax" aria-hidden="true"><Image src={image} alt="" fill sizes="100vw" quality={78} /></div>
+    <section className="ef" aria-labelledby="ef-title">
+      <div className="ef-bg" data-ed="parallax" aria-hidden="true"><Image src={image} alt="" fill sizes="100vw" quality={80} /></div>
       <div className="ef-veil" aria-hidden="true" />
-      <div className="ef-frame">
-        <Stepped text={top} className="ef-top" as="h2" />
-        <a className="ef-cta" href={cta.href}><span>{cta.label}</span></a>
-        <Stepped text={bottom} className="ef-bottom" as="h3" />
-        <div className="ef-border" aria-hidden="true" />
+      <div className="ef-in">
+        <div className="ef-copy">
+          <Stepped id="ef-title" text={top} />
+          {text && <p className="ef-text" data-ed="fade">{text}</p>}
+        </div>
+        <div className="ef-actions" data-ed="fade">
+          <a className="ef-btn" href={cta.href}>{cta.label}</a>
+          <a className="ef-link" href={link.href}><span>{link.label}</span></a>
+        </div>
+        {place && <p className="ef-place"><span>{place.replace(/\*/g, '').split('\n').join(' · ')}</span>{tag && <span>{tag}</span>}</p>}
       </div>
-      {tag && <span className="ec-tag ef-tag">{tag}</span>}
     </section>
   );
 }

@@ -8,7 +8,6 @@ import Footer from './site/Footer';
 import Gallery from './Gallery';
 import ContactForm from './ContactForm';
 import Opening from './home/Opening';
-import Prologue from './home/Prologue';
 import About from './home/About';
 import Chapters from './home/Chapters';
 import Residences from './home/Residences';
@@ -40,7 +39,6 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
   const loc = page.location || {};
   const contact = page.contact || {};
   const gallery = (page.gallery?.images || []).filter((g) => g.path);
-  const manifestText = tx(page.manifest?.text, lang);
   const hasLocation = !!(tx(loc.title, lang) || tx(loc.text, lang) || loc.map_embed);
   const buildings: any[] = data.scenes?.buildings || [];
   const order = sectionList(page);
@@ -58,11 +56,10 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
 
     world: () => page.world && (page.world.items || []).length > 0 && <World world={page.world} lang={lang} cta={{ href: href('apartments', lang), label: aptLabel }} more={t.learnMore} />,
 
-    manifest: () => manifestText && (
-      <Prologue text={manifestText} label={t.manifest} images={(page.manifest?.images || []).filter((m) => m.path).map((m) => ({ src: mediaUrl(m.path), alt: imgAlt(m, lang) }))} />
-    ),
+    // the animated statement was retired (2026-10-22); the project opens with "about" instead
+    manifest: () => null,
 
-    about: () => (tx(page.about?.title, lang) || tx(page.about?.text, lang)) && <About about={page.about || {}} units={units} lang={lang} tag={tag} />,
+    about: () => (tx(page.about?.title, lang) || tx(page.about?.text, lang)) && <About about={page.about || {}} units={units} lang={lang} tag={tag} cta={{ href: href('apartments', lang), label: aptLabel }} />,
 
     showcase: () => {
       const items = (page.showcase?.items || []).filter((it) => it.image).map((it) => ({ src: mediaUrl(it.image), caption: tx(it.caption, lang) }));
@@ -70,7 +67,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
     },
 
     statement: () => page.statement?.image && tx(page.statement?.title, lang) && (
-      <ContactFrame top={tx(page.statement.title, lang)} bottom={tx(page.statement.foot, lang) || tx(page.statement.eyebrow, lang)} image={mediaUrl(page.statement.image)} cta={{ href: '#kontakt', label: tx(page.statement.cta2, lang) || t.enquire }} tag={tag} />
+      <ContactFrame top={tx(page.statement.title, lang)} text={tx(page.statement.text, lang)} place={tx(page.statement.foot, lang) || tx(page.statement.eyebrow, lang)} image={mediaUrl(page.statement.image)} cta={{ href: '#kontakt', label: tx(page.statement.cta2, lang) || t.enquire }} link={{ href: href('apartments', lang), label: aptLabel }} tag={tag} />
     ),
 
     offer: () => {

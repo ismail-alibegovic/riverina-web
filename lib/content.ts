@@ -41,7 +41,7 @@ export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'showca
  * ("leading the vision") → interiors carousel ("objects of desire") → world cards ("insights") → closing statement
  * → footer with the enquiry form. Gallery, location and developer have their own pages. Also in lib/admin/app.js.
  */
-export const DEFAULT_HIDDEN: SectionKey[] = ['about', 'showcase', 'buildings', 'vision', 'gallery', 'contact', 'location', 'details'];
+export const DEFAULT_HIDDEN: SectionKey[] = ['manifest', 'showcase', 'buildings', 'vision', 'gallery', 'contact', 'location', 'details'];
 
 // Text conventions in the CMS: a new line starts a new heading line; *word* marks the contrasting word.
 export type Page = {
@@ -126,7 +126,7 @@ export const DEFAULT_PAGE: Page = {
     ],
   },
   about: {
-    title: { bs: 'O\n*projektu*', en: 'About\n*the project*' },
+    title: { bs: 'Novi dom\n*uz rijeku*', en: 'A new home\n*by the river*' },
     text: {
       bs: 'Riverina Residence nastaje na Ilidži, u Sarajevu. Prva zgrada, Riverina 1, ima poslovno prizemlje i pet stambenih etaža.\n\n[[TBD: broj zgrada u kompleksu, faze i rok useljenja]]',
       en: 'Riverina Residence is being built in Ilidža, Sarajevo. The first building, Riverina 1, has a commercial ground floor and five residential floors.\n\n[[TBD: number of buildings, phases and completion date]]',

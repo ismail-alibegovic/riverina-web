@@ -22,8 +22,11 @@ function placeWords(el: HTMLElement) {
   const [w1, w2] = Array.from(el.querySelectorAll<HTMLElement>('.eh-w'));
   if (!w2) return;
   w1?.style.removeProperty('top'); w2.style.removeProperty('top');
-  const W = el.clientWidth, H = el.clientHeight, cs = getComputedStyle(el);
-  const shift = (parseFloat(cs.getPropertyValue('--shift')) / 100) * H, ox = parseFloat(cs.getPropertyValue('--ox')) / 100;
+  // the picture plate's own box (its height and offset differ between screens, see --mh and --shift)
+  const box = el.querySelector<HTMLElement>('.eh-media');
+  if (!box) return;
+  const W = box.clientWidth, H = box.clientHeight, shift = box.offsetTop;
+  const ox = parseFloat(getComputedStyle(el).getPropertyValue('--ox')) / 100;
   const tall = W / H < SKY.aspect;
   const imgW = tall ? H * SKY.aspect : W, imgH = tall ? H : W / SKY.aspect;
   const offX = tall ? (W - imgW) * ox : 0, offY = tall ? 0 : (H - imgH) / 2;
@@ -32,18 +35,24 @@ function placeWords(el: HTMLElement) {
     return shift + offY + SKY.cols[Math.max(0, Math.min(SKY.cols.length - 1, i))] * imgH;
   };
   const fs = parseFloat(getComputedStyle(w2).fontSize);
-  const range = document.createRange(); range.selectNodeContents(w2);
-  const textW = range.getBoundingClientRect().width;
-  const centred = getComputedStyle(w2).textAlign === 'center';
-  const left = w2.offsetLeft + (centred ? (w2.offsetWidth - textW) / 2 : 0);
-  let high = Infinity;
-  for (let x = left; x <= left + textW; x += 4) high = Math.min(high, sky(x));
+  /** highest skyline point under a word's letters (its text, not its box); `trees` false skips the columns where the
+   *  cut-out starts at the very top (the tree at the left edge), which the outer words may cross */
+  const skyUnder = (w: HTMLElement, trees = true) => {
+    const range = document.createRange(); range.selectNodeContents(w);
+    const textW = range.getBoundingClientRect().width;
+    const left = w.offsetLeft + (getComputedStyle(w).textAlign === 'center' ? (w.offsetWidth - textW) / 2 : 0);
+    let high = Infinity;
+    for (let x = left; x <= left + textW; x += 4) { const y = sky(x); if (trees || y > shift + offY + 0.005 * imgH) high = Math.min(high, y); }
+    return high;
+  };
   const capH = (CAP_BOTTOM - CAP_TOP) * fs;
-  const top2 = high + MAX_HIDDEN * capH - CAP_BOTTOM * fs;
+  const top2 = skyUnder(w2) + MAX_HIDDEN * capH - CAP_BOTTOM * fs;
   w2.style.top = `${top2}px`;
   if (w1) {
     const header = document.querySelector('.hdr-inner')?.getBoundingClientRect().bottom ?? 0;
-    const wanted = Math.min(w1.offsetTop, top2 - 1.3 * fs);
+    // the first word stays clear of the roof below it as well as above the middle word
+    const clear = skyUnder(w1, false) - CAP_BOTTOM * fs - 0.6 * fs;
+    const wanted = Math.min(w1.offsetTop, top2 - 1.3 * fs, clear);
     w1.style.top = `${Math.max(wanted, header + 0.1 * fs - CAP_TOP * fs)}px`;
   }
 }
@@ -74,6 +83,14 @@ export default function Opening({ hero, lang, name, tag }: { hero: NonNullable<P
     const html = document.documentElement;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const intro = !html.classList.contains('intro-seen') && !reduce;
+    // the picture layers: shown once decoded (CSS fades them in), and the loader opens only onto a finished picture
+    const pics = Array.from(el.querySelectorAll<HTMLImageElement>('.eh-zoom img'));
+    const loaded = (img: HTMLImageElement) => img.complete && img.naturalWidth > 0;
+    if (pics.every(loaded)) el.classList.add('is-pic');
+    const picReady = Promise.all(pics.map((img) => loaded(img) ? img.decode().catch(() => {}) : new Promise<void>((done) => {
+      img.addEventListener('load', () => done(), { once: true });
+      img.addEventListener('error', () => done(), { once: true });
+    }))).then(() => el.classList.add('is-pic'));
     el.classList.add('is-live'); // switches off the CSS fail-safes
     const place = () => placeWords(el);
     place();
@@ -109,38 +126,50 @@ export default function Opening({ hero, lang, name, tag }: { hero: NonNullable<P
         lenis?.stop();
         const field = el.querySelector<HTMLElement>('.ld-field')!;
         const logo = el.querySelector<HTMLElement>('.ld-logo')!;
-        const tl = gsap.timeline({
-          onComplete: () => {
-            html.classList.remove('intro-run');
-            el.classList.add('intro-done');
-            getLenis()?.start();
-            ScrollTrigger.refresh();
-          },
-        });
-        // 1 · the logo, shape by shape, each along its own stroke (soft-edged masks)
-        tl.fromTo(q('.ld-part'), { '--p': '0%' }, { '--p': '130%', duration: 1.05, ease: 'power2.inOut', stagger: 0.14 }, 0.1)
+        // 1 · the logo, shape by shape, each along its own stroke (soft-edged masks); a gold base line draws under it
+        const draw = gsap.timeline();
+        draw.fromTo(q('.ld-part'), { '--p': '0%' }, { '--p': '130%', duration: 1.05, ease: 'power2.inOut', stagger: 0.14 }, 0.1)
           .fromTo(q('.ld-word .ld-ch > span'), { y: 0, yPercent: 105 }, { yPercent: 0, duration: 0.9, ease: 'power3.out', stagger: 0.045 }, 0.75)
-          .fromTo(q('.ld-res .ld-ch > span'), { opacity: 0, y: 0, yPercent: 60 }, { opacity: 1, yPercent: 0, duration: 0.7, ease: 'power3.out', stagger: 0.035 }, 1.15);
-        // 2 · the navy field opens from the centre; the logo travels into the header; the picture settles
-        const hole = { p: 50 };
-        const at = 2.05;
-        tl.to(hole, { p: 0, duration: 1.8, ease: 'power3.inOut', onUpdate: () => { field.style.clipPath = HOLE(hole.p); } }, at)
-          .to(media, { scale: 1, duration: 1.8, ease: 'power3.inOut' }, at)
-          .add(() => {
-            // measured when it starts, so the header's real position (any screen size) is the target
-            const brand = document.querySelector<HTMLElement>('.hdr-brand');
-            if (!brand) return;
-            const a = logo.getBoundingClientRect(), b = brand.getBoundingClientRect();
-            const s = b.height / a.height;
-            gsap.to(logo, { x: b.left + b.width / 2 - (a.left + a.width / 2), y: b.top + b.height / 2 - (a.top + a.height / 2), scale: s, duration: 1.8, ease: 'power3.inOut' });
-          }, at)
-          .add(words, at + 1.4)
-          .add(feet, at + 1.7)
-          // the header (and its real logo) takes over where the travelling logo lands
-          .add(() => html.classList.add('intro-header'), at + 1.55)
-          // landed: hand over to the header's logo (onComplete removes intro-run, which shows it)
-          .to(logo, { opacity: 0, duration: 0.25, ease: 'power1.out' }, at + 1.8)
-          .set(el.querySelector('.ld'), { display: 'none' });
+          .fromTo(q('.ld-res .ld-ch > span'), { opacity: 0, y: 0, yPercent: 60 }, { opacity: 1, yPercent: 0, duration: 0.7, ease: 'power3.out', stagger: 0.035 }, 1.15)
+          .fromTo(q('.ld-rule'), { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: 'power3.inOut' }, 1.2);
+        // the field opens only onto a decoded picture: no wait when it is ready, at most 2.5 s more on a slow line
+        const drawn = new Promise<void>((r) => { draw.eventCallback('onComplete', () => r()); });
+        const pictured = Promise.race([picReady, new Promise((r) => setTimeout(r, 2500))]);
+        Promise.all([drawn, pictured]).then(() => { if (!dead) ctx.add(reveal); });
+
+        // 2 · the logo rises into the header first, so it never crosses the picture; then the navy field opens from the
+        //     centre to the edges and the picture settles from ×1.2. The field's top band is the last to go.
+        const reveal = () => {
+          const hole = { p: 50 };
+          const travel = 1.5, open = 0.5, dur = 1.7;
+          gsap.timeline({
+            onComplete: () => {
+              html.classList.remove('intro-run', 'intro-header', 'intro-landed');
+              el.classList.add('intro-done');
+              getLenis()?.start();
+              ScrollTrigger.refresh();
+            },
+          })
+            .to(q('.ld-rule'), { scaleX: 0, duration: 0.5, ease: 'power2.in' }, 0)
+            .add(() => {
+              // measured when it starts, so the header's real position (any screen size) is the target
+              const brand = document.querySelector<HTMLElement>('.hdr-brand');
+              if (!brand) return;
+              const a = logo.getBoundingClientRect(), b = brand.getBoundingClientRect();
+              const s = b.height / a.height;
+              gsap.to(logo, { x: b.left + b.width / 2 - (a.left + a.width / 2), y: b.top + b.height / 2 - (a.top + a.height / 2), scale: s, duration: travel, ease: 'power3.inOut' });
+            }, 0.05)
+            .to(hole, { p: 0, duration: dur, ease: 'power3.inOut', onUpdate: () => { field.style.clipPath = HOLE(hole.p); } }, open)
+            .to(media, { scale: 1, duration: dur, ease: 'power3.inOut' }, open)
+            .add(words, open + 1.0)
+            .add(feet, open + 1.3)
+            // the header (and its real logo) takes over where the travelling logo lands
+            .add(() => html.classList.add('intro-header'), 0.05 + travel - 0.2)
+            // landed: the header's own logo cross-fades in as the travelling one fades out
+            .add(() => html.classList.add('intro-landed'), 0.05 + travel)
+            .to(logo, { opacity: 0, duration: 0.25, ease: 'power1.out' }, 0.05 + travel)
+            .set(el.querySelector('.ld'), { display: 'none' }, open + dur);
+        };
       }, el);
 
       // scrolling away: both picture layers drift down by 10 % (Elicyon), nothing else moves
@@ -148,7 +177,7 @@ export default function Opening({ hero, lang, name, tag }: { hero: NonNullable<P
       undo = () => { ctx.revert(); drift.scrollTrigger?.kill(); drift.kill(); };
     }, () => { html.classList.remove('intro-run'); el.classList.add('intro-done'); });
 
-    return () => { dead = true; undo(); window.removeEventListener('resize', onResize); html.classList.remove('intro-run', 'intro-header'); };
+    return () => { dead = true; undo(); window.removeEventListener('resize', onResize); html.classList.remove('intro-run', 'intro-header', 'intro-landed'); };
   }, []);
 
   const word = (i: number) => words[i] && <span className={`eh-w eh-w${i + 1}`}>{words[i]}</span>;
@@ -167,7 +196,7 @@ export default function Opening({ hero, lang, name, tag }: { hero: NonNullable<P
     <section ref={root} className="eh" aria-labelledby="hero-title">
       {/* layer order (Elicyon): picture · middle word · building cut-out · ground shade · first and last word */}
       <div className="eh-media eh-bg" aria-hidden="true">
-        <div className="eh-zoom"><Image src={BG} alt="" fill priority sizes="(orientation: portrait) 230vh, 100vw" quality={80} /></div>
+        <div className="eh-zoom"><Image src={BG} alt="" fill priority sizes="(orientation: portrait) 180vh, 100vw" quality={80} /></div>
         <div className="eh-sky" />
       </div>
       <h1 id="hero-title" className="eh-title">
@@ -175,7 +204,7 @@ export default function Opening({ hero, lang, name, tag }: { hero: NonNullable<P
         {word(0)}{word(1)}{word(2)}
       </h1>
       <div className="eh-media eh-fg" aria-hidden="true">
-        <div className="eh-zoom"><Image src={FG} alt="" fill priority sizes="(orientation: portrait) 230vh, 100vw" quality={80} /></div>
+        <div className="eh-zoom"><Image src={FG} alt="" fill priority sizes="(orientation: portrait) 180vh, 100vw" quality={80} /></div>
       </div>
       <div className="eh-ground" aria-hidden="true" />
 
@@ -197,6 +226,7 @@ export default function Opening({ hero, lang, name, tag }: { hero: NonNullable<P
             ))}
             {letters(LOGO.word, 'ld-word')}
             {letters(LOGO.res, 'ld-res')}
+            <span className="ld-rule" />
           </div>
         </div>
       </div>

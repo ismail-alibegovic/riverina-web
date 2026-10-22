@@ -28,7 +28,7 @@ export default function Selector({ data, lang, fill = false, title, gallery }: {
         get() {
           const bar = el.querySelector<HTMLElement>('.rvs-bar')?.offsetHeight || 56;
           const top = el.getBoundingClientRect().top + window.scrollY;
-          // the frame's top margin and the legend under the stage stay in view too
+          // the legend strip under the stage stays in view too
           const frame = el.closest('.apt') ? 64 : 0;
           return Math.max(0.5, Math.min(0.96, (window.innerHeight - top - bar - frame) / window.innerHeight));
         },

@@ -247,3 +247,10 @@
 .cms-count { display: block; text-align: right; font-size: 11px; color: #8a8f99; margin-top: 2px; }
 .cms-count.is-over { color: #b3261e; }
 .cms-gal-i input.is-missing { border-color: #e0a100 !important; background: #fff8e6; }
+
+.cms-miss { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; margin-left: 4px; border-radius: 50%; background: #fbf0dd; border: 1px solid #ecd5a6; color: #8a5a00; font-size: 11px; font-weight: 700; cursor: help; }
+.cms-readylist, .cms-ready { list-style: none; margin: 0; padding: 0; }
+.cms-readylist > li { padding: 10px 0; border-top: 1px solid var(--c-line); }
+.cms-ready { margin-top: 6px; display: grid; gap: 2px; }
+.cms-ready li.is-ok { color: #2f6b3a; }
+.cms-ready li.is-todo { color: var(--c-muted, #6b6f78); }

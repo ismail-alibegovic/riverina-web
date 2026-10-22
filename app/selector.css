@@ -153,6 +153,13 @@ html.rvs-lock { overflow: hidden; }
 .rvs-dotc { display: inline-block; width: 9px; height: 9px; border-radius: 999px; flex-shrink: 0; }
 .rvs-bg-available { background: var(--rvs-available); } .rvs-bg-reserved { background: var(--rvs-reserved); } .rvs-bg-sold { background: var(--rvs-sold); } .rvs-bg-unavailable { background: var(--rvs-unavailable); }
 .rvs-empty { padding: 40px; text-align: center; font-family: var(--rvs-font-display); font-size: 28px; }
+.rvs-empty .rvs-empty-title { display: block; font-weight: inherit; }
+.rvs-empty .rvs-empty-text { max-width: 46ch; margin: 14px auto 0; font-family: var(--rvs-font); font-size: 15px; line-height: 1.6; opacity: .72; }
+.rvs-stage-wrap { position: relative; }
+.rvs-ill-stage { left: auto; right: 22px; top: 18px; bottom: auto; z-index: 2; pointer-events: none; }
+.rvs-media-empty { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 32px; text-align: center; border: 1px dashed var(--rvs-line); }
+.rvs-media-empty strong { font-family: var(--rvs-font-display); font-size: 22px; font-weight: 400; }
+.rvs-media-empty span { max-width: 32ch; font-size: 14px; line-height: 1.55; opacity: .7; }
 
 /* status label */
 .rvs-st { display: inline-flex; align-items: center; gap: 7px; font-size: 13.5px; color: var(--rvs-available-text); }

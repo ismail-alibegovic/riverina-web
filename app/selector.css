@@ -410,3 +410,34 @@ html.rvs-lock { overflow: hidden; }
 .rvs-tip-img { display: block; width: 180px; height: 150px; object-fit: contain; margin: -4px -4px 8px; background: #fbf8f2; }
 .rvs-tip-type { display: block; font-style: normal; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--rvs-gold); margin-bottom: 2px; }
 @media (hover: none) { .rvs-tip-img { display: none; } }
+
+/* ---------- apartment sheet, refined (2026-10-22) ---------- */
+/* the plans print on ivory paper: their white ground multiplies away, so there is no white box inside the sheet */
+.rvs-sheet-media { background: var(--rvs-paper); }
+.rvs-media-img, .rvs-media-floor img { mix-blend-mode: multiply; }
+.rvs-media-floor { background: transparent; }
+/* head: the place as a quiet label, round hairline buttons for previous / next / close */
+.rvs-p-head { padding: 16px clamp(18px, 3vw, 40px); }
+.rvs-p-where { font-size: 10.5px; letter-spacing: .22em; }
+.rvs-iconbtn { width: 44px; height: 44px; border-radius: 999px; border-color: rgba(20, 33, 58, .2); transition: background .25s, border-color .25s, color .25s, transform .12s ease-out; }
+.rvs-iconbtn:hover:not([disabled]) { background: var(--rvs-ink); border-color: var(--rvs-ink); color: var(--rvs-paper); }
+.rvs-iconbtn:active:not([disabled]) { transform: scale(.94); }
+.rvs-iconbtn svg { width: 18px; height: 18px; }
+/* actions: one solid navy call to action, the rest hairline; all answer on press */
+.rvs-btn { height: 50px; padding: 0 24px; font-size: 12px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; border-color: rgba(20, 33, 58, .28); transition: background .25s, color .25s, border-color .25s, transform .12s ease-out; }
+.rvs-btn:hover { background: rgba(20, 33, 58, .05); border-color: var(--rvs-ink); }
+.rvs-btn:active { transform: scale(.98); }
+.rvs-btn svg { width: 16px; height: 16px; }
+.rvs-btn-primary, .rvs a.rvs-btn-primary { border-color: var(--rvs-ink); }
+.rvs-btn-primary:hover { background: var(--rvs-ink-2); }
+.rvs-btn-ghost { height: 44px; }
+.rvs-actions { gap: 10px; margin: 32px 0 40px; }
+/* facts: larger figures, gold labels */
+.rvs-fact dd { font-size: clamp(28px, 2.6vw, 38px); font-weight: 400; }
+.rvs-fact dt { color: var(--rvs-gold); }
+.rvs-p-sub { font-size: 24px; color: var(--rvs-ink-2); }
+/* the enquiry form: no box, underlined fields like the site's footer form */
+.rvs-form { padding: 28px 0 0; background: none; border: 0; border-top: 1px solid var(--rvs-line); }
+.rvs-field input, .rvs-field textarea { border: 0; border-bottom: 1px solid rgba(20, 33, 58, .3); background: transparent; padding: 10px 2px; }
+.rvs-field input:focus, .rvs-field textarea:focus { border-bottom-color: var(--rvs-ink); box-shadow: 0 1px 0 var(--rvs-ink); }
+@media (prefers-reduced-motion: reduce) { .rvs-btn, .rvs-iconbtn { transition: none; } }

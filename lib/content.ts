@@ -1,4 +1,5 @@
 // Content model, defaults and data loading for the public site.
+import { withoutDrafts } from './drafts';
 import { href, pick, LOCALES, UI, ROUTE_KEYS, type Lang, type Localized, type RouteKey } from './i18n';
 import { APARTMENT_TYPES, ROOM_NAMES, unitsOfType } from './apartmentTypes';
 import { DEFAULT_FLOORS } from './floorPlans';
@@ -329,7 +330,10 @@ export async function getSiteData(): Promise<SiteData> {
   if (process.env.SITE_DATA_FILE) {
     const { readFile } = await import('node:fs/promises');
     const d = JSON.parse(await readFile(process.env.SITE_DATA_FILE, 'utf8')) as SiteData;
-    return { settings: d.settings || {}, page: mergePage(d.page || {}), scenes: d.scenes || EMPTY.scenes, units: d.units || [] };
+    {
+      const live = withoutDrafts(d.scenes || EMPTY.scenes, d.units || []);
+      return { settings: d.settings || {}, page: mergePage(d.page || {}), scenes: live.scenes, units: live.units };
+    }
   }
   if (!SUPABASE_URL || !SUPABASE_KEY) return { ...EMPTY, page: DEFAULT_PAGE };
   try {
@@ -341,7 +345,10 @@ export async function getSiteData(): Promise<SiteData> {
     });
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const d = (await r.json()) as SiteData;
-    return { settings: d.settings || {}, page: mergePage(d.page || {}), scenes: d.scenes || EMPTY.scenes, units: d.units || [] };
+    {
+      const live = withoutDrafts(d.scenes || EMPTY.scenes, d.units || []);
+      return { settings: d.settings || {}, page: mergePage(d.page || {}), scenes: live.scenes, units: live.units };
+    }
   } catch (e) {
     console.error('public_site_data failed', e);
     return { ...EMPTY, page: DEFAULT_PAGE };

@@ -532,3 +532,8 @@ dl.rvs-more { display: block; margin: 0; }
   .rvs-apt-info > * { animation: none; }
   .rvs-btn, .rvs-iconbtn, .rvs-gal-item img { transition: none; }
 }
+
+.rvs-ssr { max-width: 720px; margin: 0 auto; padding: 32px 22px; }
+.rvs-ssr h2 { font-family: var(--rvs-font-display); font-weight: 400; font-size: 28px; margin: 0 0 12px; }
+.rvs-ssr ul { list-style: none; margin: 0 0 28px; padding: 0; }
+.rvs-ssr li { padding: 10px 0; border-top: 1px solid var(--rvs-line); font-size: 15px; }

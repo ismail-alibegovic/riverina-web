@@ -1,7 +1,7 @@
-import { Lang, SiteData, UI, tx, toSelectorData, copyright } from '@/lib/content';
+import { Lang, SiteData, UI, tx, toSelectorData, copyright, mediaUrl } from '@/lib/content';
 import { href } from '@/lib/i18n';
 import { siteNav } from '@/lib/nav';
-import Selector from './Selector';
+import Selector, { SelectorPic } from './Selector';
 import SiteChrome from './site/SiteChrome';
 import JsonLd from './JsonLd';
 
@@ -12,7 +12,12 @@ export default function ApartmentsOnly({ data, lang, embed }: { data: SiteData; 
   const title = tx(p.title, lang) || t.chooseApartment;
   const sel = toSelectorData(data);
   const has = sel.units.length > 0 || sel.buildings.length > 0;
-  const finder = has ? <Selector data={sel} lang={lang} fill={!embed} title={title} /> : <p className="empty-note">{t.noApartments}</p>;
+  // the drawer's gallery: interiors, as optimised thumbnails, opening the full picture
+  const gallery: SelectorPic[] = (data.page.details?.items || []).filter((it) => it.image).slice(0, 6).map((it) => {
+    const full = mediaUrl(it.image);
+    return { src: `/_next/image?url=${encodeURIComponent(full)}&w=640&q=75`, full, alt: tx(it.title, lang) };
+  });
+  const finder = has ? <Selector data={sel} lang={lang} fill={!embed} title={title} gallery={gallery} /> : <p className="empty-note">{t.noApartments}</p>;
 
   if (embed) return <div className="only only-embed"><main className="only-main">{finder}</main></div>;
 

@@ -33,34 +33,38 @@ export const imgAlt = (img: { alt?: L; caption?: L }, lang: Lang) => plain(img.a
 
 /** Search and sharing texts for one page; empty fields fall back to the page's own title and text. */
 export type Seo = { title?: L; description?: L; image?: string };
-export type SectionKey = 'hero' | 'vision' | 'manifest' | 'about' | 'showcase' | 'categories' | 'buildings' | 'types' | 'details' | 'world' | 'gallery' | 'location' | 'investor' | 'statement' | 'contact';
-export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'showcase', 'categories', 'buildings', 'types', 'vision', 'details', 'world', 'gallery', 'location', 'investor', 'statement', 'contact'];
+export type SectionKey = 'hero' | 'vision' | 'manifest' | 'about' | 'showcase' | 'categories' | 'offer' | 'buildings' | 'types' | 'details' | 'world' | 'gallery' | 'location' | 'investor' | 'statement' | 'contact';
+export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'showcase', 'categories', 'offer', 'buildings', 'types', 'investor', 'location', 'world', 'details', 'vision', 'gallery', 'statement', 'contact'];
 /**
  * Home sections that are off until switched on in the CMS. The home page follows elicyon.com's sequence, one story
  * from the river to the front door: hero → manifest → categories → apartment types ("services") → vision
  * ("leading the vision") → interiors carousel ("objects of desire") → world cards ("insights") → closing statement
  * → footer with the enquiry form. Gallery, location and developer have their own pages. Also in lib/admin/app.js.
  */
-export const DEFAULT_HIDDEN: SectionKey[] = ['about', 'showcase', 'buildings', 'gallery', 'location', 'investor', 'contact'];
+export const DEFAULT_HIDDEN: SectionKey[] = ['manifest', 'showcase', 'buildings', 'vision', 'gallery', 'contact', 'location', 'details'];
 
 // Text conventions in the CMS: a new line starts a new heading line; *word* marks the contrasting word.
 export type Page = {
   /** home page fields at the top level (kept for older saves), other pages under pages.<route> */
   seo?: Seo & { pages?: Partial<Record<Exclude<RouteKey, 'home'>, Seo>> };
   sections?: { order?: SectionKey[]; hidden?: SectionKey[] };
-  hero?: { eyebrow?: L; title?: L; subtitle?: L; image?: string; cta?: L; cta2?: L };
+  /** words: the three stepped hero words, one per line (the opening); title stays the page's main name */
+  hero?: { eyebrow?: L; title?: L; words?: L; subtitle?: L; image?: string; cta?: L; cta2?: L };
   manifest?: { text?: L; images?: Img[] };
   about?: { eyebrow?: L; title?: L; text?: L; image?: string; image2?: string; facts?: { value?: L; label?: L }[]; auto_facts?: boolean };
   categories?: { items?: { title?: L; caption?: L; image?: string; link?: string; link_label?: L }[] };
   /** full-screen dimmed render with a centred heading, a portrait image and a short text (after the hero) */
   vision?: { title?: L; text?: L; image?: string; image2?: string };
   /** three cards leading to the inner pages */
+  /** after Elicyon's services: a stepped heading and copy, three portrait pictures in a stepped row with their labels, a note and a link */
+  offer?: { title?: L; text?: L; note?: L; cta?: L; items?: { title?: L; image?: string; link?: string }[] };
   world?: { title?: L; text?: L; items?: { label?: L; title?: L; text?: L; image?: string; link?: string; link_label?: L }[] };
   buildings?: { title?: L; text?: L };
   /** horizontal strip of wide renders with captions */
   showcase?: { title?: L; text?: L; items?: { image?: string; caption?: L }[] };
   /** full-screen render with a closing statement before the enquiry form */
-  statement?: { eyebrow?: L; title?: L; text?: L; image?: string; cta?: L; cta2?: L };
+  /** foot: the second line pair on the closing frame's border (top: title) */
+  statement?: { eyebrow?: L; title?: L; text?: L; foot?: L; image?: string; cta?: L; cta2?: L };
   /** apartment types (lib/apartmentTypes.ts); figures come from the brochure and the unit table, texts from the CMS */
   types?: { title?: L; text?: L; note?: L };
   details?: { title?: L; note?: L; items?: { image?: string; title?: L; text?: L }[] };
@@ -69,7 +73,7 @@ export type Page = {
   /** gallery page (/galerija): page_image is its hero, the river strip (showcase) and these images follow */
   gallery?: { title?: L; text?: L; images?: Img[]; page_image?: string };
   location?: { title?: L; text?: L; address?: L; map_embed?: string; map_link?: string; image?: string; page_image?: string; points?: { name?: L; value?: L }[] };
-  investor?: { title?: L; text?: L; logo?: string; link?: string; page_image?: string };
+  investor?: { title?: L; text?: L; logo?: string; link?: string; image?: string; page_image?: string };
   privacy?: { title?: L; text?: L };
   contact?: { title?: L; text?: L; phone?: string; email?: string; address?: L; hours?: L };
   footer?: { text?: L; company?: string };
@@ -99,6 +103,8 @@ export const DEFAULT_PAGE: Page = {
   hero: {
     eyebrow: { bs: 'Ilidža, Sarajevo', en: 'Ilidža, Sarajevo' },
     title: { bs: 'Riverina\n*residence*', en: 'Riverina\n*residence*' },
+    // approved by the owner 21. 10. 2026, from the brochure line "Moderno življenje uz rijeku"
+    words: { bs: 'Moderno\nŽivljenje\nUz rijeku', en: 'Modern\nLiving\nBy the river' },
     subtitle: { bs: 'Novi stambeni kompleks na Ilidži.', en: 'A new residential development in Ilidža.' },
     // current facade (360° set, angle 315°), confirmed by the owner 20. 10. 2026
     image: `${R}/objekat/riverina-1-ugao-vecer.webp`,
@@ -106,18 +112,21 @@ export const DEFAULT_PAGE: Page = {
   },
   manifest: {
     text: {
-      bs: 'Riverina je *novi* stambeni kompleks na *Ilidži*. Prva zgrada nudi *63 stana* od 46 do 111 m², iznad poslovnog prizemlja, zamišljenih za *miran* život u *Sarajevu*.',
-      en: 'Riverina is a *new* residential development in *Ilidža*. The first building offers *63 apartments* from 46 to 111 m², above a commercial ground floor, designed for a *calm* life in *Sarajevo*.',
+      // One line per row; {words} dissolve as the statement recomposes on scroll, *words* are set in capitals.
+      bs: 'Riverina {je novi stambeni kompleks}\nna *Ilidži*, uz rijeku.\n{Prva zgrada nudi} *63 stana*,\nod 46 do 111 m²,\n{iznad poslovnog prizemlja,}\nza miran život\nu *Sarajevu*.',
+      en: 'Riverina {is a new residential development}\nin *Ilidža*, by the river.\n{The first building offers} *63 apartments*,\nfrom 46 to 111 m²,\n{above a commercial ground floor,}\nfor a calm life\nin *Sarajevo*.',
     },
     images: [
-      { path: `${R}/enterijer/enterijer-19.webp`, caption: { bs: 'Kupatilo s tušem, vizualizacija', en: 'Shower room, visualisation' } },
-      { path: `${R}/objekat/objekat-7.webp`, caption: { bs: 'Ulaz u zgradu, vizualizacija', en: 'Building entrance, visualisation' } },
-      { path: `${R}/enterijer/enterijer-8.webp`, caption: { bs: 'Spavaća soba, vizualizacija', en: 'Bedroom, visualisation' } },
-      { path: `${R}/objekat/objekat-2.webp`, caption: { bs: 'Poslovno prizemlje, vizualizacija', en: 'Commercial ground floor, visualisation' } },
+      // current facade details (360° set) and interiors; see _phase-a/phase-a-audit.md
+      { path: `${R}/editorial/st-facade.webp`, caption: { bs: 'Fasada, detalj, vizualizacija', en: 'Facade detail, visualisation' } },
+      { path: `${R}/editorial/st-dining.webp`, caption: { bs: 'Trpezarija uz prozor, vizualizacija', en: 'Dining by the window, visualisation' } },
+      { path: `${R}/editorial/st-bath.webp`, caption: { bs: 'Kupatilo, vizualizacija', en: 'Bathroom, visualisation' } },
+      { path: `${R}/editorial/st-ground.webp`, caption: { bs: 'Poslovno prizemlje, vizualizacija', en: 'Commercial ground floor, visualisation' } },
+      { path: `${R}/editorial/st-bedroom.webp`, caption: { bs: 'Spavaća soba, vizualizacija', en: 'Bedroom, visualisation' } },
     ],
   },
   about: {
-    title: { bs: 'O\n*projektu*', en: 'About\n*the project*' },
+    title: { bs: 'Novi dom\n*uz rijeku*', en: 'A new home\n*by the river*' },
     text: {
       bs: 'Riverina Residence nastaje na Ilidži, u Sarajevu. Prva zgrada, Riverina 1, ima poslovno prizemlje i pet stambenih etaža.\n\n[[TBD: broj zgrada u kompleksu, faze i rok useljenja]]',
       en: 'Riverina Residence is being built in Ilidža, Sarajevo. The first building, Riverina 1, has a commercial ground floor and five residential floors.\n\n[[TBD: number of buildings, phases and completion date]]',
@@ -143,14 +152,17 @@ export const DEFAULT_PAGE: Page = {
     eyebrow: { bs: 'Riverina Residence', en: 'Riverina Residence' },
     title: { bs: 'Prostor za vaš\n*novi početak*', en: 'A space for your\n*new beginning*' },
     text: { bs: 'Stanovi od 46 do 111 m², s jednom do četiri spavaće sobe. Prodaja je u toku.', en: 'Apartments from 46 to 111 m², with one to four bedrooms. Sales are now open.' },
-    image: `${R}/naselje/3.webp`,
+    foot: { bs: 'Riverina Residence\n*Ilidža, Sarajevo*', en: 'Riverina Residence\n*Ilidža, Sarajevo*' },
+    // current facade, 360° set, angle 150° (2× Lanczos)
+    image: `${R}/chapters/kontakt-150.webp`,
     cta2: { bs: 'Pošaljite upit', en: 'Send an enquiry' },
   },
   categories: {
     items: [
-      { title: { bs: 'Arhitektura', en: 'Architecture' }, caption: { bs: 'Riverina 1', en: 'Riverina 1' }, image: `${R}/objekat/objekat-1.webp`, link: 'apartments' },
-      { title: { bs: 'Enterijer', en: 'Interiors' }, caption: { bs: 'Stanovi od\n46 do 111 m²', en: 'Apartments from\n46 to 111 m²' }, image: `${R}/enterijer/enterijer-2.webp`, link: 'gallery', link_label: { bs: 'Pogledajte galeriju', en: 'View the gallery' } },
-      { title: { bs: 'Lokacija', en: 'Location' }, caption: { bs: 'Ilidža,\nSarajevo', en: 'Ilidža,\nSarajevo' }, image: `${R}/naselje/5.webp`, link: 'location', link_label: { bs: 'Pogledajte lokaciju', en: 'View the location' } },
+      // current facade (360° set, 60°), an interior and the river (concept view of the neighbourhood), all 2× Lanczos
+      { title: { bs: 'Arhitektura', en: 'Architecture' }, caption: { bs: 'Riverina 1', en: 'Riverina 1' }, image: `${R}/chapters/arhitektura-60.webp`, link: 'apartments' },
+      { title: { bs: 'Enterijer', en: 'Interiors' }, caption: { bs: 'Lođa ili terasa\nuz svaki stan', en: 'A loggia or terrace\nwith every apartment' }, image: `${R}/chapters/enterijer-2.webp`, link: 'gallery', link_label: { bs: 'Pogledajte galeriju', en: 'View the gallery' } },
+      { title: { bs: 'Lokacija', en: 'Location' }, caption: { bs: 'Ilidža,\nSarajevo', en: 'Ilidža,\nSarajevo' }, image: `${R}/chapters/lokacija-rijeka.webp`, link: 'location', link_label: { bs: 'Pogledajte lokaciju', en: 'View the location' } },
     ],
   },
   // "Moderno življenje uz rijeku" is a phrase from the sales brochure.
@@ -163,13 +175,25 @@ export const DEFAULT_PAGE: Page = {
     image: `${R}/naselje/2.webp`,
     image2: `${R}/enterijer/enterijer-3.webp`,
   },
+  // Confirmed facts only: 63 apartments of 46 to 111 m², a commercial ground floor (conceptual design), the river.
+  offer: {
+    title: { bs: 'Prostor\n*za život*', en: 'Space\n*for living*' },
+    text: { bs: 'Stanovi, poslovno prizemlje i naselje uz rijeku: tri dijela jednog projekta na Ilidži.', en: 'Apartments, a commercial ground floor and a neighbourhood by the river: three parts of one project in Ilidža.' },
+    note: { bs: 'Površine i tlocrti su prema prodajnim skicama arhitekta.', en: 'Areas and plans follow the architect\'s sales drawings.' },
+    cta: { bs: 'Pogledajte stanove', en: 'View the apartments' },
+    items: [
+      { title: { bs: 'Stanovi', en: 'Apartments' }, image: `${R}/enterijer/enterijer-3.webp`, link: 'apartments' },
+      { title: { bs: 'Poslovno prizemlje', en: 'Commercial ground floor' }, image: `${R}/editorial/prizemlje-kafe.webp`, link: 'gallery' },
+      { title: { bs: 'Naselje uz rijeku', en: 'By the river' }, image: `${R}/naselje/16.webp`, link: 'location' },
+    ],
+  },
   world: {
     title: { bs: 'Svijet\n*Riverine*', en: 'The world\n*of Riverina*' },
-    text: { bs: 'Zgrada i naselje u vizualizacijama, lokacija na Ilidži i investitor projekta.', en: 'The building and the neighbourhood in visualisations, the location in Ilidža and the developer.' },
+    text: { bs: 'Zgrada i naselje u vizualizacijama, lokacija na Ilidži i interaktivni pregled stanova.', en: 'The building and the neighbourhood in visualisations, the location in Ilidža and the interactive apartment view.' },
     items: [
       { label: { bs: 'Vizualizacije', en: 'Visualisations' }, title: { bs: 'Galerija', en: 'Gallery' }, text: { bs: 'Riverina 1, naselje uz rijeku i enterijeri stanova.', en: 'Riverina 1, the neighbourhood by the river and the apartment interiors.' }, image: `${R}/objekat/objekat-4.webp`, link: 'gallery' },
       { label: { bs: 'Ilidža, Sarajevo', en: 'Ilidža, Sarajevo' }, title: { bs: 'Lokacija', en: 'Location' }, text: { bs: 'Riverina Residence se nalazi na Ilidži, u Sarajevu.', en: 'Riverina Residence is located in Ilidža, Sarajevo.' }, image: `${R}/naselje/9.webp`, link: 'location' },
-      { label: { bs: 'ALYASIN Group', en: 'ALYASIN Group' }, title: { bs: 'Investitor', en: 'Developer' }, text: { bs: 'Investitor projekta Riverina Residence.', en: 'The developer of Riverina Residence.' }, image: `${R}/objekat/objekat-5.webp`, link: 'developer' },
+      { label: { bs: 'Riverina 1', en: 'Riverina 1' }, title: { bs: 'Odaberite stan', en: 'Choose an apartment' }, text: { bs: 'Zgrada, sprat i stan u interaktivnom pregledu.', en: 'Building, floor and apartment in the interactive view.' }, image: `${R}/objekat/objekat-5.webp`, link: 'apartments' },
     ],
   },
   buildings: {
@@ -179,8 +203,8 @@ export const DEFAULT_PAGE: Page = {
   types: {
     title: { bs: 'Kolekcija\n*stanova*', en: 'Apartment\n*collection*' },
     text: {
-      bs: 'Devet tipova stanova od 46 do 111 m², s jednom do četiri spavaće sobe. Svaki stan ima lođu ili terasu.',
-      en: 'Nine apartment types from 46 to 111 m², with one to four bedrooms. Every apartment has a loggia or a terrace.',
+      bs: 'Devet tipova stanova od 46 do 111 m², s jednom do četiri spavaće sobe.',
+      en: 'Nine apartment types from 46 to 111 m², with one to four bedrooms.',
     },
     note: {
       bs: 'Površine prema prodajnim skicama arhitekta; lođa se obračunava s 0,75, terasa s 0,25 svoje površine. Dopušteno odstupanje kvadrature ±3 %. Podložno raspoloživosti.',
@@ -191,12 +215,13 @@ export const DEFAULT_PAGE: Page = {
     title: { bs: 'Enterijer\n*i detalji*', en: 'Interiors\n*and details*' },
     note: { bs: 'Vizualizacije su ilustrativne.', en: 'Visualisations are for illustration only.' },
     items: [
+      // interiors not shown elsewhere on the home page, and the commercial ground floor (concept)
       { image: `${R}/enterijer/enterijer-1.webp`, title: { bs: 'Dnevni boravak', en: 'Living room' } },
-      { image: `${R}/enterijer/enterijer-4.webp`, title: { bs: 'Trpezarija', en: 'Dining' } },
       { image: `${R}/enterijer/enterijer-7.webp`, title: { bs: 'Kuhinja', en: 'Kitchen' } },
       { image: `${R}/enterijer/enterijer-6.webp`, title: { bs: 'Spavaća soba', en: 'Bedroom' } },
-      { image: `${R}/enterijer/enterijer-9.webp`, title: { bs: 'Kupatilo', en: 'Bathroom' } },
-      { image: `${R}/enterijer/enterijer-5.webp`, title: { bs: 'Boravak', en: 'Lounge' } },
+      { image: `${R}/enterijer/enterijer-3.webp`, title: { bs: 'Boravak', en: 'Lounge' } },
+      { image: `${R}/enterijer/enterijer-5.webp`, title: { bs: 'Boravak i trpezarija', en: 'Living and dining' } },
+      { image: `${R}/editorial/prizemlje-kafe.webp`, title: { bs: 'Poslovno prizemlje', en: 'Commercial ground floor' }, text: { bs: 'Koncept uređenja', en: 'Fit-out concept' } },
     ],
   },
   gallery: {
@@ -224,6 +249,8 @@ export const DEFAULT_PAGE: Page = {
     title: { bs: 'Investitor\n*ALYASIN Group*', en: 'Developer\n*ALYASIN Group*' },
     text: { bs: '[[TBD: tekst o investitoru]]', en: '[[TBD: about the developer]]' },
     logo: `${R}/investitor/alyasin-logo.webp`,
+    // background of the home section: the neighbourhood by the river at night (concept view)
+    image: `${R}/chapters/investitor-noc.webp`,
     page_image: `${R}/objekat/objekat-5.webp`,
   },
   privacy: {

@@ -1,7 +1,7 @@
 /* Riverina Residence — home page sections (phase b). Tokens live in globals.css. */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-:root { --hero-d: 2.15s; }
-html.intro-seen { --hero-d: .1s; }
+/* entrance delay of page heroes; the logo loader lives inside the home hero and never delays other pages */
+:root { --hero-d: .1s; }
 
 /* ---------- reveals ----------
    Keyframes wait (paused) until SmoothScroll marks the element .is-in, then play once.
@@ -500,32 +500,27 @@ html.reveal-ready .cat-title.is-in .cat-ch { transform: none; }
 .split, .vis-title, .det-title, .world-title, .stm .split { font-size: clamp(38px, 4.2vw, 64px); }
 .sec-rule, .sec-idx { display: none !important; }
 
-/* gallery page: coverflow (Swiper) with the centre picture in the same mat as the home interiors carousel */
+/* gallery page: the site's one slider in its feature form (elicyon.css .sl), centred in the page grid */
 .gallery-page { background: var(--paper); overflow: hidden; }
 .cf-filter { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s-2) var(--s-6); margin-bottom: clamp(36px, 4vw, 56px); padding-inline: var(--gutter); }
 .cf-chip { position: relative; padding: 6px 0; border: 0; background: none; color: var(--muted); font: 500 var(--t-label)/1 var(--body); letter-spacing: var(--track-label); text-transform: uppercase; cursor: pointer; transition: color var(--dur-fast) ease; }
 .cf-chip sup { margin-inline-start: 4px; font-size: 9px; letter-spacing: .05em; }
-.cf-chip::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform var(--dur-1) var(--ease-out); }
+.cf-chip::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform var(--dur-1) var(--ease-out); }
 .cf-chip.is-on, .cf-chip:hover { color: var(--navy); }
 .cf-chip.is-on::after { transform: none; }
-.cf-swiper { padding-block: 24px 64px !important; }
-.cf-slide { width: clamp(260px, 30vw, 460px) !important; }
-.cf-frame { display: block; width: 100%; padding: 0; border: 0; background: transparent; cursor: grab; position: relative; transition: padding .9s var(--ease-io), background-color .9s var(--ease-io); }
-.cf-img { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; }
+.cf-in { max-width: 1376px; margin: 0 auto; padding-inline: 32px; }
+.cf-frame { position: relative; display: block; width: 100%; padding: 0; border: 0; background: transparent; cursor: grab; }
+.swiper-slide-active .cf-frame { cursor: zoom-in; }
+.cf-img { position: relative; display: block; aspect-ratio: 3 / 2; overflow: hidden; background: var(--ivory); }
 .cf-img img { object-fit: cover; -webkit-user-drag: none; }
-.cf-slide:not(.swiper-slide-active) .cf-img { filter: saturate(.85) brightness(.92); }
-.swiper-slide-active .cf-frame { padding: clamp(12px, 1.2vw, 20px); background: #8a5a4f; cursor: zoom-in; }
-.cf-open { position: absolute; left: 50%; bottom: calc(clamp(12px, 1.2vw, 20px) + 14px); translate: -50% 0; padding: 7px 12px; background: rgba(251, 248, 242, .92); color: var(--navy); font: 500 10px/1 var(--body); letter-spacing: .16em; text-transform: uppercase; opacity: 0; transition: opacity var(--dur-1) var(--ease-out); }
+.cf-open { position: absolute; right: 16px; bottom: 16px; padding: 9px 14px; background: rgba(250, 246, 239, .94); color: var(--navy); font: 500 10px/1 var(--body); letter-spacing: .18em; text-transform: uppercase; opacity: 0; transition: opacity var(--dur-1) var(--ease-out); }
 .cf-frame:hover .cf-open, .cf-frame:focus-visible .cf-open { opacity: 1; }
-.cf-frame:focus-visible { outline: 2px solid var(--navy); outline-offset: 4px; }
-.cf .swiper-pagination-bullet { width: 6px; height: 6px; border-radius: 0; background: var(--navy); opacity: .25; }
-.cf .swiper-pagination-bullet-active { opacity: 1; }
-.cf-info { display: flex; flex-direction: column; align-items: center; gap: var(--s-3); text-align: center; min-height: 96px; padding-inline: var(--gutter); }
-.cf-count { font: 400 var(--t-sm)/1 var(--display); letter-spacing: .1em; color: var(--muted); font-variant-numeric: lining-nums; }
-.cf-title { color: var(--navy); animation: fade-up .7s var(--ease-out) both; }
-.cf-tag { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-@media (max-width: 760px) { .cf-slide { width: 72vw !important; } }
-@media (prefers-reduced-motion: reduce) { .cf-frame { transition: none; } .cf-title { animation: none; } }
+.cf-frame:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+.cf-info { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-3); min-height: 48px; margin-top: 20px; }
+.cf-title { margin: 0; font: 300 clamp(22px, 1.8vw, 28px)/1.2 var(--display); color: var(--navy); animation: fade-up .7s var(--ease-out) both; }
+.cf-tag { margin: 0; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+@media (max-width: 760px) { .cf-in { padding-inline: 20px; } .cf-img { aspect-ratio: 4 / 5; } .cf-info { flex-direction: column; } }
+@media (prefers-reduced-motion: reduce) { .cf-title { animation: none; } }
 /* the render label clears the taller header (R mark above the name) on the hero, and the caption link on phones */
 .hero .ill-tag, .ph .ill-tag { top: calc(var(--header-h) + 44px); }
 @media (max-width: 899px) {

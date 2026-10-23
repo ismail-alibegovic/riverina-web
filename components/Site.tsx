@@ -7,20 +7,30 @@ import SiteChrome from './site/SiteChrome';
 import Footer from './site/Footer';
 import Gallery from './Gallery';
 import ContactForm from './ContactForm';
-import Hero from './home/Hero';
-import Manifest from './home/Manifest';
+import Opening from './home/Opening';
 import About from './home/About';
-import Categories from './home/Categories';
-import Details from './home/Details';
-import Types, { type TypeCard } from './home/Types';
+import Chapters from './home/Chapters';
+import Residences from './home/Residences';
+import Objects from './home/Objects';
+import EditorialMotion from './home/EditorialMotion';
+import { Investor, Location, ContactFrame } from './home/Editorial';
+import { type TypeCard } from './home/Types';
 import Showcase from './home/Showcase';
-import Statement from './home/Statement';
 import Vision from './home/Vision';
 import World from './home/World';
+import Offer from './home/Offer';
 import { Fill, Heading, Paras } from './home/text';
 import JsonLd from './JsonLd';
 
 const FALLBACK_BUILDING = '/riverina/objekat/objekat-3.webp';
+// the project's navy and gold map of Sarajevo from the sales catalogue, Ilidža marked
+const NAVY_MAP = '/riverina/lokacija/mapa-navy.webp';
+// the developer section's collage: Riverina 1 at dusk (or the CMS picture), the neighbourhood on the river at sunset,
+// the entrance; no amenity renders until the owner confirms them (docs/content-todo.md)
+const INVESTOR_PICS = ['/riverina/objekat/objekat-8.webp', '/riverina/naselje/3.webp', '/riverina/objekat/objekat-7.webp'];
+// shown until the developer's text is filled in the CMS (Tekstovi sajta → Investitor); deliberately Latin filler, so
+// nothing reads as a confirmed fact
+const INVESTOR_PLACEHOLDER = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante venenatis dapibus, posuere velit aliquet. Donec ullamcorper nulla non metus auctor fringilla.\n\nCurabitur blandit tempus porttitor. Maecenas faucibus mollis interdum, nullam quis risus eget urna mollis ornare vel eu leo.';
 
 export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
   const { page, settings, units } = data;
@@ -29,7 +39,6 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
   const loc = page.location || {};
   const contact = page.contact || {};
   const gallery = (page.gallery?.images || []).filter((g) => g.path);
-  const manifestText = tx(page.manifest?.text, lang);
   const hasLocation = !!(tx(loc.title, lang) || tx(loc.text, lang) || loc.map_embed);
   const buildings: any[] = data.scenes?.buildings || [];
   const order = sectionList(page);
@@ -41,31 +50,39 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
   const tag = illustrationLabel(page, lang);
 
   const sections: Record<SectionKey, () => React.ReactNode> = {
-    hero: () => <Hero hero={page.hero || {}} lang={lang} name={name} tag={tag} />,
+    hero: () => <Opening hero={page.hero || {}} lang={lang} name={name} tag={tag} />,
 
     vision: () => page.vision && tx(page.vision.title, lang) && <Vision vision={page.vision} lang={lang} tag={tag} />,
 
     world: () => page.world && (page.world.items || []).length > 0 && <World world={page.world} lang={lang} cta={{ href: href('apartments', lang), label: aptLabel }} more={t.learnMore} />,
 
-    manifest: () => manifestText && (
-      <Manifest text={manifestText} label={t.manifest} images={(page.manifest?.images || []).filter((m) => m.path).map((m) => ({ src: mediaUrl(m.path), alt: imgAlt(m, lang) }))} />
-    ),
+    // the animated statement was retired (2026-10-22); the project opens with "about" instead
+    manifest: () => null,
 
-    about: () => (tx(page.about?.title, lang) || tx(page.about?.text, lang)) && <About about={page.about || {}} units={units} lang={lang} tag={tag} />,
+    about: () => (tx(page.about?.title, lang) || tx(page.about?.text, lang)) && <About about={page.about || {}} units={units} lang={lang} tag={tag} cta={{ href: href('apartments', lang), label: aptLabel }} />,
 
     showcase: () => {
       const items = (page.showcase?.items || []).filter((it) => it.image).map((it) => ({ src: mediaUrl(it.image), caption: tx(it.caption, lang) }));
       return items.length > 1 && <Showcase title={tx(page.showcase?.title, lang)} text={tx(page.showcase?.text, lang)} items={items} tag={tag} label={tx(page.showcase?.title, lang).replace(/\*/g, '').replace(/\n/g, ' ')} />;
     },
 
-    statement: () => page.statement?.image && tx(page.statement?.title, lang) && <Statement st={page.statement} lang={lang} tag={tag} cta={aptLabel} />,
+    statement: () => page.statement?.image && tx(page.statement?.title, lang) && (
+      <ContactFrame top={tx(page.statement.title, lang)} text={tx(page.statement.text, lang)} place={tx(page.statement.foot, lang) || tx(page.statement.eyebrow, lang)} image={mediaUrl(page.statement.image)} cta={{ href: '#kontakt', label: tx(page.statement.cta2, lang) || t.enquire }} link={{ href: href('apartments', lang), label: aptLabel }} tag={tag} />
+    ),
+
+    offer: () => {
+      const o = page.offer;
+      const items = (o?.items || []).filter((it) => tx(it.title, lang) && it.image).map((it) => ({ title: tx(it.title, lang), src: mediaUrl(it.image), href: resolveLink(it.link, lang) }));
+      return o && items.length > 0 && (
+        <Offer title={tx(o.title, lang)} text={tx(o.text, lang)} note={tx(o.note, lang)} cta={{ href: href('apartments', lang), label: tx(o.cta, lang) || aptLabel }} items={items} />
+      );
+    },
 
     categories: () => {
       const items = (page.categories?.items || []).filter((c) => tx(c.title, lang) && c.image);
       return items.length > 0 && (
-        <section aria-label={t.categories}>
-          <Categories tag={tag} items={items.map((c) => ({ title: tx(c.title, lang), caption: tx(c.caption, lang), src: mediaUrl(c.image), href: resolveLink(c.link, lang), linkLabel: tx(c.link_label, lang) || (c.link === 'apartments' ? aptLabel : t.categories) }))} />
-        </section>
+        <Chapters tag={tag} heading={tx(page.world?.title, lang) || t.categories} text={tx(page.world?.text, lang)} cta={{ href: href('apartments', lang), label: aptLabel }}
+          items={items.map((c) => ({ title: tx(c.title, lang), caption: tx(c.caption, lang), src: mediaUrl(c.image), href: resolveLink(c.link, lang), linkLabel: tx(c.link_label, lang) || (c.link === 'apartments' ? aptLabel : t.categories) }))} />
       );
     },
 
@@ -102,27 +119,15 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
 
     types: () => {
       const cards = typeCards(data, lang);
-      return (
-        <section id="tipovi" className="section types">
-          <div className="wrap types-head">
-            <Heading text={tx(page.types?.title, lang)} />
-            {tx(page.types?.text, lang) && <p className="lead" data-reveal="up">{tx(page.types?.text, lang)}</p>}
-          </div>
-          <Types cards={cards} labels={{ filter: t.filterBedrooms, all: t.filterAll, rooms: t.rooms, total: t.total, view: t.viewUnit, area: t.area, outdoor: t.outdoor, floor: t.floor }} />
-          {tx(page.types?.note, lang) && <p className="wrap types-note">{tx(page.types?.note, lang)}</p>}
-        </section>
+      return cards.length > 0 && (
+        <Residences cards={cards} heading={tx(page.types?.title, lang)} text={tx(page.types?.text, lang)} note={tx(page.types?.note, lang)} bedsMany={t.bedsMany} allHref={href('apartments', lang)}
+          labels={{ group: t.filterBedrooms, all: t.allApartments, view: t.viewUnit, filterAll: t.filterAll, prev: t.prevSlide, next: t.nextSlide }} />
       );
     },
 
     details: () => {
       const slides = (page.details?.items || []).filter((d) => d.image).map((d) => ({ src: mediaUrl(d.image), title: tx(d.title, lang), text: tx(d.text, lang) }));
-      return slides.length > 0 && (
-        <section id="detalji" className="section details">
-          <div className="wrap"><Heading text={tx(page.details?.title, lang).replace(/\n/g, ' ')} className="is-center det-title" /></div>
-          <Details tag={tag} slides={slides} labels={{ prev: t.prev, next: t.next, region: t.slider }} />
-          {tx(page.details?.note, lang) && <p className="wrap det-note">{tx(page.details?.note, lang)}</p>}
-        </section>
-      );
+      return slides.length > 0 && <Objects title={tx(page.details?.title, lang)} slides={slides} note={tx(page.details?.note, lang)} tag={tag} labels={{ prev: t.prevSlide, next: t.nextSlide, region: t.slider }} />;
     },
 
     gallery: () => gallery.length > 0 && (
@@ -135,39 +140,12 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
     ),
 
     location: () => hasLocation && (
-      <section id="lokacija" className="section location">
-        <div className="wrap loc-grid">
-          <div className="loc-text">
-            <Heading text={tx(loc.title, lang) || t.location} />
-            <div data-reveal="up"><Paras className="prose" text={tx(loc.text, lang)} /></div>
-            {(loc.points || []).filter((p) => tx(p.name, lang)).length > 0 && (
-              <ul className="points" data-reveal="up">
-                {(loc.points || []).filter((p) => tx(p.name, lang)).map((p, i) => (
-                  <li key={i}><span>{tx(p.name, lang)}</span><b>{tx(p.value, lang)}</b></li>
-                ))}
-              </ul>
-            )}
-            {tx(loc.address, lang) && <p className="loc-address">{tx(loc.address, lang)}</p>}
-            <a className="link-line" href={href('location', lang)}>{t.moreLocation}</a>
-          </div>
-          <div className="loc-media" data-reveal="clip" data-parallax={loc.map_embed ? undefined : 6}>
-            {loc.map_embed
-              ? <iframe src={loc.map_embed} title={t.location} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
-              : loc.image ? <Fill src={loc.image} alt={tx(loc.title, lang).replace(/\*/g, '').replace(/\n/g, ' ')} sizes="(min-width: 900px) 58vw, 100vw" /> : null}
-          </div>
-        </div>
-      </section>
+      <Location title={tx(loc.title, lang) || t.location} text={tx(loc.text, lang).replace(/\[\[TBD:[^\]]*\]\]/g, '').trim()} map={NAVY_MAP} alt={`${tx(loc.title, lang).replace(/\*/g, '').replace(/\n/g, ' ')}: ${t.location}`} link={{ href: href('location', lang), label: t.moreLocation }} />
     ),
 
     investor: () => page.investor && (tx(page.investor.title, lang) || page.investor.logo) && (
-      <section id="investitor" className="section investor">
-        <div className="wrap inv-inner">
-          {page.investor.logo && <div className="inv-logo" data-reveal="up"><Fill src={page.investor.logo} alt={page.footer?.company || ''} sizes="240px" /></div>}
-          <Heading text={tx(page.investor.title, lang)} className="is-center" />
-          <div data-reveal="up"><Paras className="prose inv-text" text={tx(page.investor.text, lang)} /></div>
-          <a className="link-line" href={href('developer', lang)}>{t.moreDeveloper}</a>
-        </div>
-      </section>
+      <Investor title={tx(page.investor.title, lang)} text={tx(page.investor.text, lang).replace(/\[\[TBD:[^\]]*\]\]/g, '').trim()} placeholder={INVESTOR_PLACEHOLDER} role={t.developerRole} logo={page.investor.logo ? mediaUrl(page.investor.logo) : undefined}
+        images={[mediaUrl(page.investor.image) || INVESTOR_PICS[0], ...INVESTOR_PICS.slice(1)].map((src) => ({ src, alt: '' }))} link={{ href: href('developer', lang), label: t.moreDeveloper }} tag={tag} />
     ),
 
     contact: () => (
@@ -197,6 +175,7 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
       </main>
       <Footer data={data} lang={lang} nav={nav} form={!has('contact')} />
       <JsonLd data={data} lang={lang} route="home" />
+      <EditorialMotion />
     </>
   );
 }

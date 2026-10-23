@@ -4,7 +4,7 @@ import ContactForm from '../ContactForm';
 import { Rich } from '../home/text';
 
 /**
- * Elicyon-style footer on a soft river-blue field, kept to one band: a stepped invitation, the enquiry form beside it,
+ * Elicyon-style footer on the navy brand field, kept to one band: a stepped invitation, the enquiry form beside it,
  * the menu and the contact details, then a thin legal line. The contact page already has the form (form={false}).
  */
 export default function Footer({ data, lang, nav, form = true }: { data: SiteData; lang: Lang; nav: { href: string; label: string }[]; form?: boolean }) {
@@ -32,6 +32,11 @@ export default function Footer({ data, lang, nav, form = true }: { data: SiteDat
           {tx(c.address, lang) && <p>{tx(c.address, lang)}</p>}
           {tx(c.hours, lang) && <p>{tx(c.hours, lang)}</p>}
         </div>
+      </div>
+      {/* the name across the full width closes the page (Elicyon); decorative, the brand is named in the header */}
+      <div className="footer-mark" aria-hidden="true">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/loader/riverina.webp" alt="" width={1079} height={161} loading="lazy" />
       </div>
       <div className="wrap wrap-wide footer-legal">
         <a href={href('privacy', lang)}>{t.privacy}</a>

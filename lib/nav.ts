@@ -13,7 +13,6 @@ export function siteNav(data: SiteData, lang: Lang, current?: 'apartments' | 'ga
     { href: href('apartments', lang), label: t.apartments, current: current === 'apartments' },
     { href: href('gallery', lang), label: t.gallery, current: current === 'gallery' },
     (tx(loc.title, lang) || tx(loc.text, lang) || loc.map_embed) && { href: href('location', lang), label: t.location, current: current === 'location' },
-    (tx(p.investor?.title, lang) || p.investor?.logo) && { href: href('developer', lang), label: t.developer, current: current === 'developer' },
     { href: href('contact', lang), label: t.contact, current: current === 'contact' },
   ];
   return items.filter(Boolean) as { href: string; label: string; current?: boolean }[];

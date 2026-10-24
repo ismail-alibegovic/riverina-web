@@ -35,7 +35,7 @@ export const imgAlt = (img: { alt?: L; caption?: L }, lang: Lang) => plain(img.a
 /** Search and sharing texts for one page; empty fields fall back to the page's own title and text. */
 export type Seo = { title?: L; description?: L; image?: string };
 export type SectionKey = 'hero' | 'vision' | 'manifest' | 'about' | 'showcase' | 'categories' | 'offer' | 'buildings' | 'types' | 'details' | 'world' | 'gallery' | 'location' | 'investor' | 'statement' | 'contact';
-export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'showcase', 'categories', 'offer', 'buildings', 'types', 'investor', 'location', 'world', 'details', 'vision', 'gallery', 'statement', 'contact'];
+export const SECTION_ORDER: SectionKey[] = ['hero', 'manifest', 'about', 'showcase', 'categories', 'offer', 'buildings', 'types', 'location', 'world', 'details', 'vision', 'gallery', 'statement', 'contact'];
 /**
  * Home sections that are off until switched on in the CMS. The home page follows elicyon.com's sequence, one story
  * from the river to the front door: hero → manifest → categories → apartment types ("services") → vision

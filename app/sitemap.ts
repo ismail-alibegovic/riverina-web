@@ -6,7 +6,7 @@ const PRIORITY: Partial<Record<RouteKey, number>> = { home: 1, apartments: 0.9, 
 
 /** Every public page in every language, each with its hreflang alternates (incl. x-default). */
 export default function sitemap(): MetadataRoute.Sitemap {
-  return ROUTE_KEYS.flatMap((key) => LANGS.map((lang) => ({
+  return ROUTE_KEYS.filter((k) => k !== 'developer').flatMap((key) => LANGS.map((lang) => ({
     url: SITE_URL + href(key, lang),
     changeFrequency: key === 'privacy' ? 'yearly' as const : 'weekly' as const,
     priority: (PRIORITY[key] ?? 0.5) * (lang === DEFAULT_LANG ? 1 : 0.9),

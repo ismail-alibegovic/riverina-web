@@ -13,7 +13,7 @@ import Chapters from './home/Chapters';
 import Residences from './home/Residences';
 import Objects from './home/Objects';
 import EditorialMotion from './home/EditorialMotion';
-import { Investor, Location, ContactFrame } from './home/Editorial';
+import { Location, ContactFrame } from './home/Editorial';
 import { type TypeCard } from './home/Types';
 import Showcase from './home/Showcase';
 import Vision from './home/Vision';
@@ -25,12 +25,6 @@ import JsonLd from './JsonLd';
 const FALLBACK_BUILDING = '/riverina/objekat/objekat-3.webp';
 // the project's navy and gold map of Sarajevo from the sales catalogue, Ilidža marked
 const NAVY_MAP = '/riverina/lokacija/mapa-navy.webp';
-// the developer section's collage: Riverina 1 at dusk (or the CMS picture), the neighbourhood on the river at sunset,
-// the entrance; no amenity renders until the owner confirms them (docs/content-todo.md)
-const INVESTOR_PICS = ['/riverina/objekat/objekat-8.webp', '/riverina/naselje/3.webp', '/riverina/objekat/objekat-7.webp'];
-// shown until the developer's text is filled in the CMS (Tekstovi sajta → Investitor); deliberately Latin filler, so
-// nothing reads as a confirmed fact
-const INVESTOR_PLACEHOLDER = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante venenatis dapibus, posuere velit aliquet. Donec ullamcorper nulla non metus auctor fringilla.\n\nCurabitur blandit tempus porttitor. Maecenas faucibus mollis interdum, nullam quis risus eget urna mollis ornare vel eu leo.';
 
 export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
   const { page, settings, units } = data;
@@ -143,10 +137,8 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
       <Location title={tx(loc.title, lang) || t.location} text={tx(loc.text, lang).replace(/\[\[TBD:[^\]]*\]\]/g, '').trim()} map={NAVY_MAP} alt={`${tx(loc.title, lang).replace(/\*/g, '').replace(/\n/g, ' ')}: ${t.location}`} link={{ href: href('location', lang), label: t.moreLocation }} />
     ),
 
-    investor: () => page.investor && (tx(page.investor.title, lang) || page.investor.logo) && (
-      <Investor title={tx(page.investor.title, lang)} text={tx(page.investor.text, lang).replace(/\[\[TBD:[^\]]*\]\]/g, '').trim()} placeholder={INVESTOR_PLACEHOLDER} role={t.developerRole} logo={page.investor.logo ? mediaUrl(page.investor.logo) : undefined}
-        images={[mediaUrl(page.investor.image) || INVESTOR_PICS[0], ...INVESTOR_PICS.slice(1)].map((src) => ({ src, alt: '' }))} link={{ href: href('developer', lang), label: t.moreDeveloper }} tag={tag} />
-    ),
+    // the developer is not presented on the site (owner's decision, 24. 10. 2026)
+    investor: () => null,
 
     contact: () => (
       <section id="kontakt" className="section contact">

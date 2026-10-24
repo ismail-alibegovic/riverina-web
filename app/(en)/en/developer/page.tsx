@@ -1,15 +1,7 @@
-import { DeveloperPage } from '@/components/pages/Pages';
-import { buildMetadata } from '@/lib/meta';
-import { getSiteData } from '@/lib/content';
+import { notFound } from 'next/navigation';
+export const metadata = { robots: { index: false, follow: false } };
 
-export const revalidate = 300;
-
-export async function generateMetadata() {
-  const d = await getSiteData();
-  return buildMetadata(d, 'en', 'developer', { title: d.page.investor?.title, text: d.page.investor?.text, image: d.page.investor?.page_image });
-}
-
-export default async function Page() {
-  const data = await getSiteData();
-  return <DeveloperPage data={data} lang="en" />;
+// The developer page is switched off: the site does not present the developer (owner's decision, 24. 10. 2026).
+export default function Page() {
+  notFound();
 }

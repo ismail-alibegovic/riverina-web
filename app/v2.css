@@ -172,7 +172,7 @@ html.kt-locked { overflow: hidden; }
 .k-hero-bg { z-index: 0; animation: kt-scale 2.8s var(--ease) both; }
 .k-hero-fg { z-index: 2; pointer-events: none; animation: kt-scale 2.8s var(--ease) both; }
 .k-hero-in { position: absolute; z-index: 1; left: 0; right: 0; top: 0; padding: 0 var(--g); }
-.k-hero-title { position: absolute; left: max(var(--g), calc((100vw - var(--wrap)) / 2 + var(--g))); right: max(var(--g), calc((100vw - var(--wrap)) / 2 + var(--g))); top: calc(21.6vw - .75em); font: 400 11.6vw/.86 var(--sans); letter-spacing: -.055em; white-space: nowrap; color: #fff; }
+.k-hero-title { position: absolute; left: max(var(--g), calc((100vw - var(--wrap)) / 2 + var(--g))); right: max(var(--g), calc((100vw - var(--wrap)) / 2 + var(--g))); top: calc(21.6vw - .52em); font: 400 11.6vw/.86 var(--sans); letter-spacing: -.055em; white-space: nowrap; color: #fff; }
 .k-fit { display: inline-block; }
 .k-fit-part { display: inline-block; overflow: hidden; vertical-align: top; padding: .16em 0 .26em; margin: -.16em 0 -.26em; }
 .k-fit-part + .k-fit-part { margin-left: .18em; }
@@ -203,7 +203,7 @@ html.kt-locked { overflow: hidden; }
   .k-hero { max-height: none; }
   /* portrait plate (plate-m) has 620 px of sky: the title sits above the roof and most of the building fits */
   .k-hero-bg, .k-hero-fg { object-position: 52% 0; }
-  .k-hero-title { top: calc(var(--hdr) + 3svh); left: var(--g); right: auto; width: min(calc(100vw - 2 * var(--g)), 44svh); }
+  .k-hero-title { top: max(calc(var(--hdr) + 3svh), calc(43.5svh - 1.82em)); left: var(--g); right: auto; width: min(calc(100vw - 2 * var(--g)), 44svh); }
   .k-fit-part { display: block; }
   .k-fit-part + .k-fit-part { margin-left: 0; }
   .k-hero-card { left: var(--g); right: var(--g); width: auto; max-width: 440px; bottom: max(18px, env(safe-area-inset-bottom)); padding: 14px 16px; display: flex; align-items: center; gap: 16px; }
@@ -690,3 +690,20 @@ body.kt-body .rvs { --rvs-font: var(--kt-sans), "Inter", system-ui, sans-serif; 
   .kt *, .kt *::before, .kt *::after { animation-duration: 0s !important; animation-delay: 0s !important; transition-duration: 0s !important; transition-delay: 0s !important; }
   .k-map-pulse { display: none; }
 }
+
+/* ── reference restraint: one quiet type voice outside the hero ──
+   KEY TOWERS keeps the italic serif for the wordmark-like hero only; section headings, statements and labels are
+   plain sans in one colour, labels are small sentence-case text, numbers carry the single accent colour. */
+.kt-main section:not(.k-hero) em { font: inherit; letter-spacing: inherit; color: inherit; }
+.kt-main .kt-title { font-size: clamp(32px, 3.1vw, 46px); line-height: 1.1; letter-spacing: -.035em; }
+.kt-eyebrow { gap: 0; font: 400 13px/1.3 var(--sans); letter-spacing: 0; text-transform: none; color: var(--muted); }
+.kt-eyebrow::before { display: none; }
+.k-apts { background: transparent; }
+.k-tile { background: #3d4a63; }
+.k-tile b { color: #fff; font-weight: 200; }
+.k-tile-label, .k-tile p { color: rgba(255, 255, 255, .78); }
+.k-fac-n { color: rgba(5, 24, 54, .22); }
+.k-stats b { font-weight: 200; }
+/* hero: both words in capitals, like "KEY TOWERS" */
+.k-hero-title { text-transform: uppercase; }
+.k-fit-part.is-serif em { letter-spacing: -.02em; }

@@ -3,6 +3,7 @@ import { href as siteHref, type Lang } from '@/lib/i18n';
 import { getImageProps } from 'next/image';
 import { Fill, Rich } from '@/components/home/text';
 import { V2, fill, v2Href } from '@/lib/v2/copy';
+import { APARTMENT_TYPES } from '@/lib/apartmentTypes';
 import { v2Units, v2Facts } from '@/lib/v2/units';
 import Shell from './Shell';
 import Carousel from './Carousel';
@@ -57,6 +58,10 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
     bg: heroImg(`${R}/hero/plate.webp`), bgM: heroImg(`${R}/hero/plate-m.webp`).srcSet,
     fg: heroImg(`${R}/hero/building.webp`), fgM: heroImg(`${R}/hero/building-m.webp`).srcSet,
   };
+  // real figures from the sales brochure (lib/apartmentTypes.ts)
+  const twoBath = APARTMENT_TYPES.filter((ty) => ty.rooms.filter(([k]) => k === 'bathroom').length >= 2).map((ty) => ty.id);
+  const twoBathLabel = twoBath.length > 1 ? `${twoBath[0]}–${twoBath[twoBath.length - 1]}` : twoBath.join('');
+  const maxLiving = Math.max(...APARTMENT_TYPES.flatMap((ty) => ty.rooms.filter(([k]) => k === 'living' || k === 'livingDining').map(([, a]) => a))).toLocaleString(lang === 'bs' ? 'bs-BA' : 'en-GB');
   const vision = tx(p.vision?.title, lang).replace(/\*/g, '').split(/\s+/).filter(Boolean);
 
   return (
@@ -239,6 +244,58 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
           </div>
         </section>
       )}
+
+      {/* ───────── Outdoor space (reference "Parking": three light figure tiles) ───────── */}
+      {f && (
+        <section className="k-figs" aria-labelledby="k-out-title">
+          <div className="kt-wrap k-split k-tt-head">
+            <p className="kt-label kt-eyebrow" data-k="fade">{t.outLabel}</p>
+            <div>
+              <h2 id="k-out-title" className="k-h2" data-k="up">{t.outTitle}</h2>
+              <p className="k-split-text" data-k="up">{t.outText}</p>
+            </div>
+          </div>
+          <div className="kt-wrap k-figs-grid">
+            {[
+              [t.outLoggia, String(units.filter((u) => u.outdoor?.kind === 'loggia').length)],
+              [t.outTerrace, String(units.filter((u) => u.outdoor?.kind === 'terrace').length)],
+              [t.outFloors, (() => { const fl = units.filter((u) => u.outdoor?.kind === 'loggia').map((u) => u.floor); return fl.length ? `${Math.min(...fl)}–${Math.max(...fl)}` : ''; })()],
+            ].map(([l, v], i) => (
+              <div className="k-fig" key={i} data-k="up" style={{ '--i': i } as React.CSSProperties}>
+                <span>{l}</span>
+                <b data-kt-count>{v}</b>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ───────── Interiors (reference "Storage space": big picture + three stacked figure rows) ───────── */}
+      <section className="k-store" aria-labelledby="k-int-title">
+        <p className="k-fac-label kt-wrap" data-k="fade">{t.intLabel}</p>
+        <div className="kt-wrap k-store-grid">
+          <figure className="k-store-big" data-k="fade">
+            <div className="k-img"><Fill src={`${R}/enterijer/enterijer-2.webp`} alt="" sizes="(min-width: 900px) 45vw, 100vw" /></div>
+            <h2 id="k-int-title">{t.intTitle}</h2>
+          </figure>
+          <div className="k-store-list">
+            {[
+              { v: f ? `${f.minBeds}–${f.maxBeds}` : '', c: t.intBeds, x: t.intBedsT, src: `${R}/enterijer/enterijer-6.webp` },
+              { v: '2', c: t.intBath, x: fill(t.intBathT, { t: twoBathLabel }), src: `${R}/enterijer/enterijer-9.webp` },
+              { v: maxLiving, c: t.intLiving, x: t.intLivingT, src: `${R}/enterijer/enterijer-5.webp` },
+            ].map((r, i) => (
+              <div className="k-store-row" key={i} data-k="up" style={{ '--i': i } as React.CSSProperties}>
+                <div>
+                  <b>{r.v}</b>
+                  <span>{r.c}</span>
+                  <p>{r.x}</p>
+                </div>
+                <div className="k-img"><Fill src={r.src} alt="" sizes="(min-width: 900px) 18vw, 40vw" /></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ───────── Gallery ───────── */}
       {gallery.length >= 5 && (

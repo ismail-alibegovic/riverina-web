@@ -761,3 +761,65 @@ body.kt-body .rvs { --rvs-font: var(--kt-sans), "Inter", system-ui, sans-serif; 
   .k-tt { grid-auto-columns: 84vw; }
   .k-contact .k-row { grid-template-columns: 1fr 24px; }
 }
+
+/* ── closer to the reference, second pass ── */
+/* denser headings, small dark body text */
+.kt-main .k-h2, .kt-main .kt-title, .k-proj-lead, .k-rwt, .k-fac-title, .k-loc-title, .k-life-card h3, .k-tt-label { font-weight: 450; letter-spacing: -.045em; }
+.k-h2 { font-size: clamp(32px, 3.15vw, 48px); line-height: 1.04; }
+.k-proj-lead { font-size: clamp(28px, 2.9vw, 44px); line-height: 1.06; }
+.k-split-text, .k-head-text, .k-rw-body p, .k-fac-grid p, .k-type-text, .k-life-card p { font-size: 13px; line-height: 1.45; color: rgba(5, 24, 54, .78); }
+.k-split-text { max-width: 40ch; }
+.k-life-card h3 { font-size: 22px; }
+.k-contact-title { font-weight: 500; letter-spacing: -.06em; }
+.k-contact .k-row dd { font-weight: 450; letter-spacing: -.045em; }
+
+/* building facts: three narrow columns and a wide last one, taller */
+.k-fac { text-align: center; }
+.k-fac-grid { grid-template-columns: 1fr 1fr 1fr 2.25fr; }
+.k-fac-grid li { min-height: clamp(280px, 24vw, 360px); }
+.k-fac-grid p { max-width: 40ch; }
+
+/* typographic composition at the reference's scale */
+.k-type-title { font-size: clamp(56px, 11.2vw, 196px); line-height: .9; font-weight: 450; letter-spacing: -.065em; }
+.k-type-img { height: .56em; }
+.k-type-img.is-tall { height: .9em; width: .75em; align-self: flex-start; margin-top: .08em; }
+.k-type-text { margin-left: 50%; }
+
+/* "O PROJEKTU": chrome / glass letters filled with a sky reflection */
+.k-proj-big { color: transparent; -webkit-text-stroke: 0; text-shadow: none; background: linear-gradient(180deg, rgba(255, 255, 255, .95) 0%, rgba(214, 228, 245, .85) 30%, rgba(150, 182, 222, .7) 52%, rgba(255, 255, 255, .9) 70%, rgba(186, 206, 232, .75) 100%); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 2px 14px rgba(5, 24, 54, .25)); font-weight: 300; }
+
+/* outdoor figures (reference "Parking") */
+.k-figs { padding-block: clamp(80px, 8vw, 128px) clamp(40px, 4vw, 64px); }
+.k-figs-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; }
+.k-fig { display: flex; flex-direction: column; justify-content: space-between; min-height: clamp(200px, 17vw, 270px); padding: 16px 18px 14px; background: var(--cream-3); }
+.k-fig span { font: 500 11px/1.4 var(--sans); letter-spacing: .08em; text-transform: uppercase; color: rgba(5, 24, 54, .6); max-width: 22ch; }
+.k-fig b { font: 300 clamp(64px, 7.4vw, 128px)/.85 var(--sans); letter-spacing: -.06em; color: var(--navy); }
+
+/* interiors (reference "Storage space") */
+.k-store { padding-block: clamp(48px, 5vw, 80px) clamp(80px, 8vw, 128px); }
+.k-store > .k-fac-label { text-align: center; margin-bottom: 22px; }
+.k-store-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.k-store-big { position: relative; min-height: 100%; }
+.k-store-big .k-img { position: absolute; inset: 0; }
+.k-store-big h2 { position: absolute; z-index: 2; left: 28px; top: 26px; right: 28px; color: #fff; font: 450 clamp(28px, 2.8vw, 42px)/1.05 var(--sans); letter-spacing: -.045em; max-width: 12em; text-shadow: 0 2px 24px rgba(5, 24, 54, .35); }
+.k-store-list { display: grid; gap: 6px; }
+.k-store-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; background: #3d4a63; color: #fff; min-height: clamp(170px, 14vw, 210px); }
+.k-store-row > div:first-child { display: flex; flex-direction: column; }
+.k-store-row b { font: 200 clamp(44px, 4vw, 64px)/.9 var(--sans); letter-spacing: -.05em; }
+.k-store-row span { margin-top: 6px; font-size: 12px; color: rgba(255, 255, 255, .6); }
+.k-store-row p { margin-top: auto; padding-top: 14px; font-size: 12px; line-height: 1.45; color: rgba(255, 255, 255, .85); max-width: 32ch; }
+.k-store-row .k-img { min-height: 140px; }
+
+@media (max-width: 960px) {
+  .k-fac-grid { grid-template-columns: 1fr 1fr; }
+  .k-figs-grid { grid-template-columns: 1fr 1fr; }
+  .k-figs-grid .k-fig:first-child { grid-column: 1 / -1; }
+  .k-store-grid { grid-template-columns: 1fr; }
+  .k-store-big { min-height: 0; aspect-ratio: 4 / 3; }
+  .k-type-text { margin-left: 0; }
+}
+@media (max-width: 760px) {
+  .k-fac-grid { grid-template-columns: 1fr; }
+  .k-type-title { font-size: clamp(44px, 13.5vw, 72px); }
+  .k-store-row { grid-template-columns: 1fr 1fr; }
+}

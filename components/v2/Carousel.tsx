@@ -59,7 +59,7 @@ export default function Carousel({ id, title, text, items, labels, tag }: { id: 
         ) : (
           <figure className={'k-slide is-' + it.size} key={i}>
             <div className="k-img"><Image src={it.src} alt={it.caption} fill sizes="(min-width: 900px) 34vw, 82vw" quality={78} /></div>
-            <figcaption><span>{it.caption}</span>{tag && <small>{tag}</small>}</figcaption>
+            <figcaption><span>{it.caption}</span>{tag && it.size === 'l' && <small>{tag}</small>}</figcaption>
           </figure>
         ))}
       </div>

@@ -49,7 +49,7 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
   const contact = p.contact || {};
   const company = p.footer?.company || 'ALYASIN Group d.o.o.';
   const views = (data.scenes?.buildings?.[0]?.views || []).filter((v: any) => v.image);
-  const archImg = views.length ? views[Math.floor(views.length * 0.875)].image : `${R}/objekat/riverina-1-ugao-vecer.webp`;
+  const archImg = views.length ? mediaUrl(views[Math.floor(views.length * 0.875)].image) : `${R}/objekat/riverina-1-ugao-vecer.webp`;
   // hero plates (scripts/make-hero-plate.py): landscape and portrait versions, the portrait one with more sky
   const heroImg = (src: string) => getImageProps({ src, alt: '', fill: true, sizes: 'max(100vw, 135vh)', quality: 80, loading: 'eager', fetchPriority: 'high' }).props;
   const hero = {
@@ -86,47 +86,31 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
         {tag && <span className="kt-tag">{tag}</span>}
       </section>
 
-      {/* ───────── Intro statement ───────── */}
-      <section id="uvod" className="k-intro kt-sec">
-        <div className="kt-wrap">
-          {manifest && <p className="k-statement" data-k="up"><Rich text={manifest} /></p>}
-          {f && (
-            <ul className="k-specs" data-k="up" style={{ '--i': 1 } as React.CSSProperties} aria-label={t.facts}>
-              <li><span>{t.statUnits}</span><b>{f.units}</b></li>
-              <li><span>{t.statTypes}</span><b>{f.types}</b></li>
-              <li><span>{t.statArea}</span><b>{range} m²</b></li>
-              <li><span>{t.statFloors}</span><b>{f.floors}</b></li>
-            </ul>
-          )}
-        </div>
-        {world.length > 0 && (
-          <div className="kt-wrap k-world">
-            <div className="k-head">
-              <Title text={t.worldTitle} />
-              {tx(p.world?.text, lang) && <p className="k-head-text" data-k="up">{tx(p.world?.text, lang)}</p>}
-            </div>
-            <div className="k-world-grid">
-              {world.map((w, i) => (
-                <a className="k-world-card" href={worldLink(w.link)} key={i} data-k="up" style={{ '--i': i } as React.CSSProperties}>
-                  <div className="k-img k-world-img"><Fill src={w.image} alt="" sizes="(min-width: 900px) 31vw, 100vw" /></div>
-                  <h3>{tx(w.title, lang)}</h3>
-                  <p>{tx(w.text, lang)}</p>
-                </a>
-              ))}
-            </div>
+      {/* ───────── Everything around the residence (reference: "Everything you need for a comfortable life") ───────── */}
+      {world.length > 0 && (
+        <section id="uvod" className="k-life" aria-labelledby="k-life-title">
+          <div className="kt-wrap k-split">
+            <h2 id="k-life-title" className="k-h2" data-k="up"><Rich text={t.worldTitle.replace('\n', ' ')} /></h2>
+            {tx(p.world?.text, lang) && <p className="k-split-text" data-k="up">{tx(p.world?.text, lang)}</p>}
           </div>
-        )}
-      </section>
+          <div className="kt-wrap k-life-grid">
+            {world.map((w, i) => (
+              <a className="k-life-card" href={worldLink(w.link)} key={i} data-k="up" style={{ '--i': i } as React.CSSProperties}>
+                <div className="k-img"><Fill src={w.image} alt="" sizes="(min-width: 900px) 31vw, 100vw" /></div>
+                <h3>{tx(w.title, lang)}</h3>
+                <p>{tx(w.text, lang)}</p>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
 
-      {/* ───────── About the residence ───────── */}
+      {/* ───────── About the residence: statement + 2×2 figures, then a wide render ───────── */}
       <section id="o-projektu" className="k-about" aria-labelledby="k-about-title">
-        <div className="kt-wrap k-about-grid">
-          <div className="k-about-l">
-            <Label>{t.aboutLabel}</Label>
-            <h2 id="k-about-title" className="k-about-title" data-k="up">{aboutText}</h2>
-          </div>
-          <div className="k-about-r">
-            {tx(p.types?.text, lang) && <p className="k-small" data-k="up">{tx(p.types?.text, lang)}</p>}
+        <div className="kt-wrap k-split">
+          <h2 id="k-about-title" className="k-h2" data-k="up">{aboutText}</h2>
+          <div>
+            {tx(p.statement?.text, lang) && <p className="k-split-text" data-k="up">{tx(p.statement?.text, lang)}</p>}
             {f && (
               <div className="k-stats" data-k="up" style={{ '--i': 1 } as React.CSSProperties}>
                 <div><b data-kt-count>{f.units}</b><span>{t.statUnits}</span></div>
@@ -138,17 +122,17 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
           </div>
         </div>
         <figure className="k-wide" data-k="clip">
-          <div className="k-img k-wide-img" data-kt-par="7"><Fill src={`${R}/naselje/3.webp`} alt={showcase[0]?.caption || ''} sizes="100vw" quality={80} /></div>
+          <div className="k-img k-wide-img" data-kt-par="6"><Fill src={`${R}/naselje/3.webp`} alt={showcase[0]?.caption || ''} sizes="100vw" quality={80} /></div>
           {tag && <span className="kt-tag">{tag}</span>}
         </figure>
       </section>
 
-      {/* ───────── Architecture & lifestyle carousel ───────── */}
+      {/* ───────── Architecture & lifestyle carousel (reference: "Features of the complex") ───────── */}
       {showcase.length > 1 && (
-        <section className="k-feat kt-sec" aria-labelledby="k-feat-title">
+        <section className="k-feat" aria-labelledby="k-feat-title">
           <Carousel
             id="k-feat-title"
-            title={t.archTitle}
+            title={t.archTitle.replace('\n', ' ')}
             text={tx(p.showcase?.text, lang) || t.archText}
             labels={{ prev: lang === 'bs' ? 'Prethodno' : 'Previous', next: lang === 'bs' ? 'Sljedeće' : 'Next' }}
             tag={tag}
@@ -162,23 +146,22 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
         </section>
       )}
 
-      {/* ───────── About THE ARCHITECTURE (dark) ───────── */}
-      <section className="k-arch" aria-labelledby="k-arch-title">
-        <div className="k-arch-hero">
-          <div className="k-img" data-kt-par="6"><Fill src={archImg} alt="" sizes="100vw" /></div>
-          <div className="k-arch-shade" aria-hidden="true" />
-          <h2 id="k-arch-title" className="k-arch-title kt-wrap">
-            <span className="k-arch-top" data-k="up">{t.bigTitleTop}</span>
-            <span className="k-arch-big" data-k="up" style={{ '--i': 1 } as React.CSSProperties}>{t.bigTitle}</span>
+      {/* ───────── About THE PROJECT (reference: "About THE PROJECT" over the lobby) ───────── */}
+      <section className="k-proj" aria-labelledby="k-proj-title">
+        <div className="k-proj-hero">
+          <div className="k-img" data-kt-par="5"><Fill src={`${R}/enterijer/enterijer-1.webp`} alt="" sizes="100vw" quality={80} /></div>
+          <h2 id="k-proj-title" className="k-proj-title">
+            <span className="k-proj-small" data-k="up">{t.projSmall}</span>
+            <span className="k-proj-big" data-k="up" style={{ '--i': 1, '--n': t.projBig.length } as React.CSSProperties}>{t.projBig}</span>
           </h2>
           {tag && <span className="kt-tag">{tag}</span>}
         </div>
-        <div className="kt-wrap k-arch-intro">
-          <Label>{t.bigLabel}</Label>
+        <div className="kt-wrap k-proj-intro">
+          <p className="k-proj-label" data-k="fade">{t.projLabel}</p>
           <div>
-            <p className="k-arch-lead" data-k="up">{visionText}</p>
+            {manifest && <p className="k-proj-lead" data-k="up"><Rich text={manifest} /></p>}
             {f && (
-              <p className="k-arch-num" data-k="up" style={{ '--i': 1 } as React.CSSProperties}>
+              <p className="k-proj-num" data-k="up" style={{ '--i': 1 } as React.CSSProperties}>
                 <b data-kt-count>{f.units}</b><span>{t.unitsBig}</span>
               </p>
             )}
@@ -187,27 +170,30 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
         <Rows
           tag={tag}
           rows={[
-            { title: t.row1, text: t.row1t, src: `${R}/objekat/objekat-2.webp` },
-            { title: t.row2, text: f ? fill(t.row2t, { n: f.units, a: range }) : '', src: `${R}/naselje/15.webp` },
-            { title: t.row3, text: t.row3t, src: `${R}/objekat/objekat-6.webp` },
+            { title: plain(p.categories?.items?.[0]?.title, lang) || t.bigTitle, text: visionText, src: archImg },
+            { title: plain(p.categories?.items?.[1]?.title, lang) || 'Enterijer', text: tx(p.types?.text, lang), src: `${R}/enterijer/enterijer-6.webp` },
+            { title: t.typeLabel, text: tx(p.showcase?.text, lang) || t.archText, src: `${R}/naselje/4.webp` },
           ]}
         />
+        <div className="kt-wrap k-fac">
+          <p className="k-fac-label" data-k="fade">{t.facLabel}</p>
+          <h2 className="k-fac-title" data-k="up">{t.facTitle}</h2>
+          <ol className="k-fac-grid">
+            {[
+              [t.row1, t.row1t],
+              [t.row2, f ? fill(t.row2t, { n: f.units, a: range }) : ''],
+              [t.row3, t.row3t],
+              [t.fac4, f ? fill(t.fac4t, { a: range }) : ''],
+            ].map(([h, x], i) => (
+              <li key={i} data-k="up" style={{ '--i': i } as React.CSSProperties}>
+                <span className="k-fac-n" aria-hidden="true">{i + 1}</span>
+                <h3>{h}</h3>
+                <p>{x}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
       </section>
-
-      {/* ───────── Typographic composition ───────── */}
-      {vision.length >= 2 && (
-        <section className="k-type kt-sec" aria-label={plain(p.vision?.title, lang)}>
-          <div className="kt-wrap">
-            <Label center>{t.archLabel}</Label>
-            <h2 className="k-type-title">
-              <span className="k-type-line" data-k="up">{vision[0]}<TypeImg src={`${R}/naselje/2.webp`} w="wide" /></span>
-              <span className="k-type-line is-in2" data-k="up" style={{ '--i': 1 } as React.CSSProperties}><TypeImg src={`${R}/enterijer/enterijer-3.webp`} w="tall" />{vision[1]}</span>
-              <span className="k-type-line is-serif" data-k="up" style={{ '--i': 2 } as React.CSSProperties}>{vision.slice(2).join(' ')}<TypeImg src={`${R}/naselje/16.webp`} w="wide" /></span>
-            </h2>
-            {tx(p.statement?.text, lang) && <p className="k-type-text" data-k="up">{tx(p.statement?.text, lang)}</p>}
-          </div>
-        </section>
-      )}
 
       {/* ───────── Apartments ───────── */}
       <section className="k-apts kt-sec" aria-labelledby="k-apts-title">
@@ -246,6 +232,21 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
         </div>
       </section>
 
+      {/* ───────── Typographic composition (reference: "Cozy Evenings Among The Greenery") ───────── */}
+      {vision.length >= 2 && (
+        <section className="k-type" aria-label={plain(p.vision?.title, lang)}>
+          <div className="kt-wrap">
+            <p className="k-fac-label" data-k="fade">{t.typeLabel}</p>
+            <h2 className="k-type-title">
+              <span className="k-type-line is-1" data-k="up"><TypeImg src={`${R}/naselje/4.webp`} w="wide" />{vision[0]}</span>
+              <span className="k-type-line is-2" data-k="up" style={{ '--i': 1 } as React.CSSProperties}>{vision[1]}<TypeImg src={`${R}/enterijer/enterijer-4.webp`} w="tall" /></span>
+              <span className="k-type-line is-3" data-k="up" style={{ '--i': 2 } as React.CSSProperties}><TypeImg src={`${R}/naselje/16.webp`} w="wide" />{vision.slice(2).join(' ')}</span>
+            </h2>
+            {visionText && <p className="k-type-text" data-k="up">{visionText}</p>}
+          </div>
+        </section>
+      )}
+
       {/* ───────── Gallery ───────── */}
       {gallery.length >= 5 && (
         <section id="galerija" className="k-gal kt-sec" aria-labelledby="k-gal-title">
@@ -257,22 +258,25 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
         </section>
       )}
 
-      {/* ───────── Location ───────── */}
+      {/* ───────── Location (reference: "Proximity" panel) ───────── */}
       <section id="lokacija" className="k-loc" aria-labelledby="k-loc-title">
-        <div className="kt-wrap k-loc-head">
-          <Label light>{t.locLabel}</Label>
-          <div>
-            <Title id="k-loc-title" text={tx(loc.title, lang) || 'Ilidža,\n*Sarajevo*'} />
-            <p className="k-small" data-k="up">{strip(tx(loc.text, lang))}</p>
-            {tx(loc.address, lang) && <p className="k-loc-address">{tx(loc.address, lang)}</p>}
-            {loc.map_link && <a className="kt-link" href={loc.map_link} target="_blank" rel="noopener noreferrer">{lang === 'bs' ? 'Otvori u Google Maps' : 'Open in Google Maps'}</a>}
+        <div className="kt-wrap">
+          <div className="k-loc-panel">
+            <div className="k-loc-side">
+              <h2 id="k-loc-title" className="k-loc-title" data-k="up"><Rich text={(tx(loc.title, lang) || 'Ilidža, *Sarajevo*').replace('\n', ' ')} /></h2>
+              <p className="k-split-text" data-k="up">{strip(tx(loc.text, lang))}</p>
+              {tx(loc.address, lang) && <p className="k-loc-address">{tx(loc.address, lang)}</p>}
+              <div className="k-loc-links">
+                {loc.map_link && <a className="kt-link" href={loc.map_link} target="_blank" rel="noopener noreferrer">{lang === 'bs' ? 'Otvori u Google Maps' : 'Open in Google Maps'}</a>}
+                <a className="kt-link" href={siteHref('location', lang)}>{t.locLink}</a>
+              </div>
+            </div>
+            <figure className="k-map" data-k="fade">
+              <div className="k-map-img"><Fill src={loc.image || `${R}/lokacija/mapa-ilidza.webp`} alt={t.mapAlt} sizes="(min-width: 900px) 72vw, 100vw" quality={80} /></div>
+              {!loc.image && <span className="k-map-pulse" aria-hidden="true" />}
+            </figure>
           </div>
         </div>
-        <figure className="k-map" data-k="fade">
-          <div className="k-map-img"><Fill src={loc.image || `${R}/lokacija/mapa-ilidza.webp`} alt={t.mapAlt} sizes="100vw" quality={80} /></div>
-          {/* soft pulse over the pin printed on the map (Ilidža) */}
-          {!loc.image && <span className="k-map-pulse" aria-hidden="true" />}
-        </figure>
       </section>
 
       {/* ───────── Contact ───────── */}

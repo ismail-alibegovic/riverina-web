@@ -14,10 +14,9 @@ export default function Rows({ rows, tag }: { rows: { title: string; text: strin
         {rows.map((r, i) => (
           <li key={i} className={i === on ? 'is-on' : ''} onMouseEnter={() => setOn(i)}>
             <button type="button" onClick={() => setOn(i)} onFocus={() => setOn(i)} aria-expanded={i === on}>
-              <span className="k-rown">{String(i + 1).padStart(2, '0')}</span>
               <span className="k-rowt">{r.title}</span>
             </button>
-            <div className="k-rowbody"><div><span className="k-plus" aria-hidden="true">+</span><p>{r.text}</p></div></div>
+            <div className="k-rowbody"><div><svg className="k-sparkle" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c.6 5.4 4.6 9.4 10 10-5.4.6-9.4 4.6-10 10-.6-5.4-4.6-9.4-10-10 5.4-.6 9.4-4.6 10-10z" /></svg><p>{r.text}</p></div></div>
             <div className="k-img k-rowimg-m"><Image src={r.src} alt="" fill sizes="100vw" quality={75} /></div>
           </li>
         ))}

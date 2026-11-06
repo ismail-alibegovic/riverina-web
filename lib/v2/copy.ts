@@ -31,6 +31,8 @@ const BS = {
   galleryLabel: 'Galerija', galleryTitle: 'Vizualizacije\n*projekta*',
   locLabel: 'Lokacija', mapAlt: 'Mapa Ilidže s označenom lokacijom Riverina Residence',
   contactLabel: 'Kontakt', contactTitle: 'Kontakt', contactLead: 'Javite nam se za tlocrte, dostupnost i termin razgovora.', investor: 'Investitor', place: 'Lokacija',
+  projSmall: 'O', projBig: 'projektu', projLabel: 'Arhitektura', facLabel: 'Zgrada', facTitle: 'Od ulice do terase',
+  fac4: 'Devet tipova stanova', fac4t: 'Stanovi od {a} m², s jednom do četiri spavaće sobe.', typeLabel: 'Život uz rijeku', locLink: 'Više o lokaciji',
   // apartments
   catalogue: 'Katalog', onBuilding: 'Odabir na zgradi', onBuildingText: 'Okrenite zgradu, pređite preko fasade i kliknite na stan. Tlocrt, dostupnost i upit za svaki stan.',
   area: 'Površina', from: 'od', to: 'do', bedrooms: 'Spavaće sobe', floor: 'Sprat', availability: 'Dostupnost', onlyAvailable: 'Samo slobodni', all: 'Svi', reset: 'Poništi', apply: 'Primijeni', filters: 'Filteri', results: '{n} stanova',
@@ -70,6 +72,8 @@ const EN: V2Strings = {
   galleryLabel: 'Gallery', galleryTitle: 'Project\n*visualisations*',
   locLabel: 'Location', mapAlt: 'Map of Ilidža with the location of Riverina Residence',
   contactLabel: 'Contact', contactTitle: 'Contact', contactLead: 'Get in touch for floor plans, availability and a meeting.', investor: 'Developer', place: 'Location',
+  projSmall: 'About', projBig: 'the project', projLabel: 'Architecture', facLabel: 'Building', facTitle: 'From the street to the terrace',
+  fac4: 'Nine apartment types', fac4t: 'Apartments from {a} m², with one to four bedrooms.', typeLabel: 'Living by the river', locLink: 'More about the location',
   catalogue: 'Catalogue', onBuilding: 'Select on the building', onBuildingText: 'Turn the building, hover over the facade and click an apartment. Floor plan, availability and an enquiry for every apartment.',
   area: 'Area', from: 'from', to: 'to', bedrooms: 'Bedrooms', floor: 'Floor', availability: 'Availability', onlyAvailable: 'Available only', all: 'All', reset: 'Reset', apply: 'Apply', filters: 'Filters', results: '{n} apartments',
   sort: 'Sort', sortDefault: 'By floor', sortAreaUp: 'Area: ascending', sortAreaDown: 'Area: descending',

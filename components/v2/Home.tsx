@@ -76,12 +76,11 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
           <img {...hero.fg} className="k-hero-fg" alt="" aria-hidden="true" />
         </picture>
         <div className="k-hero-card">
-          <p className="k-hero-sub">{tx(p.hero?.subtitle, lang)}</p>
           <dl>
             <div><dt>{t.heroLocation}</dt><dd>{tx(p.hero?.eyebrow, lang)}</dd></div>
             {f && <div><dt>{t.heroBuilding}</dt><dd>{fill(t.heroUnits, { n: f.units, a: range })}</dd></div>}
           </dl>
-          <a className="kt-pill is-gold" href={apts}>{tx(p.hero?.cta, lang) || t.choose}<Arrow /></a>
+          <a className="k-hero-link" href={apts}><span>{tx(p.hero?.cta, lang) || t.choose}</span><Arrow /></a>
         </div>
         <a className="k-hero-scroll" href="#uvod"><span>{t.scroll}</span><i aria-hidden="true" /></a>
         {tag && <span className="kt-tag">{tag}</span>}

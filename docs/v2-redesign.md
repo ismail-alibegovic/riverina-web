@@ -17,7 +17,7 @@ Sve v2 stranice su `noindex, nofollow` dok se redizajn ne odobri. Podaci dolaze 
 - CSS: `app/v2.css`, sve pod `.kt` (ili `body.kt-body` za panele postojećeg pregleda) — nema sudara s postojećim stilovima.
 
 ## Sekcije početne (`components/v2/Home.tsx`)
-Hero (render trenutne fasade, monumentalni naslov iz CMS-a „Život / uz rijeku", navy kartica s lokacijom i brojem stanova) → uvodna izjava (manifest) i ključne činjenice → Svijet Riverine (3 kartice) → O projektu (tekst + 2×2 brojke + široki render) → Arhitektura i život (karusel) → tamni blok „Arhitektura" (360° render, redovi s izmjenom slike) → tipografska kompozicija „Moderno življenje uz rijeku" → Stanovi (pločice + izbor tlocrta) → Galerija (editorial mozaik + lightbox) → Lokacija (brand mapa Ilidže) → Kontakt (forma).
+Hero (monumentalni naslov iz CMS-a „Život *uz rijeku*" u jednom redu od ivice do ivice — `FitTitle` ga skalira na tačnu širinu; ispod linija s podnaslovom, činjenicama i CTA; zatim render trenutne fasade, kadar 135° iz 360° seta, preko cijele širine) → uvodna izjava (manifest) i ključne činjenice → Svijet Riverine (3 kartice) → O projektu (tekst + 2×2 brojke + široki render) → Arhitektura i život (karusel) → tamni blok „Arhitektura" (360° render, redovi s izmjenom slike) → tipografska kompozicija „Moderno življenje uz rijeku" → Stanovi (pločice + izbor tlocrta) → Galerija (editorial mozaik + lightbox) → Lokacija (brand mapa Ilidže) → Kontakt (forma).
 
 ## Stanovi
 - `components/v2/Catalog.tsx`: filteri (površina s dvije ručice, spavaće sobe, sprat, samo slobodni), sortiranje, mreža/lista; stanje filtera je u URL-u (`?beds=2&floor=3&view=list`).

@@ -5,6 +5,7 @@ import { V2, fill, v2Href } from '@/lib/v2/copy';
 import { v2Units, v2Facts } from '@/lib/v2/units';
 import Shell from './Shell';
 import Carousel from './Carousel';
+import FitTitle from './FitTitle';
 import Rows from './Rows';
 import GalleryV2 from './GalleryV2';
 import LeadForm from './LeadForm';
@@ -48,35 +49,33 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
   const company = p.footer?.company || 'ALYASIN Group d.o.o.';
   const views = (data.scenes?.buildings?.[0]?.views || []).filter((v: any) => v.image);
   const archImg = views.length ? views[Math.floor(views.length * 0.875)].image : `${R}/objekat/riverina-1-ugao-vecer.webp`;
+  // hero: current facade from the 360° set (135°: lawn in front, open sky, no traffic); CMS hero image as fallback
+  const heroView = views.find((v: any) => v.id === 'a135') || views[Math.round(views.length * 0.375)];
+  const heroImg = heroView?.image || p.hero?.image || `${R}/objekat/riverina-1-ugao-vecer.webp`;
   const vision = tx(p.vision?.title, lang).replace(/\*/g, '').split(/\s+/).filter(Boolean);
 
   return (
-    <Shell data={data} lang={lang} tone="hero" langHref={(l) => v2Href('home', l)}>
+    <Shell data={data} lang={lang} tone="light" langHref={(l) => v2Href('home', l)}>
       {/* ───────── Hero ───────── */}
       <section className="k-hero" aria-labelledby="k-hero-title">
-        <div className="k-hero-media">
-          <Fill src={p.hero?.image || `${R}/objekat/riverina-1-ugao-vecer.webp`} alt={plain(p.hero?.subtitle, lang)} sizes="100vw" priority quality={80} />
-        </div>
-        <div className="k-hero-shade" aria-hidden="true" />
-        <div className="kt-wrap k-hero-in">
-          <h1 id="k-hero-title" className="k-hero-title">
-            {heroLines.map((l, i) => (
-              <span className={'k-hero-line' + (l.startsWith('*') ? ' is-serif' : '')} key={i} style={{ '--i': i } as React.CSSProperties}>
-                <span><Rich text={l} /></span>
-              </span>
-            ))}
-          </h1>
-          <p className="k-hero-sub">{tx(p.hero?.subtitle, lang)}</p>
-          <div className="k-hero-card">
-            <dl>
+        <div className="kt-wrap k-hero-top">
+          <FitTitle id="k-hero-title" parts={heroLines} />
+          <div className="k-hero-bar">
+            <p className="k-hero-sub">{tx(p.hero?.subtitle, lang)}</p>
+            <dl className="k-hero-facts">
               <div><dt>{t.heroLocation}</dt><dd>{tx(p.hero?.eyebrow, lang)}</dd></div>
               {f && <div><dt>{t.heroBuilding}</dt><dd>{fill(t.heroUnits, { n: f.units, a: range })}</dd></div>}
             </dl>
-            <a className="kt-pill is-gold" href={apts}>{tx(p.hero?.cta, lang) || t.choose}<Arrow /></a>
+            <div className="k-hero-cta">
+              <a className="kt-pill is-navy" href={apts}>{tx(p.hero?.cta, lang) || t.choose}<Arrow /></a>
+              <a className="kt-round k-hero-down" href="#uvod" aria-label={t.scroll}><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v13M5 11l5 5 5-5" /></svg></a>
+            </div>
           </div>
-          <a className="k-hero-scroll" href="#uvod"><span>{t.scroll}</span><i aria-hidden="true" /></a>
         </div>
-        {tag && <span className="kt-tag k-hero-tag">{tag}</span>}
+        <figure className="k-hero-pic">
+          <div className="k-img" data-kt-par="3"><Fill src={heroImg} alt={plain(p.hero?.subtitle, lang)} sizes="100vw" priority quality={82} /></div>
+          {tag && <span className="kt-tag">{tag}</span>}
+        </figure>
       </section>
 
       {/* ───────── Intro statement ───────── */}

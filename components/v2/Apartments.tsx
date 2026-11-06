@@ -21,12 +21,9 @@ export default function Apartments({ data, lang }: { data: SiteData; lang: Lang 
   return (
     <Shell data={data} lang={lang} tone="light" current="apartments" langHref={(l) => v2Href('apartments', l)}>
       <section className="k-apage" aria-labelledby="k-apage-title">
-        <div className="kt-wrap k-apage-head">
-          <h1 id="k-apage-title" className="k-apage-title" data-k="lines"><span className="kt-line"><span>{t.apartments}</span></span><sup>({units.length})</sup></h1>
-          {tx(data.page.types?.text, lang) && <p className="k-small" data-k="up">{tx(data.page.types?.text, lang)}</p>}
-        </div>
         {units.length ? (
           <Tabs
+            head={<h1 id="k-apage-title" className="k-apage-title" data-k="lines"><span className="kt-line"><span>{t.apartments}</span></span><sup>({units.length})</sup></h1>}
             labels={[t.catalogue, t.onBuilding]}
             lang={lang}
             sel={sel}

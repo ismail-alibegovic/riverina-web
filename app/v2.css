@@ -823,3 +823,98 @@ body.kt-body .rvs { --rvs-font: var(--kt-sans), "Inter", system-ui, sans-serif; 
   .k-type-title { font-size: clamp(44px, 13.5vw, 72px); }
   .k-store-row { grid-template-columns: 1fr 1fr; }
 }
+
+/* ── catalogue and apartment page, reference pass ── */
+.k-apage { padding-top: calc(var(--hdr) + clamp(48px, 6vw, 96px)); }
+.k-apage-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+.k-apage-title { font-weight: 450; letter-spacing: -.06em; font-size: clamp(64px, 10.4vw, 176px); }
+.k-apage-title sup { font-size: 14px; font-weight: 400; color: var(--muted); margin: .9em 0 0 1.4em; letter-spacing: 0; }
+.k-tabs { margin: 0; gap: 6px; }
+.k-tabs button { height: 40px; padding: 0 16px; font-size: 14px; }
+.k-filters { padding-block: 26px; }
+.k-fg legend { font-size: 13px; }
+.k-range-in { background: transparent; }
+.k-range-in label { padding: 9px 12px; }
+.k-dots button { width: 38px; height: 38px; font-size: 14px; }
+.k-switch { height: 38px; font-size: 13px; }
+.k-views button { border-radius: 50%; width: 36px; height: 36px; }
+.k-views button[aria-pressed="true"] { background: var(--cream-3); color: var(--navy); }
+
+/* grid cards */
+.k-plans { gap: 22px; }
+.k-plan { padding: 18px 20px 18px; background: var(--cream-2); }
+.k-plan-meta { font-size: 15px; color: rgba(5, 24, 54, .45); }
+.k-plan-img { height: clamp(220px, 19vw, 290px); margin: 14px 0 26px; }
+.k-plan-title { font: 450 clamp(18px, 1.45vw, 22px)/1.2 var(--sans); letter-spacing: -.03em; }
+.k-plan-sub { margin-top: 8px; align-items: baseline; }
+.k-plan-sub > span { color: rgba(5, 24, 54, .45); }
+.k-st { font: 600 13px/1.2 var(--sans); color: var(--navy); }
+.k-st i { font-style: normal; font-weight: 400; color: rgba(5, 24, 54, .55); }
+.k-st.is-sold { color: var(--no); }
+.k-st.is-reserved { color: var(--hold); }
+
+/* round tool buttons (PDF, share) */
+.k-circ { position: relative; display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line-2); background: var(--paper); color: var(--navy); cursor: pointer; font: 500 12px/1 var(--sans); transition: background-color .3s, color .3s, border-color .3s; }
+.k-circ.is-text { width: auto; padding: 0 14px; border-radius: 999px; }
+.k-circ svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linejoin: round; }
+.k-circ:hover { background: var(--navy); color: var(--cream); border-color: var(--navy); }
+.k-circ-tip { position: absolute; top: calc(100% + 8px); right: 0; white-space: nowrap; padding: 6px 10px; border-radius: 999px; background: var(--navy); color: var(--cream); font-size: 12px; }
+
+/* list view: tinted row with a header line and a lighter plan panel */
+.k-list { gap: 0; }
+.k-li { background: var(--cream-2); border-bottom: 1px solid var(--line); padding: 0 20px 20px; }
+.k-li-head { grid-template-columns: 2.6fr 1fr .9fr .9fr 1.3fr; padding: 22px 0 18px; }
+.k-li-head > span { font-size: 15px; color: rgba(5, 24, 54, .7); }
+.k-li-title { font: 450 clamp(19px, 1.5vw, 22px)/1.2 var(--sans); letter-spacing: -.03em; }
+.k-li-head > .k-st { justify-self: start; }
+.k-li-body { display: block; position: relative; margin: 0; padding: 22px; min-height: clamp(280px, 24vw, 340px); background: var(--paper); }
+.k-li-plan { display: flex; justify-content: center; align-items: center; height: clamp(240px, 21vw, 300px); }
+.k-li-plan img { max-height: 100%; }
+.k-li-floor { position: absolute; left: 22px; bottom: 22px; width: clamp(110px, 10vw, 150px); }
+.k-li-tools { position: absolute; top: 18px; right: 18px; display: flex; gap: 8px; }
+
+/* apartment page: tinted card, plan left, white info panel inset right */
+.k-unit { background: var(--cream-2); padding: 14px; gap: 14px; grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1fr); }
+.k-unit-media { padding: 10px; }
+.k-pv-tabs { position: relative; z-index: 2; }
+.k-unit-tools { position: absolute; top: 10px; right: 10px; display: flex; gap: 8px; }
+.k-unit-mini { left: 10px; bottom: 10px; }
+.k-unit-info { margin: 0; padding: clamp(24px, 2.6vw, 36px); background: var(--paper); align-self: stretch; }
+.k-unit-title { order: 0; font-weight: 450; letter-spacing: -.05em; font-size: clamp(32px, 3vw, 48px); line-height: 1.04; margin-bottom: 16px; }
+.k-unit-type { display: flex; gap: 12px; align-items: baseline; margin-bottom: 18px; font-size: 14px; color: rgba(5, 24, 54, .6); }
+.k-unit-type .k-st { font-size: 14px; }
+.k-unit-dl { list-style: none; margin: 0; padding: 0; }
+.k-unit-dl li { padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.k-unit-dl li:first-child { border-top: 0; }
+.k-unit-price { border-top: 0; margin: 28px 0 22px; padding: 0; font-weight: 450; letter-spacing: -.04em; font-size: clamp(28px, 2.4vw, 38px); }
+.k-unit-cta { flex-direction: row; gap: 10px; margin-top: auto; }
+.k-unit-cta .kt-pill { flex: 1; justify-content: center; padding: 0 16px; font-size: 14px; }
+.k-unit-cta .kt-pill.is-navy { justify-content: center; }
+
+@media (max-width: 1180px) {
+  .k-li-head { grid-template-columns: 2fr 1fr 1fr 1fr; }
+  .k-li-head > span:nth-child(2) { display: none; }
+}
+@media (max-width: 760px) {
+  .k-apage-head { flex-direction: column; align-items: flex-start; }
+  .k-tabs button { height: 36px; font-size: 13px; }
+  .k-li { padding: 0 12px 12px; }
+  .k-li-head { grid-template-columns: 1fr auto; gap: 6px 12px; padding: 16px 0 12px; }
+  .k-li-head > span { display: none !important; }
+  .k-li-head > span:nth-child(3), .k-li-head > span:nth-child(4) { display: inline !important; font-size: 13px; }
+  .k-li-body { min-height: 0; padding: 14px; }
+  .k-li-plan { height: 220px; }
+  .k-li-floor { width: 90px; left: 14px; bottom: 14px; }
+  .k-unit { padding: 8px; gap: 8px; }
+  .k-unit-cta { flex-direction: column; }
+}
+@media (max-width: 960px) {
+  .k-unit { grid-template-columns: 1fr; }
+  .k-unit-media { min-height: 0; }
+  .k-pv-stage { min-height: 320px; }
+}
+@media (max-width: 760px) {
+  .k-unit-cta .kt-pill { flex: none; width: 100%; height: 48px; }
+  .k-unit-tools { top: 54px; }
+  .k-pv-tabs button { height: 32px; font-size: 12px; padding: 0 12px; }
+}

@@ -7,7 +7,8 @@ import BuildingView from './BuildingView';
  * Catalogue / building switch. The interactive viewer mounts on first use (it loads 360° images), and opens directly
  * when the address carries one of its links (#rvs/r1/1-1, e.g. "View on the building" on an apartment page).
  */
-export default function Tabs({ labels, catalogue, sel, lang, title, intro }: {
+export default function Tabs({ labels, catalogue, sel, lang, title, intro, head }: {
+  head: React.ReactNode;
   labels: [string, string];
   catalogue: React.ReactNode;
   sel: any;
@@ -33,11 +34,12 @@ export default function Tabs({ labels, catalogue, sel, lang, title, intro }: {
   };
   return (
     <>
-      <div className="kt-wrap">
+      <div className="kt-wrap k-apage-head">
+        {head}
         <div className="k-tabs" role="tablist" aria-label={labels.join(' / ')} onKeyDown={keys}>
           {labels.map((l, i) => (
             <button key={i} id={'k-tab-' + i} type="button" role="tab" aria-selected={tab === i} aria-controls={'k-panel-' + i} tabIndex={tab === i ? 0 : -1} onClick={() => pick(i as 0 | 1)}>
-              <span className="k-tabn">{String(i + 1).padStart(2, '0')}</span>{l}
+              {l}
             </button>
           ))}
         </div>

@@ -40,6 +40,7 @@ const BS = {
   outLoggia: 'Stanova s lođom', outTerrace: 'Stanova s terasom', outFloors: 'Spratovi s lođama',
   intLabel: 'Unutrašnjost', intTitle: 'Prostor za vaš novi početak', intBeds: 'Spavaće sobe', intBedsT: 'Od stana s jednom spavaćom sobom do stana s četiri spavaće sobe na petom spratu.', intBath: 'Kupatila', intBathT: 'Stanovi tipa {t} imaju dva kupatila.', intLiving: 'm² dnevnog boravka', intLivingT: 'Najveći dnevni boravak s trpezarijom, prema prodajnim skicama arhitekta.',
   // apartments
+  share: 'Podijeli', copied: 'Link kopiran', otherFilters: 'Ostali filteri', moreInfo: 'Više o stanu',
   catalogue: 'Katalog', onBuilding: 'Odabir na zgradi', onBuildingText: 'Okrenite zgradu, pređite preko fasade i kliknite na stan. Tlocrt, dostupnost i upit za svaki stan.',
   area: 'Površina', from: 'od', to: 'do', bedrooms: 'Spavaće sobe', floor: 'Sprat', availability: 'Dostupnost', onlyAvailable: 'Samo slobodni', all: 'Svi', reset: 'Poništi', apply: 'Primijeni', filters: 'Filteri', results: '{n} stanova',
   sort: 'Sortiranje', sortDefault: 'Po spratu', sortAreaUp: 'Površina: rastuće', sortAreaDown: 'Površina: opadajuće',
@@ -86,6 +87,7 @@ const EN: V2Strings = {
   outLabel: 'Outdoor space', outTitle: 'A loggia or a terrace with every apartment', outText: 'Apartments on floors one to four have a loggia, apartments on the fifth floor a terrace. A place for the morning coffee and a quiet end of the day overlooking the neighbourhood.',
   outLoggia: 'Apartments with a loggia', outTerrace: 'Apartments with a terrace', outFloors: 'Floors with loggias',
   intLabel: 'Interiors', intTitle: 'A space for your new beginning', intBeds: 'Bedrooms', intBedsT: 'From one-bedroom apartments to four bedrooms on the fifth floor.', intBath: 'Bathrooms', intBathT: 'Type {t} apartments have two bathrooms.', intLiving: 'm² living room', intLivingT: "The largest living and dining room, as on the architect's sales plans.",
+  share: 'Share', copied: 'Link copied', otherFilters: 'Other filters', moreInfo: 'More about the apartment',
   catalogue: 'Catalogue', onBuilding: 'Select on the building', onBuildingText: 'Turn the building, hover over the facade and click an apartment. Floor plan, availability and an enquiry for every apartment.',
   area: 'Area', from: 'from', to: 'to', bedrooms: 'Bedrooms', floor: 'Floor', availability: 'Availability', onlyAvailable: 'Available only', all: 'All', reset: 'Reset', apply: 'Apply', filters: 'Filters', results: '{n} apartments',
   sort: 'Sort', sortDefault: 'By floor', sortAreaUp: 'Area: ascending', sortAreaDown: 'Area: descending',

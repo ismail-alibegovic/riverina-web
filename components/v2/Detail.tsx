@@ -8,6 +8,7 @@ import Shell from './Shell';
 import FloorMini from './FloorMini';
 import PlanViews from './PlanViews';
 import LeadForm from './LeadForm';
+import Share from './Share';
 import { PlanCard } from './PlanCard';
 import { Title, Label, Arrow } from './ui';
 
@@ -51,20 +52,23 @@ export default function Detail({ data, lang, code }: { data: SiteData; lang: Lan
             floor={<FloorMini floor={floor} code={u.code} label={floorLabel} className="is-big" />}
           />
           <FloorMini floor={floor} code={u.code} label={floorLabel} className="k-unit-mini" />
-          {u.pdf && <a className="kt-chip k-unit-pdf" href={u.pdf} target="_blank" rel="noopener">{t.pdf}</a>}
+          <div className="k-unit-tools">
+            {u.pdf && <a className="k-circ is-text" href={u.pdf} target="_blank" rel="noopener" aria-label={t.pdfLong}>PDF</a>}
+            <Share url={u.href} title={`${t.no} ${u.code} · ${u.bedsLabel}, ${u.areaLabel}`} label={t.share} copied={t.copied} />
+          </div>
         </div>
         <div className="k-unit-info">
-          <p className="k-unit-type">{u.type && <><b>{t.type} {u.type}</b> · </>}<span className={'k-status is-' + u.status}>{u.statusLabel}</span></p>
           <h1 id="k-unit-title" className="k-unit-title">{u.bedsLabel},<br />{u.areaLabel}</h1>
-          <dl className="k-unit-dl">
-            <div><dt>{t.building}</dt><dd>{u.buildingName}</dd></div>
-            <div><dt>{t.floor}</dt><dd>{fill(t.floorN, { n: u.floor })}</dd></div>
-            <div><dt>{t.no}</dt><dd>{u.code}</dd></div>
-            {u.outdoor && <div><dt>{t.outdoor}</dt><dd>{u.outdoor.label}</dd></div>}
-          </dl>
+          <p className="k-unit-type"><b className={'k-st is-' + u.status}>{u.statusLabel}</b>{u.type && <span>{t.type} {u.type}</span>}</p>
+          <ul className="k-unit-dl">
+            <li>{u.buildingName}</li>
+            <li>{fill(t.floorN, { n: u.floor })}</li>
+            <li>{t.no} {u.code}</li>
+            {u.outdoor && <li>{u.outdoor.label}</li>}
+          </ul>
           <p className="k-unit-price">{u.price || t.priceOnRequest}</p>
           <div className="k-unit-cta">
-            {u.status !== 'sold' && <a className="kt-pill is-navy" href="#upit">{t.enquire}<Arrow /></a>}
+            {u.status !== 'sold' && <a className="kt-pill is-navy" href="#upit">{t.enquire}</a>}
             <a className="kt-pill is-line" href={`${apts}#rvs/${u.building}/${encodeURIComponent(u.code)}`}>{t.viewOnBuilding}</a>
           </div>
         </div>

@@ -6,7 +6,7 @@ import { V2, fill } from '@/lib/v2/copy';
 import type { V2Unit, FloorShape } from '@/lib/v2/units';
 import FloorMini from './FloorMini';
 import { PlanCard } from './PlanCard';
-import { Arrow } from './ui';
+import Share from './Share';
 
 type Sort = 'floor' | 'area-up' | 'area-down';
 type View = 'grid' | 'list';
@@ -161,18 +161,16 @@ export default function Catalog({ units, lang, floors }: { units: V2Unit[]; lang
                 <span>{u.buildingName}</span>
                 <span>{fill(t.floorN, { n: u.floor })}</span>
                 <span>{t.no} {u.code}</span>
-                <span className={'k-status is-' + u.status}>{u.statusLabel}</span>
-                <span className="k-li-price">{u.price || t.priceOnRequest}</span>
-                <span className="k-li-plus" aria-hidden="true"><Arrow /></span>
+                <b className={'k-st is-' + u.status}>{u.price || u.statusLabel}</b>
               </a>
               <div className="k-li-body">
-                <FloorMini floor={floors[`${u.building}:${u.floor}`]} code={u.code} label={fill(t.floorAlt, { code: u.code, n: u.floor })} className="k-li-floor" />
                 <a href={u.href} className="k-li-plan" tabIndex={-1}>
                   {u.plan && <Image src={u.plan} alt={fill(t.planAlt, { code: u.code })} width={624} height={792} sizes="(min-width: 900px) 40vw, 90vw" quality={75} />}
                 </a>
+                <FloorMini floor={floors[`${u.building}:${u.floor}`]} code={u.code} label={fill(t.floorAlt, { code: u.code, n: u.floor })} className="k-li-floor" />
                 <div className="k-li-tools">
-                  {u.pdf && <a className="kt-chip" href={u.pdf} target="_blank" rel="noopener" aria-label={`${t.pdfLong}, ${u.code}`}>{t.pdf}</a>}
-                  <a className="kt-chip" href={u.href}>{t.open}</a>
+                  {u.pdf && <a className="k-circ is-text" href={u.pdf} target="_blank" rel="noopener" aria-label={`${t.pdfLong}, ${u.code}`}>PDF</a>}
+                  <Share url={u.href} title={`${t.no} ${u.code}`} label={t.share} copied={t.copied} />
                 </div>
               </div>
             </li>

@@ -8,6 +8,7 @@ import { v2Units, v2Facts } from '@/lib/v2/units';
 import Shell from './Shell';
 import Carousel from './Carousel';
 import TileTrack from './TileTrack';
+import Proximity from './Proximity';
 import FitTitle from './FitTitle';
 import Rows from './Rows';
 import GalleryV2 from './GalleryV2';
@@ -308,25 +309,22 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
         </section>
       )}
 
-      {/* ───────── Location (reference: "Proximity" panel) ───────── */}
+      {/* ───────── Location (reference "Proximity") ───────── */}
       <section id="lokacija" className="k-loc" aria-labelledby="k-loc-title">
-        <div className="kt-wrap">
-          <div className="k-loc-panel">
-            <div className="k-loc-side">
-              <h2 id="k-loc-title" className="k-loc-title" data-k="up"><Rich text={(tx(loc.title, lang) || 'Ilidža, *Sarajevo*').replace('\n', ' ')} /></h2>
-              <p className="k-split-text" data-k="up">{strip(tx(loc.text, lang))}</p>
-              {tx(loc.address, lang) && <p className="k-loc-address">{tx(loc.address, lang)}</p>}
-              <div className="k-loc-links">
-                {loc.map_link && <a className="kt-link" href={loc.map_link} target="_blank" rel="noopener noreferrer">{lang === 'bs' ? 'Otvori u Google Maps' : 'Open in Google Maps'}</a>}
-                <a className="kt-link" href={siteHref('location', lang)}>{t.locLink}</a>
-              </div>
-            </div>
-            <figure className="k-map" data-k="fade">
-              <div className="k-map-img"><Fill src={loc.image || `${R}/lokacija/mapa-ilidza.webp`} alt={t.mapAlt} sizes="(min-width: 900px) 72vw, 100vw" quality={80} /></div>
-              {!loc.image && <span className="k-map-pulse" aria-hidden="true" />}
-            </figure>
-          </div>
-        </div>
+        <Proximity
+          id="k-loc-title"
+          title={(tx(loc.title, lang) || 'Ilidža, Sarajevo').replace(/\*/g, '').replace('\n', ' ')}
+          text={strip(tx(loc.text, lang))}
+          more={{ href: siteHref('location', lang), label: t.locLink }}
+          labels={{ prev: lang === 'bs' ? 'Prethodno' : 'Previous', next: lang === 'bs' ? 'Sljedeće' : 'Next' }}
+          groups={[
+            { label: t.pLoc, icon: 'pin', items: [
+              { src: loc.image ? mediaUrl(loc.image) : `${R}/lokacija/mapa-ilidza.webp`, title: t.pMap, sub: t.pPlace },
+              ...[['9', 0], ['7', 1], ['14', 2]].map(([n]) => ({ src: `${R}/naselje/${n}.webp`, title: (showcase.find((x) => x.src.endsWith(`/${n}.webp`))?.caption) || (gallery.find((x) => x.src.endsWith(`/${n}.webp`))?.caption) || t.pPlace, sub: t.pViz })),
+            ] },
+            { label: t.pArea, icon: 'leaf', items: showcase.map((x) => ({ src: x.src, title: x.caption, sub: t.pViz })) },
+          ]}
+        />
       </section>
 
       {/* ───────── Contact ───────── */}
@@ -341,6 +339,9 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
             <Row label={t.place} value={tx(p.hero?.eyebrow, lang) || 'Ilidža, Sarajevo'} />
             <Row label={t.investor} value={company} />
           </dl>
+          <figure className="k-cmap" data-k="fade">
+            <div className="k-img"><Fill src={`${R}/lokacija/mapa-ilidza-light.webp`} alt={t.mapAlt} sizes="(min-width: 1440px) 1360px, 100vw" quality={80} /></div>
+          </figure>
           <div className="k-split k-contact-form">
             <div>
               <h3 className="k-h2" data-k="up">{t.contactSend}</h3>

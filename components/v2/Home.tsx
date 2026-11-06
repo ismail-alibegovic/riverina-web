@@ -80,7 +80,7 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
             <div><dt>{t.heroLocation}</dt><dd>{tx(p.hero?.eyebrow, lang)}</dd></div>
             {f && <div><dt>{t.heroBuilding}</dt><dd>{fill(t.heroUnits, { n: f.units, a: range })}</dd></div>}
           </dl>
-          <a className="k-hero-link" href={apts}><span>{tx(p.hero?.cta, lang) || t.choose}</span><Arrow /></a>
+          <a className="k-hero-link" href={apts}><span>{tx(p.hero?.cta, lang) || t.choose}</span><i className="k-hero-arrow" aria-hidden="true"><Arrow /></i></a>
         </div>
         <a className="k-hero-scroll" href="#uvod"><span>{t.scroll}</span><i aria-hidden="true" /></a>
         {tag && <span className="kt-tag">{tag}</span>}

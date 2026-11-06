@@ -189,8 +189,9 @@ html.kt-locked { overflow: hidden; }
 .k-hero-link { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, .22); font: 400 14px/1 var(--sans); letter-spacing: -.005em; color: #fff; }
 .k-hero-link span { background: linear-gradient(var(--gold), var(--gold)) 0 100% / 0 1px no-repeat; padding-bottom: 3px; transition: background-size .5s var(--ease); }
 .k-hero-link:hover span { background-size: 100% 1px; }
-.k-hero-link .kt-arrow { color: var(--gold); }
-.k-hero-link:hover .kt-arrow { transform: translateX(4px); }
+.k-hero-arrow { display: grid; place-items: center; width: 36px; height: 36px; flex: none; border-radius: 50%; border: 1px solid #fff; color: #fff; font-style: normal; transition: background-color .35s var(--ease), color .35s var(--ease); }
+.k-hero-arrow .kt-arrow { width: 15px; height: 15px; }
+.k-hero-link:hover .k-hero-arrow { background: #fff; color: var(--navy); }
 .k-hero-scroll { position: absolute; z-index: 3; left: max(var(--g), calc((100vw - var(--wrap)) / 2 + var(--g))); bottom: clamp(28px, 4.4vh, 52px); display: inline-flex; align-items: center; gap: 14px; font: 500 11px/1 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: #fff; padding-block: 10px; }
 .k-hero-scroll i { position: relative; width: 56px; height: 1px; background: rgba(255, 255, 255, .4); overflow: hidden; }
 .k-hero-scroll i::after { content: ""; position: absolute; inset: 0; background: var(--gold); animation: kt-run 2.4s var(--ease-io) infinite; }
@@ -208,9 +209,9 @@ html.kt-locked { overflow: hidden; }
   .k-hero-card { left: var(--g); right: var(--g); width: auto; max-width: 440px; bottom: max(18px, env(safe-area-inset-bottom)); padding: 14px 16px; display: flex; align-items: center; gap: 16px; }
   .k-hero-card dl { grid-template-columns: auto auto; gap: 18px; flex: 1; }
   .k-hero-card dd { font-size: 14px; }
-  .k-hero-link { margin: 0; padding: 0; border: 0; flex: none; width: 40px; height: 40px; justify-content: center; border-radius: 50%; background: var(--gold); }
+  .k-hero-link { margin: 0; padding: 0; border: 0; flex: none; }
+  .k-hero-arrow { width: 40px; height: 40px; }
   .k-hero-link span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-  .k-hero-link .kt-arrow { color: var(--navy); }
   .k-hero > .kt-tag { bottom: auto; top: calc(var(--hdr) + 4px); left: auto; right: var(--g); transform: none; }
   .k-hero-scroll { display: none; }
 }

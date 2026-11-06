@@ -6,6 +6,7 @@ import { V2, fill, v2Href } from '@/lib/v2/copy';
 import { v2Units, v2Facts } from '@/lib/v2/units';
 import Shell from './Shell';
 import Carousel from './Carousel';
+import TileTrack from './TileTrack';
 import FitTitle from './FitTitle';
 import Rows from './Rows';
 import GalleryV2 from './GalleryV2';
@@ -197,29 +198,21 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
 
       {/* ───────── Apartments ───────── */}
       <section className="k-apts kt-sec" aria-labelledby="k-apts-title">
-        <div className="kt-wrap k-head k-head-split">
-          <Label>{t.aptsLabel}</Label>
-          <div>
-            <Title id="k-apts-title" text={t.aptsTitle} />
-          </div>
-        </div>
         {f && (
-          <div className="kt-wrap k-tiles">
-            {[
-              { label: t.statTypes, value: String(f.types), text: t.statTypesT, src: interiors[0]?.src },
-              { label: t.statArea, value: `${range}`, unit: 'm²', text: t.statAreaT, src: interiors[3]?.src },
-              { label: t.statBeds, value: `${f.minBeds}–${f.maxBeds}`, text: t.statBedsT, src: interiors[2]?.src },
-            ].map((s, i) => (
-              <a className="k-tile" href={apts} key={i} data-k="up" style={{ '--i': i } as React.CSSProperties}>
-                <div className="k-tile-top">
-                  <span className="k-tile-label">{s.label}</span>
-                  <b>{s.value}{s.unit && <small>{s.unit}</small>}</b>
-                  <p>{s.text}</p>
-                </div>
-                {s.src && <div className="k-img k-tile-img"><Fill src={s.src} alt="" sizes="(min-width: 900px) 31vw, 100vw" /></div>}
-              </a>
-            ))}
-          </div>
+          <TileTrack
+            id="k-apts-title"
+            label={t.aptsLabel}
+            title={t.aptsTitle2}
+            text={tx(p.types?.text, lang)}
+            labels={{ prev: lang === 'bs' ? 'Prethodno' : 'Previous', next: lang === 'bs' ? 'Sljedeće' : 'Next' }}
+            tiles={[
+              { label: t.tTypes, value: String(f.types), caption: t.tTypesC, text: t.statTypesT, src: interiors[0]?.src, href: apts },
+              { label: t.tArea, value: range, unit: '', caption: t.tAreaC, text: t.statAreaT, src: interiors[3]?.src, href: apts },
+              { label: t.tBeds, value: `${f.minBeds}–${f.maxBeds}`, caption: t.tBedsC, text: t.statBedsT, src: interiors[2]?.src, href: apts },
+              { label: t.tOut, value: String(f.units), caption: t.tOutC, text: t.tOutT, src: interiors[1]?.src, href: apts },
+              { label: t.tFloors, value: String(f.floors), caption: t.tFloorsC, text: t.tFloorsT, src: interiors[4]?.src, href: apts },
+            ]}
+          />
         )}
         <div className="kt-wrap k-preview">
           <div className="k-preview-head">
@@ -283,17 +276,18 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
       <section id="kontakt" className="k-contact kt-sec" aria-labelledby="k-contact-title">
         <div className="kt-wrap">
           <h2 id="k-contact-title" className="k-contact-title" data-k="up">{plain(contact.title, lang) || t.contactTitle}</h2>
-          <div className="k-contact-grid">
+          <dl className="k-rows" data-k="up">
+            {(contact.phone || data.settings.phone) && <Row label={lang === 'bs' ? 'Telefon' : 'Phone'} value={<a href={'tel:' + String(contact.phone || data.settings.phone).replace(/[^\d+]/g, '')}>{contact.phone || data.settings.phone}</a>} />}
+            {contact.email && <Row label="E-mail" value={<a href={'mailto:' + contact.email}>{contact.email}</a>} />}
+            {tx(contact.address, lang) && <Row label={lang === 'bs' ? 'Adresa' : 'Address'} value={tx(contact.address, lang)} />}
+            {tx(contact.hours, lang) && <Row label={lang === 'bs' ? 'Radno vrijeme' : 'Opening hours'} value={tx(contact.hours, lang)} />}
+            <Row label={t.place} value={tx(p.hero?.eyebrow, lang) || 'Ilidža, Sarajevo'} />
+            <Row label={t.investor} value={company} />
+          </dl>
+          <div className="k-split k-contact-form">
             <div>
-              <p className="k-small" data-k="up">{tx(contact.text, lang) || t.contactLead}</p>
-              <dl className="k-rows" data-k="up">
-                {(contact.phone || data.settings.phone) && <Row label={V2[lang].contact} value={<a href={'tel:' + String(contact.phone || data.settings.phone).replace(/[^\d+]/g, '')}>{contact.phone || data.settings.phone}</a>} />}
-                {contact.email && <Row label="E-mail" value={<a href={'mailto:' + contact.email}>{contact.email}</a>} />}
-                {tx(contact.address, lang) && <Row label={lang === 'bs' ? 'Adresa' : 'Address'} value={tx(contact.address, lang)} />}
-                {tx(contact.hours, lang) && <Row label={lang === 'bs' ? 'Radno vrijeme' : 'Opening hours'} value={tx(contact.hours, lang)} />}
-                <Row label={t.place} value={tx(p.hero?.eyebrow, lang) || 'Ilidža, Sarajevo'} />
-                <Row label={t.investor} value={company} />
-              </dl>
+              <h3 className="k-h2" data-k="up">{t.contactSend}</h3>
+              <p className="k-split-text" data-k="up">{tx(contact.text, lang) || t.contactLead}</p>
             </div>
             <div data-k="up" style={{ '--i': 1 } as React.CSSProperties}><LeadForm lang={lang} /></div>
           </div>

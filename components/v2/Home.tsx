@@ -1,5 +1,6 @@
 import { tx, plain, mediaUrl, imgAlt, illustrationLabel, type SiteData } from '@/lib/content';
 import { href as siteHref, type Lang } from '@/lib/i18n';
+import Image from 'next/image';
 import { Fill, Rich } from '@/components/home/text';
 import { V2, fill, v2Href } from '@/lib/v2/copy';
 import { v2Units, v2Facts } from '@/lib/v2/units';
@@ -49,33 +50,29 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
   const company = p.footer?.company || 'ALYASIN Group d.o.o.';
   const views = (data.scenes?.buildings?.[0]?.views || []).filter((v: any) => v.image);
   const archImg = views.length ? views[Math.floor(views.length * 0.875)].image : `${R}/objekat/riverina-1-ugao-vecer.webp`;
-  // hero: current facade from the 360° set (135°: lawn in front, open sky, no traffic); CMS hero image as fallback
-  const heroView = views.find((v: any) => v.id === 'a135') || views[Math.round(views.length * 0.375)];
-  const heroImg = heroView?.image || p.hero?.image || `${R}/objekat/riverina-1-ugao-vecer.webp`;
   const vision = tx(p.vision?.title, lang).replace(/\*/g, '').split(/\s+/).filter(Boolean);
 
   return (
-    <Shell data={data} lang={lang} tone="light" langHref={(l) => v2Href('home', l)}>
-      {/* ───────── Hero ───────── */}
+    <Shell data={data} lang={lang} tone="hero" langHref={(l) => v2Href('home', l)}>
+      {/* ───────── Hero (KEY TOWERS composition: full-bleed render, one-line title in the sky, the building in front of it) ───────── */}
       <section className="k-hero" aria-labelledby="k-hero-title">
-        <div className="kt-wrap k-hero-top">
+        {/* plate = the 135° render of the current facade with the sky extended upward (scripts/make-hero-plate.py) */}
+        <Image className="k-hero-bg" src={`${R}/hero/plate.webp`} alt={plain(p.hero?.subtitle, lang)} fill priority sizes="100vw" quality={85} />
+        <div className="k-hero-in">
           <FitTitle id="k-hero-title" parts={heroLines} />
-          <div className="k-hero-bar">
-            <p className="k-hero-sub">{tx(p.hero?.subtitle, lang)}</p>
-            <dl className="k-hero-facts">
-              <div><dt>{t.heroLocation}</dt><dd>{tx(p.hero?.eyebrow, lang)}</dd></div>
-              {f && <div><dt>{t.heroBuilding}</dt><dd>{fill(t.heroUnits, { n: f.units, a: range })}</dd></div>}
-            </dl>
-            <div className="k-hero-cta">
-              <a className="kt-pill is-navy" href={apts}>{tx(p.hero?.cta, lang) || t.choose}<Arrow /></a>
-              <a className="kt-round k-hero-down" href="#uvod" aria-label={t.scroll}><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v13M5 11l5 5 5-5" /></svg></a>
-            </div>
-          </div>
         </div>
-        <figure className="k-hero-pic">
-          <div className="k-img" data-kt-par="3"><Fill src={heroImg} alt={plain(p.hero?.subtitle, lang)} sizes="100vw" priority quality={82} /></div>
-          {tag && <span className="kt-tag">{tag}</span>}
-        </figure>
+        {/* the same building, cut out, laid over the title so the roof rises in front of the letters */}
+        <Image className="k-hero-fg" src={`${R}/hero/building.webp`} alt="" aria-hidden="true" fill priority sizes="100vw" quality={85} />
+        <div className="k-hero-card">
+          <p className="k-hero-sub">{tx(p.hero?.subtitle, lang)}</p>
+          <dl>
+            <div><dt>{t.heroLocation}</dt><dd>{tx(p.hero?.eyebrow, lang)}</dd></div>
+            {f && <div><dt>{t.heroBuilding}</dt><dd>{fill(t.heroUnits, { n: f.units, a: range })}</dd></div>}
+          </dl>
+          <a className="kt-pill is-gold" href={apts}>{tx(p.hero?.cta, lang) || t.choose}<Arrow /></a>
+        </div>
+        <a className="k-hero-scroll" href="#uvod"><span>{t.scroll}</span><i aria-hidden="true" /></a>
+        {tag && <span className="kt-tag">{tag}</span>}
       </section>
 
       {/* ───────── Intro statement ───────── */}

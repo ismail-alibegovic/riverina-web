@@ -7,8 +7,10 @@ into it) needs a taller canvas. This script:
   2. cuts the building out along its outline (hand-traced corners, straight edges) into a second, transparent image.
 The page stacks: plate → title → building, both images with the same size and object-position, so they line up.
 
-Usage: python3 scripts/make-hero-plate.py path/to/r1-360-135.webp
-Output: public/riverina/hero/plate.webp, public/riverina/hero/building.webp
+Usage: python3 scripts/make-hero-plate.py path/to/r1-360-135.webp [EXT] [suffix]
+  desktop:  python3 scripts/make-hero-plate.py r1-360-135.webp          → plate.webp, building.webp (EXT 300)
+  portrait: python3 scripts/make-hero-plate.py r1-360-135.webp 620 -m   → plate-m.webp, building-m.webp
+  (portrait screens get more sky, so the whole building fits under the title at a lower zoom)
 """
 import sys
 import numpy as np
@@ -17,7 +19,8 @@ from scipy import ndimage
 
 SRC = sys.argv[1]
 OUT = 'public/riverina/hero'
-EXT = 300   # px of sky added on top
+EXT = int(sys.argv[2]) if len(sys.argv) > 2 else 300   # px of sky added on top
+SUF = sys.argv[3] if len(sys.argv) > 3 else ''
 BLEND = 170  # px over which the new sky fades into the render's sky
 
 # outline of Riverina 1 in the 135° frame (1672 × 941): roof, terrace railings and walls, closed along the bottom
@@ -81,7 +84,7 @@ plate = np.clip(plate, 0, 255).astype(np.uint8)
 
 import os
 os.makedirs(OUT, exist_ok=True)
-Image.fromarray(plate).save(f'{OUT}/plate.webp', quality=88, method=6)
+Image.fromarray(plate).save(f'{OUT}/plate{SUF}.webp', quality=88, method=6)
 
 # --- building cut-out (same canvas), soft 1 px edge
 mask = Image.new('L', (w, H), 0)
@@ -90,5 +93,5 @@ mask = mask.filter(ImageFilter.GaussianBlur(0.7))
 cut = Image.fromarray(plate).convert('RGBA')
 cut.putalpha(mask)
 bbox = (0, 0, w, H)
-cut.save(f'{OUT}/building.webp', quality=90, method=6)
+cut.save(f'{OUT}/building{SUF}.webp', quality=90, method=6)
 print('plate', w, H, 'roof top at', 36 + EXT, '=', round((36 + EXT) / H, 4), 'of height')

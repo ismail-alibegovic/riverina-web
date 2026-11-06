@@ -1,6 +1,6 @@
 import { tx, plain, mediaUrl, imgAlt, illustrationLabel, type SiteData } from '@/lib/content';
 import { href as siteHref, type Lang } from '@/lib/i18n';
-import Image from 'next/image';
+import { getImageProps } from 'next/image';
 import { Fill, Rich } from '@/components/home/text';
 import { V2, fill, v2Href } from '@/lib/v2/copy';
 import { v2Units, v2Facts } from '@/lib/v2/units';
@@ -50,6 +50,12 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
   const company = p.footer?.company || 'ALYASIN Group d.o.o.';
   const views = (data.scenes?.buildings?.[0]?.views || []).filter((v: any) => v.image);
   const archImg = views.length ? views[Math.floor(views.length * 0.875)].image : `${R}/objekat/riverina-1-ugao-vecer.webp`;
+  // hero plates (scripts/make-hero-plate.py): landscape and portrait versions, the portrait one with more sky
+  const heroImg = (src: string) => getImageProps({ src, alt: '', fill: true, sizes: 'max(100vw, 135vh)', quality: 80, loading: 'eager', fetchPriority: 'high' }).props;
+  const hero = {
+    bg: heroImg(`${R}/hero/plate.webp`), bgM: heroImg(`${R}/hero/plate-m.webp`).srcSet,
+    fg: heroImg(`${R}/hero/building.webp`), fgM: heroImg(`${R}/hero/building-m.webp`).srcSet,
+  };
   const vision = tx(p.vision?.title, lang).replace(/\*/g, '').split(/\s+/).filter(Boolean);
 
   return (
@@ -57,12 +63,18 @@ export default function Home({ data, lang }: { data: SiteData; lang: Lang }) {
       {/* ───────── Hero (KEY TOWERS composition: full-bleed render, one-line title in the sky, the building in front of it) ───────── */}
       <section className="k-hero" aria-labelledby="k-hero-title">
         {/* plate = the 135° render of the current facade with the sky extended upward (scripts/make-hero-plate.py) */}
-        <Image className="k-hero-bg" src={`${R}/hero/plate.webp`} alt={plain(p.hero?.subtitle, lang)} fill priority sizes="100vw" quality={85} />
+        <picture>
+          <source media="(max-aspect-ratio: 1/1)" srcSet={hero.bgM} sizes="108vh" />
+          <img {...hero.bg} className="k-hero-bg" alt={plain(p.hero?.subtitle, lang)} />
+        </picture>
         <div className="k-hero-in">
           <FitTitle id="k-hero-title" parts={heroLines} />
         </div>
         {/* the same building, cut out, laid over the title so the roof rises in front of the letters */}
-        <Image className="k-hero-fg" src={`${R}/hero/building.webp`} alt="" aria-hidden="true" fill priority sizes="100vw" quality={85} />
+        <picture>
+          <source media="(max-aspect-ratio: 1/1)" srcSet={hero.fgM} sizes="108vh" />
+          <img {...hero.fg} className="k-hero-fg" alt="" aria-hidden="true" />
+        </picture>
         <div className="k-hero-card">
           <p className="k-hero-sub">{tx(p.hero?.subtitle, lang)}</p>
           <dl>

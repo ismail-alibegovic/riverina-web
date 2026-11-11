@@ -103,9 +103,9 @@ export const DEFAULT_PAGE: Page = {
     title: { bs: 'Riverina\n*residence*', en: 'Riverina\n*residence*' },
     subtitle: { bs: 'Novi stambeni kompleks na Ilidži.', en: 'A new residential development in Ilidža.' },
     // Riverina 1 with the current facade (360° set, angle 315°, confirmed by the owner 20. 10. 2026), upscaled from
-    // 1672 px to 2560 px (lanczos + light sharpening) for full-bleed use. Older renders (objekat-*, naselje/*) show
-    // a previous facade.
-    image: `${R}/objekat/riverina-1-hero.webp`,
+    // 1672 px to 2560 px and with the sky extended upwards so the name sits in clear sky above the roof
+    // (scripts/hero-sky.py). Older renders (objekat-*, naselje/*) show a previous facade.
+    image: `${R}/objekat/riverina-1-nebo.webp`,
     cta: { bs: 'Odaberite stan', en: 'Find your apartment' },
   },
   manifest: {

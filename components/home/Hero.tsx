@@ -5,49 +5,46 @@ import { Fill, Rich } from './text';
 export type HeroFact = { label: string; value: string };
 
 /**
- * Opening frame: Riverina 1 full-bleed, with a deep navy fall-off at the bottom where all the text sits, so nothing
- * is set over the busy middle of the render. The name runs large at the bottom left, the intro and the way into
- * the apartments on the right, and the three first facts close the frame in one hairline row.
+ * Opening frame: Riverina 1 full-bleed under an open evening sky. The name runs across the full width in the sky
+ * above the building (sans + italic serif), one line of introduction below it, and a frosted card in the bottom
+ * corner holds the first facts and the way into the apartments. The picture is not darkened.
+ *
+ * The render's sky was extended upwards (riverina-1-nebo.webp) so the name has clear sky to sit on and the
+ * picture is shown at a scale where it stays sharp on phones.
  */
 export default function Hero({ hero, lang, name, tag, facts }: { hero: NonNullable<Page['hero']>; lang: Lang; name: string; tag?: string; facts: HeroFact[] }) {
   const raw = tx(hero.title, lang) || name;
   const lines = raw.split('\n').map((l) => l.trim()).filter(Boolean);
-  const eyebrow = tx(hero.eyebrow, lang);
   const sub = tx(hero.subtitle, lang);
-  const cta2 = tx(hero.cta2, lang);
+  const eyebrow = tx(hero.eyebrow, lang);
+  const all = eyebrow ? [{ label: lang === 'en' ? 'Location' : 'Lokacija', value: eyebrow }, ...facts] : facts;
   return (
     <section className="hx" aria-labelledby="hero-title">
       <div className="hx-media">
         <Fill src={hero.image} sizes="100vw" priority quality={85} className="hx-img" />
       </div>
       <div className="hx-shade" aria-hidden="true" />
-      {tag && <span className="ill-tag hx-tag">{tag}</span>}
       <div className="wrap wrap-wide hx-inner">
         <div className="hx-head">
-          <div className="hx-name">
-            {eyebrow && <p className="label hx-eyebrow">{eyebrow}</p>}
-            <h1 id="hero-title" className="hx-title">
-              {lines.map((l, i) => (
-                <span className="hx-line" key={i} style={{ '--i': i } as React.CSSProperties}><span><Rich text={l} /></span></span>
-              ))}
-            </h1>
-          </div>
-          <div className="hx-intro">
-            {sub && <p className="hx-sub">{sub}</p>}
-            <div className="hx-ctas">
-              <a className="btn btn-light hx-cta" href={href('apartments', lang)} data-magnetic>{tx(hero.cta, lang)}<span aria-hidden="true" className="arr">→</span></a>
-              {cta2 && <a className="link-line hx-cta2" href="#kontakt">{cta2}</a>}
-            </div>
-          </div>
-        </div>
-        {facts.length > 0 && (
-          <dl className="hx-facts" aria-label={name}>
-            {facts.map((f) => (
-              <div key={f.label}><dt>{f.label}</dt><dd>{f.value}</dd></div>
+          <h1 id="hero-title" className="hx-title">
+            {lines.map((l, i) => (
+              <span className="hx-line" key={i} style={{ '--i': i } as React.CSSProperties}><span><Rich text={l} /></span></span>
             ))}
-          </dl>
-        )}
+          </h1>
+          {sub && <p className="hx-sub">{sub}</p>}
+        </div>
+        <aside className="hx-card" aria-label={name}>
+          {all.length > 0 && (
+            <dl>
+              {all.map((f) => (
+                <div key={f.label}><dt>{f.label}</dt><dd>{f.value}</dd></div>
+              ))}
+            </dl>
+          )}
+          <a className="hx-cta" href={href('apartments', lang)} data-magnetic>{tx(hero.cta, lang)}<span aria-hidden="true" className="arr">→</span></a>
+        </aside>
       </div>
+      {tag && <span className="ill-tag hx-tag">{tag}</span>}
     </section>
   );
 }

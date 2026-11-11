@@ -102,9 +102,10 @@ export const DEFAULT_PAGE: Page = {
     eyebrow: { bs: 'Ilidža, Sarajevo', en: 'Ilidža, Sarajevo' },
     title: { bs: 'Riverina\n*residence*', en: 'Riverina\n*residence*' },
     subtitle: { bs: 'Novi stambeni kompleks na Ilidži.', en: 'A new residential development in Ilidža.' },
-    // Riverina 1 with the current facade (360° set, angle 315°, confirmed by the owner 20. 10. 2026). The hero frames
-    // it at native size; the older renders (objekat-*, naselje/*) show a previous facade.
-    image: `${R}/objekat/riverina-1-ugao-vecer.webp`,
+    // Riverina 1 with the current facade (360° set, angle 315°, confirmed by the owner 20. 10. 2026), upscaled from
+    // 1672 px to 2560 px (lanczos + light sharpening) for full-bleed use. Older renders (objekat-*, naselje/*) show
+    // a previous facade.
+    image: `${R}/objekat/riverina-1-hero.webp`,
     cta: { bs: 'Odaberite stan', en: 'Find your apartment' },
   },
   manifest: {

@@ -5,11 +5,9 @@ import { Fill, Rich } from './text';
 export type HeroFact = { label: string; value: string };
 
 /**
- * Opening frame on calm navy: the name and one line of introduction with the way into the apartments, then the
- * building itself in a large framed render, then the three facts a visitor needs first.
- *
- * The render is framed (never wider than the content column) instead of full-bleed: the source images are about
- * 1670 px wide, so stretched across a large screen they turn soft, and text set over a busy render is hard to read.
+ * Opening frame: Riverina 1 full-bleed, with a deep navy fall-off at the bottom where all the text sits, so nothing
+ * is set over the busy middle of the render. The name runs large at the bottom left, the intro and the way into
+ * the apartments on the right, and the three first facts close the frame in one hairline row.
  */
 export default function Hero({ hero, lang, name, tag, facts }: { hero: NonNullable<Page['hero']>; lang: Lang; name: string; tag?: string; facts: HeroFact[] }) {
   const raw = tx(hero.title, lang) || name;
@@ -19,6 +17,11 @@ export default function Hero({ hero, lang, name, tag, facts }: { hero: NonNullab
   const cta2 = tx(hero.cta2, lang);
   return (
     <section className="hx" aria-labelledby="hero-title">
+      <div className="hx-media">
+        <Fill src={hero.image} sizes="100vw" priority quality={85} className="hx-img" />
+      </div>
+      <div className="hx-shade" aria-hidden="true" />
+      {tag && <span className="ill-tag hx-tag">{tag}</span>}
       <div className="wrap wrap-wide hx-inner">
         <div className="hx-head">
           <div className="hx-name">
@@ -37,12 +40,6 @@ export default function Hero({ hero, lang, name, tag, facts }: { hero: NonNullab
             </div>
           </div>
         </div>
-        <figure className="hx-frame">
-          <div className="hx-media">
-            <Fill src={hero.image} sizes="(max-width: 1520px) 100vw, 1520px" priority quality={85} className="hx-img" />
-          </div>
-          {tag && <figcaption className="ill-tag">{tag}</figcaption>}
-        </figure>
         {facts.length > 0 && (
           <dl className="hx-facts" aria-label={name}>
             {facts.map((f) => (

@@ -16,7 +16,7 @@ export default function Hero({ hero, lang, name, tag, facts, meta }: { hero: Non
   return (
     <section className="hx" aria-labelledby="hero-title">
       <div className="hx-media" data-parallax="6">
-        <Fill src={hero.image} sizes="100vw" priority quality={74} className="hx-img" />
+        <Fill src={hero.image} sizes="100vw" priority quality={75} className="hx-img" />
       </div>
       <div className="hx-shade" aria-hidden="true" />
       <div className="wrap wrap-wide hx-inner" data-parallax-out>

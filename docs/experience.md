@@ -1,5 +1,7 @@
 # Riverina Residence: the visitor journey (Nov 2026)
 
+Colours: only the logo's two (navy #0B2247, gold #C4994A) on paper and ivory. Available = gold, reserved = gold hatching, sold = navy tint.
+
 Reference: KEY TOWERS corporate website (Behance). Taken from it: two voices in the type (light grotesque plus an italic serif accent), hairline grids for figures, plans on soft tinted panels, round controls, a translucent fact card in the hero and an apartment catalogue with filters. Not taken: its colours (Riverina stays navy, ivory and paper with gold as an accent), its feature claims (Riverina shows only confirmed facts, see `content-todo.md`) and its marketing filler (mockups, social posts).
 
 ## One journey, one question per step
@@ -39,6 +41,6 @@ Orientation and price appear only when the CMS has them (and prices only when sw
 ## Replacing images later
 
 - **Hero, panorama, small pictures, statement:** CMS → Tekstovi sajta (Naslovna, Život, Završna poruka). The layouts crop with `object-fit`, so any wide render works.
-- **Building render with floor zones:** `lib/facade.ts`. Change `image`, `w`, `h` and the three columns of floor heights (near corner, side corner, far end). `npm test` checks that the zones stay in order.
-- **Floor plates:** CMS → Označi stanove (floor plans saved there replace the generated ones).
+- **Building render with floor zones:** CMS → Označi stanove → building → *Spratovi na renderu zgrade*: load the default lines, then correct each floor point by point (drag points, double-click an edge to add one, right-click to delete). A new render: *Zamijeni render*, then redraw. Without CMS lines the site uses `lib/facade.ts`.
+- **Floor plates:** generated as vector drawings from the AutoCAD sheets (`scripts/make-floor-svg.py`): the architect's linework at our own thin line weight, and each apartment's exact outline from its marked area on its sheet. Floor plans saved in the CMS replace them.
 - **Plans and 3D views per apartment:** `public/riverina/units/`, `public/riverina/3d/` (scripts in `scripts/`), or a plan upload per apartment in the CMS.

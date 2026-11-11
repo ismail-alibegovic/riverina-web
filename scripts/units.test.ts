@@ -35,6 +35,13 @@ test('every apartment has exactly one outline on its floor plan', () => {
 test('the facade has one zone per residential floor, stacked bottom to top', () => {
   assert.deepEqual(FACADE.floors.map((f) => f.level), [1, 2, 3, 4, 5]);
   const mid = (p: [number, number][]) => p.reduce((s, q) => s + q[1], 0) / p.length;
-  for (let i = 1; i < FACADE.floors.length; i++) assert.ok(mid(FACADE.floors[i].pts) < mid(FACADE.floors[i - 1].pts));
-  for (const f of FACADE.floors) for (const [x, y] of f.pts) assert.ok(x >= 0 && x <= 1 && y >= 0 && y <= 1);
+  for (let i = 1; i < FACADE.floors.length; i++) assert.ok(mid(FACADE.floors[i].polys[0]) < mid(FACADE.floors[i - 1].polys[0]));
+  for (const f of FACADE.floors) for (const [x, y] of f.polys.flat()) assert.ok(x >= 0 && x <= 1 && y >= 0 && y <= 1);
+});
+
+test('facade lines saved in the CMS come back as the same floors', async () => {
+  const { toCms, fromCms } = await import('../lib/facade.ts');
+  const back = fromCms(toCms(FACADE), (p: string) => p);
+  assert.deepEqual(back, FACADE);
+  assert.equal(fromCms({ image: 'x.webp', shapes: [] }, (p: string) => p), null, 'no floors drawn: the default is used');
 });

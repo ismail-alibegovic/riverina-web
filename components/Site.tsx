@@ -65,8 +65,8 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
       />
     ),
 
-    explore: () => bld && levels.length > 0 && (
-      <BuildingPreview lang={lang} tag={tag} buildingName={bld.name}
+    explore: () => bld && bld.facade && levels.length > 0 && (
+      <BuildingPreview lang={lang} tag={tag} building={bld} units={list}
         title={tx(page.explore?.title, lang) || ex.explore} text={tx(page.explore?.text, lang) || ex.exploreText}
         floors={levels.map((l) => floorSummary(list, l))} />
     ),

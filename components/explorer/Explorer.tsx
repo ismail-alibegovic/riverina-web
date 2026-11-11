@@ -3,20 +3,20 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import type { Lang } from '@/lib/i18n';
 import type { Building, Unit } from '@/lib/units';
-import { FACADE, toPoints, bbox } from '@/lib/facade';
-import { EX, fill, m2, statusLabel, unitLabel, explorerPath, floorSummary, floorAvail, parseAt, pathOf as pathFor, type At } from '@/lib/explorer';
-import { beds } from '@/lib/explorer';
+import { EX, fill, m2, beds, statusLabel, unitLabel, explorerPath, floorSummary, floorAvail, parseAt, pathOf as pathFor, type At } from '@/lib/explorer';
+import Plate, { bboxOf } from './Plate';
+import BuildingStage from './BuildingStage';
+import UnitView, { UnitCard, type Settings } from './UnitView';
 export type { At } from '@/lib/explorer';
 const pathOf = pathFor;
-import Plate, { bboxOf } from './Plate';
-import UnitView, { UnitCard, type Settings } from './UnitView';
 
 const reduced = () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /**
  * The apartment explorer: building → floor → apartment, plus a filterable list. One client component, so moving
- * between the steps is an animated transition rather than a page load; every step has its own URL (shareable,
- * back button works) and the server renders the same step for that URL.
+ * between the steps is a transition rather than a page load: the building zooms into the chosen floor, the floor
+ * into the chosen apartment. Every step has its own URL (shareable, back button works) and the server renders the
+ * same step for that URL.
  */
 export default function Explorer({ lang, units, building, settings, initial, tag }: {
   lang: Lang; units: Unit[]; building: Building; settings: Settings; initial: At; tag?: string;
@@ -26,7 +26,6 @@ export default function Explorer({ lang, units, building, settings, initial, tag
   const byCode = useMemo(() => new Map(units.map((u) => [u.code, u])), [units]);
   const [at, setAt] = useState<At>(initial);
   const [leaving, setLeaving] = useState<{ origin: string } | null>(null);
-  const [hoverFloor, setHoverFloor] = useState<number | null>(null);
   const [hoverUnit, setHoverUnit] = useState<string | null>(null);
   const root = useRef<HTMLDivElement>(null);
   const levels = building.levels;
@@ -51,11 +50,10 @@ export default function Explorer({ lang, units, building, settings, initial, tag
       setAt(to);
       setLeaving(null);
       setHoverUnit(null);
-      setHoverFloor(null);
       const top = root.current ? root.current.getBoundingClientRect().top + window.scrollY - (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 84) : 0;
       if (window.scrollY > top + 4) window.scrollTo({ top: Math.max(0, top), behavior: 'instant' as ScrollBehavior });
     };
-    if (origin && !reduced()) { setLeaving({ origin }); window.setTimeout(commit, 420); }
+    if (origin && !reduced()) { setLeaving({ origin }); window.setTimeout(commit, 520); }
     else commit();
   }, [lang]);
 
@@ -64,115 +62,88 @@ export default function Explorer({ lang, units, building, settings, initial, tag
 
   const unit = at.view === 'unit' && at.code ? byCode.get(at.code) : undefined;
   const floor = at.view === 'floor' ? building.floors.find((f) => f.level === at.floor) : undefined;
-  const step = at.view === 'building' ? 1 : at.view === 'floor' ? 2 : at.view === 'unit' ? 3 : 0;
-  const view = at.view === 'unit' && !unit ? 'building' : at.view === 'floor' && !floor ? 'building' : at.view;
+  const view = at.view === 'unit' && !unit ? 'building' : at.view === 'floor' && !floor ? 'building' : at.view === 'building' && !building.facade ? 'list' : at.view;
+  const fl = unit?.floor ?? floor?.level;
+
+  // one quiet line of navigation instead of a toolbar: where you are, and the other way to look (building / list)
+  const nav = (
+    <div className="ex-nav">
+      <ol className="ex-crumbs">
+        <li><a href={pathOf(lang, { view: 'building' })} onClick={(e) => go({ view: 'building' }, e)} aria-current={view === 'building' ? 'page' : undefined}>{building.name}</a></li>
+        {fl != null && view !== 'list' && <li><a href={pathOf(lang, { view: 'floor', floor: fl })} onClick={(e) => go({ view: 'floor', floor: fl }, e)} aria-current={view === 'floor' ? 'page' : undefined}>{fill(t.floorN, { n: fl })}</a></li>}
+        {unit && view === 'unit' && <li aria-current="page">{fill(t.apartmentN, { c: unitLabel(unit) })}</li>}
+        {view === 'list' && <li aria-current="page">{t.list}</li>}
+      </ol>
+      <div className="ex-modes">
+        {building.facade && <a href={pathOf(lang, { view: 'building' })} aria-current={view !== 'list' ? 'true' : undefined} onClick={(e) => go({ view: 'building' }, e)}>{t.visual}</a>}
+        <a href={pathOf(lang, { view: 'list' })} aria-current={view === 'list' ? 'true' : undefined} onClick={(e) => go({ view: 'list' }, e)}>{t.list}</a>
+      </div>
+    </div>
+  );
 
   return (
-    <div ref={root} className={'ex is-' + view} data-lenis-prevent={view === 'floor' || view === 'building' ? undefined : undefined}>
-      <div className="ex-top">
-        <div className="wrap wrap-wide ex-top-in">
-          <ol className="ex-steps" aria-label={t.title}>
-            {[t.step1, t.step2, t.step3].map((s, k) => {
-              const n = k + 1;
-              const can = n < step;
-              const target: At = n === 1 ? { view: 'building' } : { view: 'floor', floor: unit?.floor ?? at.floor };
-              return (
-                <li key={s} className={(n === step ? 'is-on' : '') + (n < step ? ' is-done' : '')} aria-current={n === step ? 'step' : undefined}>
-                  {can ? <a href={pathOf(lang, target)} onClick={(e) => go(target, e)}><i>{String(n).padStart(2, '0')}</i>{s}</a> : <span><i>{String(n).padStart(2, '0')}</i>{s}</span>}
-                </li>
-              );
-            })}
-          </ol>
-          <div className="ex-modes" role="group">
-            <a href={pathOf(lang, { view: 'building' })} aria-current={view !== 'list' ? 'true' : undefined} onClick={(e) => go({ view: 'building' }, e)}>{t.visual}</a>
-            <a href={pathOf(lang, { view: 'list' })} aria-current={view === 'list' ? 'true' : undefined} onClick={(e) => go({ view: 'list' }, e)}>{t.list}</a>
-          </div>
-        </div>
-      </div>
-
-      {view === 'building' && (
-        <section className="ex-app ex-enter" aria-labelledby="ex-b-title" key="building">
-          <div className={'ex-stage ex-bstage' + (leaving ? ' is-leaving' : '')} style={leaving ? { transformOrigin: leaving.origin } : undefined}>
-            <div className="ex-ambient" aria-hidden="true"><Image src={FACADE.image} alt="" fill sizes="40vw" quality={30} /></div>
-            <div className="ex-facade" style={{ aspectRatio: `${FACADE.w} / ${FACADE.h}` }}>
-              <Image src={FACADE.image} alt="" fill sizes="(min-width: 1100px) 70vw, 100vw" priority quality={84} />
-              <svg viewBox={`0 0 ${FACADE.w} ${FACADE.h}`} preserveAspectRatio="none" className={'ex-fsvg' + (hoverFloor != null ? ' has-on' : '')} role="group" aria-label={building.name}>
-                {FACADE.floors.filter((z) => levels.includes(z.level)).map((z) => {
-                  const s = summaries.find((x) => x.level === z.level)!;
-                  const b = bbox(z.pts);
-                  const origin = `${(((b.x0 + b.x1) / 2) * 100).toFixed(1)}% ${(((b.y0 + b.y1) / 2) * 100).toFixed(1)}%`;
-                  return (
-                    <a key={z.level} href={pathOf(lang, { view: 'floor', floor: z.level })} className={'ex-fz' + (hoverFloor === z.level ? ' is-on' : '')}
-                      aria-label={`${fill(t.floorN, { n: z.level })}, ${floorAvail(s, lang)}`}
-                      onMouseEnter={() => setHoverFloor(z.level)} onMouseLeave={() => setHoverFloor(null)} onFocus={() => setHoverFloor(z.level)} onBlur={() => setHoverFloor(null)}
-                      onClick={(e) => go({ view: 'floor', floor: z.level }, e, origin)}>
-                      <polygon points={toPoints(z.pts, FACADE.w, FACADE.h)} />
-                    </a>
-                  );
-                })}
-              </svg>
-              {hoverFloor != null && (() => {
-                const z = FACADE.floors.find((x) => x.level === hoverFloor)!;
-                const s = summaries.find((x) => x.level === hoverFloor)!;
-                const b = bbox(z.pts);
-                return (
-                  <div className="bp-pin" style={{ left: `${((b.x0 + b.x1) / 2) * 100}%`, top: `${b.y0 * 100}%` }} aria-hidden="true">
-                    <b>{fill(t.floorN, { n: hoverFloor })}</b><span>{floorAvail(s, lang)} · {fill(t.areaRange, { a: Math.round(s.min), b: Math.round(s.max) })}</span>
-                  </div>
-                );
-              })()}
-              {tag && <span className="ill-tag">{tag}</span>}
-            </div>
-          </div>
-          <div className="ex-panel">
-            <p className="label ex-eyebrow">{t.step1}</p>
-            <h1 id="ex-b-title" className="ex-title">{building.name.split(' ')[0]} <em>{building.name.split(' ').slice(1).join(' ')}</em></h1>
-            <p className="ex-lead">{t.intro}</p>
-            <ol className="bp-floors ex-floors">
-              {summaries.slice().reverse().map((s) => {
-                const z = FACADE.floors.find((x) => x.level === s.level);
-                const b = z ? bbox(z.pts) : null;
-                const origin = b ? `${(((b.x0 + b.x1) / 2) * 100).toFixed(1)}% ${(((b.y0 + b.y1) / 2) * 100).toFixed(1)}%` : undefined;
-                return (
-                  <li key={s.level}>
-                    <a href={pathOf(lang, { view: 'floor', floor: s.level })} className={'bp-row' + (hoverFloor === s.level ? ' is-on' : '')}
-                      onMouseEnter={() => setHoverFloor(s.level)} onMouseLeave={() => setHoverFloor(null)} onFocus={() => setHoverFloor(s.level)} onBlur={() => setHoverFloor(null)}
-                      onClick={(e) => go({ view: 'floor', floor: s.level }, e, origin)}>
-                      <span className="bp-n">{String(s.level).padStart(2, '0')}</span>
-                      <span className="bp-l">{fill(t.floorN, { n: s.level })}<small>{fill(t.areaRange, { a: Math.round(s.min), b: Math.round(s.max) })}</small></span>
-                      <span className="bp-a">{floorAvail(s, lang)}</span>
-                      <span className="bp-go" aria-hidden="true">→</span>
-                    </a>
-                  </li>
-                );
-              })}
-              <li><span className="bp-row is-off"><span className="bp-n">00</span><span className="bp-l">{t.ground}<small>{t.groundNote}</small></span><span className="bp-a" /><span className="bp-go" /></span></li>
-            </ol>
-          </div>
+    <div ref={root} className={'ex is-' + view}>
+      {view === 'building' && building.facade && (
+        <section className={'ex-building ex-enter' + (leaving ? ' is-leaving' : '')} aria-labelledby="ex-b-title" key="building" style={leaving ? { '--origin': leaving.origin } as React.CSSProperties : undefined}>
+          <BuildingStage lang={lang} facade={building.facade} floors={summaries} plans={building.floors} units={units} tag={tag} priority
+            className="is-explorer"
+            onPick={(level, e, origin) => go({ view: 'floor', floor: level }, e, origin)}
+            top={nav}
+            intro={(
+              <>
+                <p className="label bs-eyebrow">{t.step1}</p>
+                <h1 id="ex-b-title" className="bs-title">{building.name.split(' ')[0]} <em>{building.name.split(' ').slice(1).join(' ')}</em></h1>
+                <p className="bs-text">{t.intro}</p>
+              </>
+            )} />
         </section>
       )}
 
       {view === 'floor' && floor && (
         <FloorView key={'f' + floor.level} lang={lang} floor={floor} units={units} building={building} hover={hoverUnit} setHover={setHoverUnit}
-          leaving={leaving} go={go} pathOf={(a) => pathOf(lang, a)} />
+          leaving={leaving} go={go} pathOf={(a) => pathOf(lang, a)} nav={nav} />
       )}
 
       {view === 'unit' && unit && (
         <div className="ex-enter ex-flow" key={'u' + unit.code}>
+          <div className="wrap wrap-wide">{nav}</div>
           <UnitView unit={unit} units={units} building={building} lang={lang} settings={settings} tag={tag} go={goTo} link={link} />
         </div>
       )}
 
       {view === 'list' && (
-        <ListView key="list" lang={lang} units={units} levels={levels} initialType={at.type} go={go} pathOf={(a) => pathOf(lang, a)} />
+        <ListView key="list" lang={lang} units={units} levels={levels} initialType={at.type} go={go} pathOf={(a) => pathOf(lang, a)} nav={nav} />
       )}
     </div>
   );
 }
 
-function FloorView({ lang, floor, units, building, hover, setHover, leaving, go, pathOf }: {
+/** The building in section, as a lift: one bar per level, the top floor set back, the current one in gold. */
+function FloorRail({ lang, building, units, current, go, pathOf }: {
+  lang: Lang; building: Building; units: Unit[]; current: number; go: (to: At, e?: React.MouseEvent) => void; pathOf: (a: At) => string;
+}) {
+  const t = EX[lang];
+  const top = Math.max(...building.levels);
+  return (
+    <nav className="fr" aria-label={t.floorsShort}>
+      {building.levels.slice().reverse().map((l) => {
+        const s = floorSummary(units, l);
+        return (
+          <a key={l} href={pathOf({ view: 'floor', floor: l })} className={'fr-bar' + (l === top ? ' is-top' : '')} aria-current={l === current ? 'true' : undefined}
+            onClick={(e) => go({ view: 'floor', floor: l }, e)} aria-label={`${fill(t.floorN, { n: l })}, ${floorAvail(s, lang)}`}>
+            <span className="fr-n">{l}</span>
+            <span className="fr-free" title={floorAvail(s, lang)}>{s.known ? s.free : s.total}</span>
+          </a>
+        );
+      })}
+      <span className="fr-bar is-ground" aria-hidden="true"><span className="fr-n">P</span></span>
+    </nav>
+  );
+}
+
+function FloorView({ lang, floor, units, building, hover, setHover, leaving, go, pathOf, nav }: {
   lang: Lang; floor: Building['floors'][number]; units: Unit[]; building: Building; hover: string | null; setHover: (c: string | null) => void;
-  leaving: { origin: string } | null; go: (to: At, e?: React.MouseEvent, origin?: string) => void; pathOf: (a: At) => string;
+  leaving: { origin: string } | null; go: (to: At, e?: React.MouseEvent, origin?: string) => void; pathOf: (a: At) => string; nav: React.ReactNode;
 }) {
   const t = EX[lang];
   const own = units.filter((u) => u.floor === floor.level && u.building === building.id);
@@ -187,48 +158,59 @@ function FloorView({ lang, floor, units, building, hover, setHover, leaving, go,
   };
   const hu = hover ? map.get(hover) : undefined;
   return (
-    <section className="ex-app ex-enter" aria-labelledby="ex-f-title">
-      <div className={'ex-stage ex-fstage' + (leaving ? ' is-leaving' : '')} style={leaving ? { transformOrigin: leaving.origin } : undefined}>
-        <nav className="ex-rail" aria-label={t.floorsShort}>
-          {building.levels.slice().reverse().map((l) => (
-            <a key={l} href={pathOf({ view: 'floor', floor: l })} aria-current={l === floor.level ? 'true' : undefined} onClick={(e) => go({ view: 'floor', floor: l }, e)}>{l}</a>
-          ))}
-          <span className="is-off" title={t.ground}>P</span>
-        </nav>
-        <div className="ex-plate">
-          <Plate floor={floor} units={map} hover={hover} onHover={setHover}
-            href={(u) => pathOf({ view: 'unit', code: u.code })}
-            onPick={(u, e) => go({ view: 'unit', code: u.code }, e, originOf(u.code))}
-            ariaLabel={fill(t.floorN, { n: floor.level })}
-            unitName={(u) => `${fill(t.apartmentN, { c: unitLabel(u) })}, ${m2(u.area, lang)}, ${statusLabel(u.status, lang)}`} />
-          <div className={'ex-tip' + (hu ? ' is-on' : '')} aria-live="polite">
-            {hu ? <><b>{fill(t.apartmentN, { c: unitLabel(hu) })}</b><span>{hu.type ? fill(t.typeN, { t: hu.type }) + ' · ' : ''}{m2(hu.area, lang)} · {beds(hu.bedrooms, lang)}</span><span className={'pill st-' + hu.status}>{statusLabel(hu.status, lang)}</span></> : <span className="ex-tip-hint">{t.pickUnit}</span>}
-          </div>
-          <ul className="ex-legend" aria-hidden="true">
-            {statuses.map((st) => <li key={st}><i className={'sw st-' + st} />{statusLabel(st, lang)}</li>)}
-            <li className="ex-north">N ↑</li>
-          </ul>
+    <section className="ex-floor ex-enter" aria-labelledby="ex-f-title">
+      <div className="wrap wrap-wide">
+        {nav}
+        <div className="ex-f-head">
+          <h1 id="ex-f-title" className="ex-title">{floor.level}. <em>{lang === 'bs' ? 'sprat' : 'floor'}</em></h1>
+          <p className="ex-lead">{floorAvail(s, lang)}<span>·</span>{fill(t.areaRange, { a: Math.round(s.min), b: Math.round(s.max) })}</p>
         </div>
-      </div>
-      <div className="ex-panel">
-        <a className="ex-back" href={pathOf({ view: 'building' })} onClick={(e) => go({ view: 'building' }, e)}><span aria-hidden="true">←</span> {t.backToBuilding}</a>
-        <p className="label ex-eyebrow">{building.name}</p>
-        <h1 id="ex-f-title" className="ex-title">{floor.level}. <em>{lang === 'bs' ? 'sprat' : 'floor'}</em></h1>
-        <p className="ex-lead">{floorAvail(s, lang)} · {fill(t.areaRange, { a: Math.round(s.min), b: Math.round(s.max) })}</p>
-        <ul className="ex-units">
-          {own.map((u) => (
-            <li key={u.code}>
-              <a href={pathOf({ view: 'unit', code: u.code })} className={'ex-u' + (hover === u.code ? ' is-on' : '')}
-                onMouseEnter={() => setHover(u.code)} onMouseLeave={() => setHover(null)} onFocus={() => setHover(u.code)} onBlur={() => setHover(null)}
-                onClick={(e) => go({ view: 'unit', code: u.code }, e, originOf(u.code))}>
-                <span className="ex-u-c">{unitLabel(u)}</span>
-                <span className="ex-u-t">{u.type ? fill(t.typeN, { t: u.type }) : ''}<small>{beds(u.bedrooms, lang)}</small></span>
-                <span className="ex-u-a">{m2(u.area, lang)}</span>
-                <span className={'dot st-' + u.status} title={statusLabel(u.status, lang)} />
-              </a>
-            </li>
-          ))}
-        </ul>
+        <div className="ex-f-grid">
+          <FloorRail lang={lang} building={building} units={units} current={floor.level} go={go} pathOf={pathOf} />
+          <div className={'ex-f-stage' + (leaving ? ' is-leaving' : '')} style={leaving ? { '--origin': leaving.origin } as React.CSSProperties : undefined}>
+            <div className="ex-plate">
+              <Plate floor={floor} units={map} hover={hover} onHover={setHover}
+                href={(u) => pathOf({ view: 'unit', code: u.code })}
+                onPick={(u, e) => go({ view: 'unit', code: u.code }, e, originOf(u.code))}
+                ariaLabel={fill(t.floorN, { n: floor.level })}
+                unitName={(u) => `${fill(t.apartmentN, { c: unitLabel(u) })}, ${m2(u.area, lang)}, ${statusLabel(u.status, lang)}`} />
+            </div>
+            <div className="ex-f-foot">
+              <ul className="ex-legend" aria-hidden="true">
+                {statuses.map((st) => <li key={st}><i className={'sw st-' + st} />{statusLabel(st, lang)}</li>)}
+              </ul>
+              <span className="ex-north" aria-hidden="true">N</span>
+            </div>
+          </div>
+          <aside className="ex-f-side">
+            <div className={'ex-peek' + (hu ? ' is-on' : '')} aria-live="polite">
+              {hu ? (
+                <>
+                  <div className="ex-peek-img">{(hu.plan3d || hu.plan) && <Image src={hu.plan3d || hu.plan} alt="" fill sizes="320px" />}</div>
+                  <div className="ex-peek-body">
+                    <p className="ex-peek-t">{fill(t.apartmentN, { c: unitLabel(hu) })}<span className={'pill st-' + hu.status}>{statusLabel(hu.status, lang)}</span></p>
+                    <p className="ex-peek-a">{m2(hu.area, lang)}</p>
+                    <p className="ex-peek-m">{hu.type ? fill(t.typeN, { t: hu.type }) + ' · ' : ''}{beds(hu.bedrooms, lang)}</p>
+                  </div>
+                </>
+              ) : <p className="ex-peek-hint">{t.pickUnit}</p>}
+            </div>
+            <ul className="ex-units">
+              {own.map((u) => (
+                <li key={u.code}>
+                  <a href={pathOf({ view: 'unit', code: u.code })} className={'ex-u' + (hover === u.code ? ' is-on' : '')}
+                    onMouseEnter={() => setHover(u.code)} onMouseLeave={() => setHover(null)} onFocus={() => setHover(u.code)} onBlur={() => setHover(null)}
+                    onClick={(e) => go({ view: 'unit', code: u.code }, e, originOf(u.code))}>
+                    <span className="ex-u-c">{unitLabel(u)}</span>
+                    <span className="ex-u-t">{u.type ? fill(t.typeN, { t: u.type }) : ''}<small>{beds(u.bedrooms, lang)}</small></span>
+                    <span className="ex-u-a">{m2(u.area, lang)}</span>
+                    <span className={'dot st-' + u.status} title={statusLabel(u.status, lang)} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        </div>
       </div>
     </section>
   );
@@ -236,8 +218,8 @@ function FloorView({ lang, floor, units, building, hover, setHover, leaving, go,
 
 type Sort = 'floor' | 'up' | 'down';
 
-function ListView({ lang, units, levels, initialType, go, pathOf }: {
-  lang: Lang; units: Unit[]; levels: number[]; initialType?: string; go: (to: At, e?: React.MouseEvent) => void; pathOf: (a: At) => string;
+function ListView({ lang, units, levels, initialType, go, pathOf, nav }: {
+  lang: Lang; units: Unit[]; levels: number[]; initialType?: string; go: (to: At, e?: React.MouseEvent) => void; pathOf: (a: At) => string; nav: React.ReactNode;
 }) {
   const t = EX[lang];
   const [beds, setBeds] = useState<number | null>(null);
@@ -255,6 +237,7 @@ function ListView({ lang, units, levels, initialType, go, pathOf }: {
   return (
     <section className="ex-list ex-enter ex-flow" aria-labelledby="ex-l-title">
       <div className="wrap wrap-wide">
+        {nav}
         <div className="ex-l-head">
           <h1 id="ex-l-title" className="ex-title">{lang === 'bs' ? <>Svi <em>stanovi</em></> : <>All <em>apartments</em></>}<sup>{shown.length}</sup></h1>
           <label className="ex-sort"><span className="label">{t.sort}</span>

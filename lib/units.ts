@@ -11,6 +11,7 @@ import { mediaUrl, type SiteData } from './content';
 import { APARTMENT_TYPES, ROOM_NAMES, unitsOfType, type ApartmentType, type RoomKey } from './apartmentTypes';
 import { DEFAULT_FLOORS, type FloorPlan } from './floorPlans';
 import PLANS_3D from './plans3d.json';
+import { FACADE, fromCms, type Facade } from './facade';
 
 export { SHEET_AREAS } from './sheetAreas';
 import { SHEET_AREAS } from './sheetAreas';
@@ -89,7 +90,8 @@ export function getUnits(data: Pick<SiteData, 'units'>): Unit[] {
   return list.sort((a, b) => a.building.localeCompare(b.building) || a.floor - b.floor || a.no - b.no);
 }
 
-export type Building = { id: string; name: string; floors: FloorPlan[]; levels: number[] };
+/** facade: the render with one zone per floor (CMS, else the default for Riverina 1, else none). */
+export type Building = { id: string; name: string; floors: FloorPlan[]; levels: number[]; facade: Facade | null };
 
 /** Buildings with apartments; floor plans from the CMS, else the ones generated from the architect's sheets. */
 export function getBuildings(data: Pick<SiteData, 'scenes'>, units: Unit[]): Building[] {
@@ -100,7 +102,8 @@ export function getBuildings(data: Pick<SiteData, 'scenes'>, units: Unit[]): Bui
     const cms: FloorPlan[] = (s.floors || []).filter((f: any) => f.image && f.shapes?.length).map((f: any) => ({ ...f, image: mediaUrl(f.image) }));
     const floors = (cms.length ? cms : DEFAULT_FLOORS[id] || []).slice().sort((a, b) => a.level - b.level);
     const levels = Array.from(new Set(units.filter((u) => u.building === id).map((u) => u.floor))).sort((a, b) => a - b);
-    return { id, name: s.name || (id === 'r1' ? 'Riverina 1' : id.toUpperCase()), floors, levels };
+    const facade = fromCms(s.facade, mediaUrl) || (id === 'r1' ? FACADE : null);
+    return { id, name: s.name || (id === 'r1' ? 'Riverina 1' : id.toUpperCase()), floors, levels, facade };
   });
 }
 

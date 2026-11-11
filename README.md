@@ -5,6 +5,7 @@ Next.js 16 (App Router) + Supabase. Javni sajt (BS `/`, EN `/en`) s interaktivni
 ## Struktura
 - `app/` — stranice (`page.tsx`, `en/page.tsx`), `admin/` (CMS), `api/lead` (upiti), `api/revalidate` (osvježavanje nakon spremanja)
 - `components/` — sekcije sajta; `explorer/` je pregled stanova (zgrada → sprat → stan, lista), `Selector.tsx` stari pregled za `/embed`
+- Spratovi na renderu zgrade (početna i prvi korak `/stanovi`): CMS → Označi stanove → zgrada → **Spratovi na renderu zgrade** → „Učitaj zadane linije" → „Uredi linije spratova" (tačke se povlače, dvoklik dodaje tačku, desni klik briše). Dok zgrada nema svoje, koriste se zadane iz `lib/facade.ts`.
 - `lib/units.ts` — jedna lista stanova za cijeli sajt (CMS → AutoCAD skice → tipovi iz brošure); `lib/facade.ts` — spratovi označeni na renderu zgrade; `lib/explorer.ts` — tekstovi i URL-ovi pregleda
 - `docs/experience.md` — put posjetioca, struktura početne i pregleda stanova, kako zamijeniti slike
 - `lib/selector/selector.js` + `app/selector.css` — pregled masterplan → zgrada → sprat → stan (vanilla JS)
@@ -62,7 +63,7 @@ Tekst koji nije preveden pada na `LOCALES[lang].fallback` (EN → BS).
 - `node scripts/make-brand-assets.mjs` — zadana OG slika, WebP logotipi, favicon i apple ikona iz `public/brand/`.
 - `node scripts/optimize-assets.mjs` — originali rendera → `public/riverina/`.
 - `node scripts/make-type-plans.mjs` — isječci tlocrta iz AutoCAD skica: po stanu (`public/riverina/units/`, pregled stana) i po tipu (`public/riverina/types/`, „Kolekcija stanova").
-- `python3 scripts/make-floor-plans.py` — tlocrti spratova i obrisi svih stanova iz bloka „Pozicija stana u objektu" na PDF skicama (`public/riverina/floors/`, `lib/floorPlans.json`). Pregled stanova ih koristi dok u CMS-u („Označi stanove") zgrada nema svoje tlocrte spratova.
+- `python3 scripts/make-floor-svg.py` — tlocrti spratova kao vektorski crteži s tankim linijama (`public/riverina/floors/floor-N.svg`) i tačni obrisi svih stanova (`lib/floorPlans.json`), iz vektorskog bloka „Pozicija stana u objektu" na AutoCAD skicama. Pregled stanova ih koristi dok u CMS-u zgrada nema svoje tlocrte spratova. Ako su u CMS-u ranije učitani stari tlocrti, kliknite „Zamijeni tlocrtima iz skica".
 - `node scripts/make-3d-plans.mjs` — 3D tlocrti s Drivea (`assets-src/3d/I`, `II`) → `public/riverina/3d/` i `lib/plans3d.json`.
 - CMS → „Označi stanove" → zgrada → **Učitaj tlocrte iz skica**: kopira generisane tlocrte spratova u CMS da se linije mogu popravljati (editor: „Prave linije (90°)", „Lijepi na uglove", „Ispravi oblik / sve"). Nakon spremanja sajt koristi verziju iz CMS-a.
 - `npm test` — provjera podataka o tipovima stanova (`lib/apartmentTypes.ts`): prostorije daju ukupnu površinu, 63 stana, slike postoje.

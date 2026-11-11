@@ -76,11 +76,7 @@ export default function UnitView({ unit: u, units, building, lang, settings, tag
     <article className="uv" aria-labelledby="uv-title">
       <div className="wrap wrap-wide">
         <nav className="uv-bar" aria-label={t.apartment}>
-          <ol className="crumbs">
-            <li><a href={link({})} onClick={(e) => go({ view: 'building' }, e)}>{building.name}</a></li>
-            <li><a href={link({ floor: u.floor })} onClick={(e) => go({ view: 'floor', floor: u.floor }, e)}>{floorName}</a></li>
-            <li aria-current="page">{name(u)}</li>
-          </ol>
+          <p className="uv-bar-l">{u.type ? fill(t.typeN, { t: u.type }) : building.name} · {floorName}</p>
           <div className="uv-step">
             <a className="round" href={link({ code: prev.code })} onClick={(e) => go({ view: 'unit', code: prev.code }, e)} aria-label={`${t.prevUnit}: ${name(prev)}`}><span aria-hidden="true">←</span></a>
             <span className="uv-count">{String(i + 1).padStart(2, '0')} / {String(floorUnits.length).padStart(2, '0')}</span>

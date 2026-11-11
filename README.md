@@ -4,7 +4,9 @@ Next.js 16 (App Router) + Supabase. Javni sajt (BS `/`, EN `/en`) s interaktivni
 
 ## Struktura
 - `app/` — stranice (`page.tsx`, `en/page.tsx`), `admin/` (CMS), `api/lead` (upiti), `api/revalidate` (osvježavanje nakon spremanja)
-- `components/` — sekcije sajta, `Selector.tsx` montira interaktivni pregled
+- `components/` — sekcije sajta; `explorer/` je pregled stanova (zgrada → sprat → stan, lista), `Selector.tsx` stari pregled za `/embed`
+- `lib/units.ts` — jedna lista stanova za cijeli sajt (CMS → AutoCAD skice → tipovi iz brošure); `lib/facade.ts` — spratovi označeni na renderu zgrade; `lib/explorer.ts` — tekstovi i URL-ovi pregleda
+- `docs/experience.md` — put posjetioca, struktura početne i pregleda stanova, kako zamijeniti slike
 - `lib/selector/selector.js` + `app/selector.css` — pregled masterplan → zgrada → sprat → stan (vanilla JS)
 - `lib/admin/app.js` + `app/admin/admin.css` — CMS (sadržaj, mediji, stanovi, scene + editor poligona, upiti, postavke)
 - `lib/content.ts` — model sadržaja, zadani tekstovi, učitavanje podataka

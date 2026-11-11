@@ -4,6 +4,8 @@ import '@/app/globals.css';
 import '@/app/selector.css';
 import '@/app/home.css';
 import '@/app/apartments.css';
+import '@/app/rv.css';
+import '@/app/explorer.css';
 
 // Runs before first paint: the intro curtain plays once per browser session, and only when the visit starts on a
 // home page (`/`, `/en`, ...). Deep links (apartments, contact, shared links from ads) open straight on their content.

@@ -19,6 +19,8 @@ export type HeaderProps = {
   email?: string;
   socials?: { label: string; href: string }[];
   company?: string;
+  /** the pill on the right: the way into the apartments (or to contact on the apartments page) */
+  cta?: { href: string; label: string };
 };
 
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -96,7 +98,13 @@ export default function Header(p: HeaderProps) {
             <img className="on-light" src={p.logoOnLight} alt="" width={480} height={108} fetchPriority="high" />
           </a>
           <div className="hdr-side is-end">
-            <a className="hdr-btn hdr-contact" href={p.contactHref} tabIndex={open ? -1 : undefined}>{t.contact}</a>
+            {p.cta?.label !== t.contact && <a className="hdr-btn hdr-contact" href={p.contactHref} tabIndex={open ? -1 : undefined}>{t.contact}</a>}
+            {p.phone && (
+              <a className="hdr-round" href={'tel:' + p.phone.replace(/[^\d+]/g, '')} aria-label={`${t.phone}: ${p.phone}`} tabIndex={open ? -1 : undefined}>
+                <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1L6.6 10.8z" fill="none" stroke="currentColor" strokeWidth="1.4" /></svg>
+              </a>
+            )}
+            {p.cta && <a className="hdr-pill" href={p.cta.href} tabIndex={open ? -1 : undefined}>{p.cta.label}</a>}
           </div>
         </div>
       </header>

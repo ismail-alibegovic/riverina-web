@@ -61,7 +61,6 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
           { label: ex.area, value: range },
           { label: ex.status, value: known ? fmt(ex.freeN, { n: free }) : t.salesOpen },
         ].filter((f) => f.value)}
-        meta={[tx(page.hero?.eyebrow, lang), t.residential, `${levels.length} ${t.levelsShort}`].filter(Boolean)}
       />
     ),
 

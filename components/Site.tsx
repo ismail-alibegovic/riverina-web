@@ -1,6 +1,6 @@
 import { Lang, SiteData, tx, mediaUrl, UI, sectionList, resolveLink, SectionKey, imgAlt, illustrationLabel } from '@/lib/content';
 import { href, LOCALES } from '@/lib/i18n';
-import { APARTMENT_TYPES, ROOM_NAMES, unitsOfType } from '@/lib/apartmentTypes';
+import { APARTMENT_TYPES } from '@/lib/apartmentTypes';
 import PLANS_3D from '@/lib/plans3d.json';
 import { siteNav } from '@/lib/nav';
 import SiteChrome from './site/SiteChrome';
@@ -8,16 +8,19 @@ import Footer from './site/Footer';
 import Gallery from './Gallery';
 import ContactForm from './ContactForm';
 import Hero from './home/Hero';
-import Manifest from './home/Manifest';
 import About from './home/About';
 import Categories from './home/Categories';
 import Details from './home/Details';
-import Types, { type TypeCard } from './home/Types';
+import Collection, { type CollectionCard } from './home/Collection';
+import Intro from './home/Intro';
+import BuildingPreview from './home/BuildingPreview';
+import { getUnits, getBuildings } from '@/lib/units';
+import { EX, fill as fmt, floorSummary, explorerPath } from '@/lib/explorer';
 import Showcase from './home/Showcase';
 import Statement from './home/Statement';
 import Vision from './home/Vision';
 import World from './home/World';
-import { Fill, Heading, Paras } from './home/text';
+import { Fill, Heading, Paras, Rich } from './home/text';
 import JsonLd from './JsonLd';
 
 const FALLBACK_BUILDING = '/riverina/objekat/objekat-3.webp';
@@ -39,16 +42,47 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
 
   const nav = siteNav(data, lang);
   const tag = illustrationLabel(page, lang);
+  const ex = EX[lang];
+  const list = getUnits(data);
+  const bld = getBuildings(data, list)[0];
+  const levels = bld?.levels || [];
+  const areas = list.map((u) => u.area);
+  const num = (n: number) => Math.round(n).toLocaleString(LOCALES[lang].number);
+  const range = areas.length ? `${num(Math.min(...areas))}–${num(Math.max(...areas))} m²` : '';
+  const known = list.some((u) => u.status !== 'unknown');
+  const free = list.filter((u) => u.status === 'available').length;
+  const types = new Set(list.map((u) => u.type).filter(Boolean)).size;
 
   const sections: Record<SectionKey, () => React.ReactNode> = {
-    hero: () => <Hero hero={page.hero || {}} lang={lang} name={name} tag={tag} />,
+    hero: () => (
+      <Hero hero={page.hero || {}} lang={lang} name={name} tag={tag}
+        facts={[
+          { label: ex.building, value: `${bld?.name || 'Riverina 1'} · ${fmt(ex.unitsN, { n: list.length })}` },
+          { label: ex.area, value: range },
+          { label: ex.status, value: known ? fmt(ex.freeN, { n: free }) : t.salesOpen },
+        ].filter((f) => f.value)}
+        meta={[tx(page.hero?.eyebrow, lang), t.residential, `${levels.length} ${t.levelsShort}`].filter(Boolean)}
+      />
+    ),
+
+    explore: () => bld && bld.facade && levels.length > 0 && (
+      <BuildingPreview lang={lang} tag={tag} building={bld} units={list}
+        title={tx(page.explore?.title, lang) || ex.explore} text={tx(page.explore?.text, lang) || ex.exploreText}
+        floors={levels.map((l) => floorSummary(list, l))} />
+    ),
 
     vision: () => page.vision && tx(page.vision.title, lang) && <Vision vision={page.vision} lang={lang} tag={tag} />,
 
     world: () => page.world && (page.world.items || []).length > 0 && <World world={page.world} lang={lang} cta={{ href: href('apartments', lang), label: aptLabel }} more={t.learnMore} />,
 
     manifest: () => manifestText && (
-      <Manifest text={manifestText} label={t.manifest} images={(page.manifest?.images || []).filter((m) => m.path).map((m) => ({ src: mediaUrl(m.path), alt: imgAlt(m, lang) }))} />
+      <Intro id="o-projektu" label={t.manifest} statement={manifestText} text={tx(page.about?.text, lang) || tx(page.vision?.text, lang)}
+        facts={[
+          { value: String(list.length), count: list.length, label: t.factUnits },
+          types > 1 && { value: String(types), count: types, label: t.factTypes },
+          levels.length > 0 && { value: String(levels.length), count: levels.length, label: t.factFloors },
+          range && { value: range.replace(' m²', ''), label: t.factArea },
+        ].filter(Boolean) as { value: string; count?: number; label: string }[]} />
     ),
 
     about: () => (tx(page.about?.title, lang) || tx(page.about?.text, lang)) && <About about={page.about || {}} units={units} lang={lang} tag={tag} />,
@@ -101,16 +135,9 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
     ),
 
     types: () => {
-      const cards = typeCards(data, lang);
       return (
-        <section id="tipovi" className="section types">
-          <div className="wrap types-head">
-            <Heading text={tx(page.types?.title, lang)} />
-            {tx(page.types?.text, lang) && <p className="lead" data-reveal="up">{tx(page.types?.text, lang)}</p>}
-          </div>
-          <Types cards={cards} labels={{ filter: t.filterBedrooms, all: t.filterAll, rooms: t.rooms, total: t.total, view: t.viewUnit, area: t.area, outdoor: t.outdoor, floor: t.floor }} />
-          {tx(page.types?.note, lang) && <p className="wrap types-note">{tx(page.types?.note, lang)}</p>}
-        </section>
+        <Collection title={tx(page.types?.title, lang)} text={tx(page.types?.text, lang)} note={tx(page.types?.note, lang)} cards={typeCards(data, lang)}
+          labels={{ all: t.filterAll, filter: t.filterBedrooms, prev: t.prev, next: t.next, view: t.viewUnits, bedroomsShort: t.bedroomsShort }} />
       );
     },
 
@@ -118,9 +145,11 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
       const slides = (page.details?.items || []).filter((d) => d.image).map((d) => ({ src: mediaUrl(d.image), title: tx(d.title, lang), text: tx(d.text, lang) }));
       return slides.length > 0 && (
         <section id="detalji" className="section details">
-          <div className="wrap"><Heading text={tx(page.details?.title, lang).replace(/\n/g, ' ')} className="is-center det-title" /></div>
+          <div className="wrap wrap-wide sec-head">
+            <h2 className="sec-title" data-reveal="up"><Rich text={tx(page.details?.title, lang).replace(/\n/g, ' ')} /></h2>
+            {tx(page.details?.note, lang) && <p className="sec-aside" data-reveal="up">{tx(page.details?.note, lang)}</p>}
+          </div>
           <Details tag={tag} slides={slides} labels={{ prev: t.prev, next: t.next, region: t.slider }} />
-          {tx(page.details?.note, lang) && <p className="wrap det-note">{tx(page.details?.note, lang)}</p>}
         </section>
       );
     },
@@ -136,9 +165,10 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
 
     location: () => hasLocation && (
       <section id="lokacija" className="section location">
-        <div className="wrap loc-grid">
+        <div className="wrap wrap-wide loc-grid">
           <div className="loc-text">
-            <Heading text={tx(loc.title, lang) || t.location} />
+            <p className="label" data-reveal="fade">{t.location}</p>
+            <h2 className="sec-title" data-reveal="up"><Rich text={(tx(loc.title, lang) || t.location).replace(/\n/g, ' ')} /></h2>
             <div data-reveal="up"><Paras className="prose" text={tx(loc.text, lang)} /></div>
             {(loc.points || []).filter((p) => tx(p.name, lang)).length > 0 && (
               <ul className="points" data-reveal="up">
@@ -202,7 +232,9 @@ export default function Site({ data, lang }: { data: SiteData; lang: Lang }) {
 }
 
 /** Cards for the apartment types section: brochure figures, availability and prices live from the unit table. */
-function typeCards({ units, settings }: SiteData, lang: Lang): TypeCard[] {
+function typeCards(data: SiteData, lang: Lang): CollectionCard[] {
+  const { settings } = data;
+  const units = getUnits(data);
   const t = UI[lang];
   const loc = LOCALES[lang].number;
   const plural = new Intl.PluralRules(loc);
@@ -210,10 +242,10 @@ function typeCards({ units, settings }: SiteData, lang: Lang): TypeCard[] {
   const m2 = (n: number) => n.toLocaleString(loc, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' m²';
   const fill = (s: string, v: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (_, k) => String(v[k] ?? ''));
   return APARTMENT_TYPES.map((ty) => {
-    const own = unitsOfType(ty, units);
+    const own = units.filter((u) => u.type === ty.id);
     const free = own.filter((u) => u.status === 'available');
+    const known = own.some((u) => u.status !== 'unknown');
     const prices = settings.show_price ? free.map((u) => Number(u.price)).filter((p) => p > 0) : [];
-    const first = free[0] || own[0];
     return {
       id: ty.id,
       name: fill(t.typeName, { t: ty.id }),
@@ -223,15 +255,13 @@ function typeCards({ units, settings }: SiteData, lang: Lang): TypeCard[] {
       outdoor: `${t[ty.outdoor.kind]} ${m2(ty.outdoor.area)}`,
       floors: ty.floors[0] === ty.floors[1] ? fill(t.floorOne, { n: ty.floors[0] }) : fill(t.floorRange, { a: ty.floors[0], b: ty.floors[1] }),
       units: fill(many('typeUnits', ty.count), { n: ty.count }),
-      avail: own.length ? (free.length ? fill(t.typeFree, { a: free.length, n: own.length }) : t.soldOut) : '',
-      soldOut: own.length > 0 && free.length === 0,
+      avail: !own.length ? '' : !known ? fill(many('typeUnits', own.length), { n: own.length }) : free.length ? fill(t.typeFree, { a: free.length, n: own.length }) : t.soldOut,
+      soldOut: known && own.length > 0 && free.length === 0,
       price: prices.length ? fill(t.priceFrom, { p: Math.min(...prices).toLocaleString(loc) + ' ' + (settings.currency || 'KM') }) : '',
-      href: first ? `${href('apartments', lang)}#rvs/${first.building}/${encodeURIComponent(first.code)}` : href('apartments', lang),
+      href: `${explorerPath(lang)}?${lang === 'bs' ? 'tip' : 'type'}=${ty.id}`,
       plan: `/riverina/types/tip-${ty.id.toLowerCase()}.webp`,
       plan3d: (PLANS_3D as Record<string, string>)[ty.sample] || '',
       planAlt: fill(t.planAlt, { t: ty.id }),
-      rooms: ty.rooms.map(([k, a]) => [ROOM_NAMES[k][lang] || ROOM_NAMES[k].bs, m2(a)]),
-      total: m2(ty.area),
     };
   });
 }

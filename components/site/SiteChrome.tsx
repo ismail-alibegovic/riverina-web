@@ -1,12 +1,12 @@
 import Header, { NavItem } from './Header';
 import SmoothScroll from './SmoothScroll';
 import { SiteData, mediaUrl } from '@/lib/content';
-import { LANGS, Lang } from '@/lib/i18n';
+import { LANGS, Lang, UI, href } from '@/lib/i18n';
 
 const SOCIAL_LABELS: Record<string, string> = { instagram: 'Instagram', facebook: 'Facebook', linkedin: 'LinkedIn' };
 
 /** Everything around the page content: intro curtain, smooth scroll, header and full-screen menu. */
-export default function SiteChrome({ data, lang, nav, contactHref, langHref, tone = 'light' }: {
+export default function SiteChrome({ data, lang, nav, contactHref, langHref, tone = 'light', cta }: {
   data: SiteData;
   lang: Lang;
   nav: NavItem[];
@@ -14,6 +14,8 @@ export default function SiteChrome({ data, lang, nav, contactHref, langHref, ton
   /** path of this page in each language */
   langHref: (l: Lang) => string;
   tone?: 'light' | 'dark';
+  /** header pill; defaults to the apartment finder */
+  cta?: { href: string; label: string } | null;
 }) {
   const s = data.settings;
   const name = s.project_name || 'Riverina Residence';
@@ -39,6 +41,7 @@ export default function SiteChrome({ data, lang, nav, contactHref, langHref, ton
         email={data.page.contact?.email}
         socials={socials}
         company={data.page.footer?.company}
+        cta={cta === null ? undefined : cta || { href: href('apartments', lang), label: UI[lang].chooseShort }}
       />
     </>
   );

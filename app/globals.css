@@ -1,16 +1,16 @@
 /* Riverina Residence — design system. Brand: navy / ivory, gold only as accent. */
 :root {
   /* colour */
-  --navy: #14213a;
-  --navy-2: #1d2d4b;
-  --navy-deep: #0e1729;
-  --ivory: #f6f1e7;
+  --navy: #0b2247;
+  --navy-2: #173463;
+  --navy-deep: #06162f;
+  --ivory: #f5efe4;
   --paper: #fbf8f2;
-  --gold: #b8955a;
-  --gold-soft: #d8c09a;
+  --gold: #c4994a;
+  --gold-soft: #dcc08a;
   --ink: var(--navy);
-  --muted: #5d6472;
-  --line: rgba(20, 33, 58, .14);
+  --muted: #56627a;
+  --line: rgba(11, 34, 71, .14);
   --line-light: rgba(246, 241, 231, .22);
   --on-dark-muted: rgba(246, 241, 231, .72);
 
@@ -67,7 +67,7 @@ h2 { font-size: var(--t-3xl); }
 h3 { font-size: var(--t-2xl); }
 p { margin: 0; text-wrap: pretty; }
 ::selection { background: var(--navy); color: var(--ivory); }
-:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; box-shadow: 0 0 0 6px rgba(184, 149, 90, .35); }
+:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; box-shadow: 0 0 0 6px rgba(196, 153, 74, .35); }
 
 .wrap { width: 100%; max-width: var(--wrap); margin: 0 auto; padding-inline: max(var(--gutter), env(safe-area-inset-left, 0px)) max(var(--gutter), env(safe-area-inset-right, 0px)); }
 .wrap-wide { max-width: 1520px; }
@@ -234,7 +234,7 @@ html.intro-seen .intro { display: none; }
 .only-head-r a { color: rgba(255, 255, 255, .85); text-decoration: none; }
 .only-head-r a:hover { color: #fff; }
 .only-main { flex: 1; padding: clamp(10px, 2vw, 28px); max-width: 1680px; width: 100%; margin: 0 auto; }
-.only .rvs { border-radius: 16px; box-shadow: 0 30px 80px -40px rgba(20, 33, 58, .35); }
+.only .rvs { border-radius: 16px; box-shadow: 0 30px 80px -40px rgba(11, 34, 71, .35); }
 .only-embed { background: transparent; min-height: 0; }
 .only-embed .only-main { padding: 0; max-width: none; }
 .only-embed .rvs { border-radius: 0; box-shadow: none; }

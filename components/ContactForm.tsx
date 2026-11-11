@@ -16,7 +16,8 @@ function validate(p: { name?: string; email?: string; phone?: string; consent?: 
   return e;
 }
 
-export default function ContactForm({ lang }: { lang: Lang }) {
+/** `unit` / `building` tie the enquiry to an apartment (stored with the lead); `message` pre-fills the text. */
+export default function ContactForm({ lang, unit = '', building = '', message = '', idPrefix = 'cf' }: { lang: Lang; unit?: string; building?: string; message?: string; idPrefix?: string }) {
   const t = UI[lang];
   const [state, setState] = useState<'idle' | 'sending' | 'ok' | 'err' | 'rate' | 'invalid'>('idle');
   const [errors, setErrors] = useState<Partial<Record<Field, true>>>({});
@@ -26,7 +27,7 @@ export default function ContactForm({ lang }: { lang: Lang }) {
     e.preventDefault();
     const f = e.currentTarget;
     const fd = Object.fromEntries(new FormData(f).entries()) as Record<string, string>;
-    const payload = { ...fd, consent: (f.elements.namedItem('consent') as HTMLInputElement).checked, lang, page: location.href, unit: '', building: '' };
+    const payload = { ...fd, consent: (f.elements.namedItem('consent') as HTMLInputElement).checked, lang, page: location.href, unit, building };
     const errs = validate(payload);
     setErrors(errs);
     if (Object.keys(errs).length) {
@@ -43,28 +44,29 @@ export default function ContactForm({ lang }: { lang: Lang }) {
     } catch { setState('err'); }
   }
 
-  const err = (k: Field) => errors[k] && <span className="cform-err" id={`cf-${k}-err`}>{msg[k]}</span>;
-  const described = (...ks: Field[]) => ks.filter((k) => errors[k]).map((k) => `cf-${k}-err`).join(' ') || undefined;
+  const err = (k: Field) => errors[k] && <span className="cform-err" id={`${idPrefix}-${k}-err`}>{msg[k]}</span>;
+  const described = (...ks: Field[]) => ks.filter((k) => errors[k]).map((k) => `${idPrefix}-${k}-err`).join(' ') || undefined;
+  const id = (k: string) => `${idPrefix}-${k}`;
   return (
     <form className="cform" onSubmit={onSubmit} noValidate>
       <div className="cform-row">
-        <label htmlFor="cf-name">{t.name}</label>
-        <input id="cf-name" name="name" autoComplete="name" required maxLength={190} aria-invalid={!!errors.name} aria-describedby={described('name')} />
+        <label htmlFor={id('name')}>{t.name}</label>
+        <input id={id('name')} name="name" autoComplete="name" required maxLength={190} aria-invalid={!!errors.name} aria-describedby={described('name')} />
         {err('name')}
       </div>
       <div className="cform-2">
         <div className="cform-row">
-          <label htmlFor="cf-phone">{t.phone}</label>
-          <input id="cf-phone" name="phone" type="tel" autoComplete="tel" maxLength={64} aria-invalid={!!errors.contact} aria-describedby={described('contact')} />
+          <label htmlFor={id('phone')}>{t.phone}</label>
+          <input id={id('phone')} name="phone" type="tel" autoComplete="tel" maxLength={64} aria-invalid={!!errors.contact} aria-describedby={described('contact')} />
         </div>
         <div className="cform-row">
-          <label htmlFor="cf-email">{t.email}</label>
-          <input id="cf-email" name="email" type="email" autoComplete="email" maxLength={190} aria-invalid={!!(errors.contact || errors.email)} aria-describedby={described('contact', 'email')} />
+          <label htmlFor={id('email')}>{t.email}</label>
+          <input id={id('email')} name="email" type="email" autoComplete="email" maxLength={190} aria-invalid={!!(errors.contact || errors.email)} aria-describedby={described('contact', 'email')} />
           {err('email')}
         </div>
       </div>
       {err('contact')}
-      <div className="cform-row"><label htmlFor="cf-msg">{t.message}</label><textarea id="cf-msg" name="message" rows={4} maxLength={4000} /></div>
+      <div className="cform-row"><label htmlFor={id('msg')}>{t.message}</label><textarea id={id('msg')} name="message" rows={4} maxLength={4000} defaultValue={message} key={message} /></div>
       <input type="text" name="website" className="hp" tabIndex={-1} autoComplete="off" aria-hidden="true" />
       <label className="cform-consent">
         <input type="checkbox" name="consent" aria-invalid={!!errors.consent} aria-describedby={described('consent')} />
